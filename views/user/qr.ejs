@@ -4,15 +4,56 @@
     <%- include('./parts/head.ejs');%>
 </head>
 <body>
-    <h1>Qr Codes</h1>
+    <h1>Create New Qr Codes</h1>
     <%- include('./parts/sideNav.ejs');%>
       
     <div class="container">
         <div>
-            <input required type="url" name="fullUrl" id="fullUrl"  placeholder="url">
-            <input type="text" name="shortUrl" id="suffixUrl"  placeholder="shorturl (optional)">
-            <button type="button" onclick="submitForm(this)">Submit</button>
+            <h4>Destination</h4>
+            <div class="mb-3">
+                <input required type="url" name="fullUrl" id="fullUrl"  placeholder="url" class="form-control">
+            </div>
+            <h4>Title</h4>
+            <div class="mb-3">
+                <input required type="text" name="title" id="titleUrl"  placeholder="title" class="form-control">
+            </div>
+            <h4>Short Link</h4>
+            <div class="mb-3 d-flex justify-content-around">
+                <input type="text" name="shortUrl"  value="127.0.0.1" class="form-control" disabled>
+                <h3 style="padding-left: 10px; padding-right: 10px;">/</h3>
+                <input type="text" name="shortUrl" id="suffixUrl"  placeholder="shorturl (optional)" class="form-control">
+            </div>
+            <button type="button" onclick="promptRecommendation(this)" class="btn btn-primary">Prompt</button>
+            <button type="button" onclick="submitForm(this)" class="btn btn-primary">Submit</button>
         </div>
+
+        <% for (const key in allUrl) { %>
+            <% const data = allUrl[key] %>
+        <div class="card mt-4">
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="row g-0">
+                      <div class="col-md-2">
+                        <div id="qr_<%= key%>" class="ps-4" short="<%= data.short%>"></div>
+                      </div>
+                      <div class="col col-md-10">
+                        <div class="d-flex flex-row-reverse">
+                            <button type="button" onclick="deleteQR(this)" class="btn btn-danger"><i class="fa-solid fa-trash-can pe-2"></i>Delete</button>
+                            <button type="button" onclick="editQR(this)" class="btn btn-success mx-2"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                            <button type="button" onclick="downloadQR(this)" class="btn btn-secondary" value="qr_<%= key%>" short="<%= data.short%>"><i class="fa-solid fa-download pe-2"></i>Download</button>
+                        </div>
+                        <div class="text-left">
+                          <h4 class="card-title">Card title</h4>
+                          <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                          <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+        </div>
+        <% } %>
+
         <table>
             <thead>
                 <tr>
@@ -35,8 +76,8 @@
                                 var qrcode = new QRCode(document.getElementById("qr_<%= key%>"), {
                                 //host/url
                                 text: "http://127.0.0.1/<%= data.short%>",
-                                width: 100,
-                                height: 100,
+                                width: "150",
+                                height: "150",
                                 colorDark : "#7368bf",
                                 colorLight : "#ffffff",
                                 correctLevel : QRCode.CorrectLevel.H
@@ -48,11 +89,32 @@
                 <% } %>
             </tbody>
         </table>
+        <a download="cobaqr.png" href="data:image/png;base64,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">Download</a>
+      <script>
+            function promptRecommendation(e){
 
-        <script>
+            }
+            function downloadQR(e) {  
+                var link = document.createElement('a');
+                var short = e.getAttribute('short')
+                console.log(e.value);
+                console.log(e.short);
+                link.download = 'filename.png';
+                console.log(document.getElementById(e.value));
+                
+                // link.href = document.getElementById(e.value).toDataURL()
+                // console.log(document.getElementById(e.value).toDataURL());
+            }
+            function editQR(e) {  
+
+            }
+            function deleteQR(e) {  
+
+            }
             function submitForm(e) {
                 // try {
                 const full = document.querySelector('#fullUrl').value
+                const title = document.querySelector('#titleUrl').value
                 const short = document.querySelector('#suffixUrl').value
                 if (!full) {
                     alert('Url must be filled !')
@@ -61,6 +123,7 @@
                 const data = {
                     full,
                     short,
+                    title,
                     clicks: 0,
                     type: 'qr'
                 }
@@ -70,14 +133,17 @@
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        body: JSON.stringify(data), // body data type must match "Content-Type" header
+                        body: JSON.stringify(data),
                     }).then(async (response) => {
                         if (response.ok) {
                             window.location.href = "/qr";
                         }
                         else if(response.status){
-                            alert('This Short URL is Already Exist !')
-                            console.log(response);
+                            Swal.fire({
+                            icon: "error",
+                            title: "Ooops....",
+                            text: "This Short URL is Already Taken!",
+                            });
                         }
                         else{
                         }

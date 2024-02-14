@@ -1,5 +1,5 @@
 import express from 'express'
-import { getAllUrl, searchShortUrl, updateClickShortUrl } from '../functions/urlController.js';
+import { filterData, getAllUrl, searchShortUrl, updateClickShortUrl } from '../functions/urlController.js';
 import session from 'express-session'
 
 const app = express() 
@@ -26,7 +26,8 @@ router.get('/', (req, res)=>{
 })
 
 router.get('/qr', async (req, res)=>{
-    res.render('user/qr', {allUrl: await getAllUrl()})
+    //jangan lupa nanti add filter untuk user 
+    res.render('user/qr', {allUrl: await filterData({type: 'qr'}, await getAllUrl())})
 })
 
 router.get('/biolink', (req, res)=>{
@@ -36,7 +37,7 @@ router.get('/biolink', (req, res)=>{
 router.get('/:shortUrl', async(req,res)=>{
     const shortUrl = await searchShortUrl(req.params.shortUrl)
     if(shortUrl == null){
-        return res.sendStatus(404)
+        res.render('user/error404')
     }else{
         const param = req.params.shortUrl
         updateClickShortUrl(param)

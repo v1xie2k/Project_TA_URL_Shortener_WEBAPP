@@ -1,100 +1,82 @@
-import { MongoClient, ServerApiVersion } from 'mongodb';
-import qrcode from 'qrcode';
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import {customAlphabet , random} from 'nanoid'
-import Swal from 'sweetalert2'
-import mongoose from 'mongoose';
-import {fire} from '../config/firebase.js'
 import  { getFirestore, Timestamp, FieldValue, Filter } from 'firebase-admin/firestore'
+import '../config/firebase.js'
+import 'dotenv/config'
 
-// const dbName = "url";
-// const uri = "mongodb+srv://peko:pekopeko666@cluster0.no79huv.mongodb.net/url";
-// const conn = await mongoose.connect(uri);
-// const db = conn.connection;
-
-// const ShortUrl = db.collection('shorturl')
-
-// const db = getFirestore(fire)
 const db = getFirestore();
 const dbName = 'shorturls'
 
-// export async function checkUrl(url) {  
-//     var status = false
-//     var rawData
-//     try{
-//         rawData = await db.collection(dbName).get();
-//         rawData.forEach((doc) => {
-//             if(doc.data().short == url){
-//                 status = true
-//             }
-//         });
-//     } catch(err){
-//         console.log(err.stack);
-//     }
-//     console.log(status);
-//     return status
-// }
-
+const genAI = new GoogleGenerativeAI(process.env.gemini_api_key);
+const model = genAI.getGenerativeModel({ model: "gemini-pro"});
 //done
 export async function getAllUrl() {
     var rawData
     var data = []
     try {
-        // data = await ShortUrl.find({}).toArray();
         rawData = await db.collection(dbName).get();
         rawData.forEach((doc) => {
             data.push(doc.data())
         });
+        // //tes gemini
+        // //url tingal diganti dengan long url yang mau dipakai
+        // const prompt = "Make 3 recommendation of short url for suffix only! this url   make the output only the suffix with 2 until 3 readable words seperated with dash mark and without slash mark, dont mind the main url"
+
+        // const result = await model.generateContent(prompt);
+        // const response = await result.response;
+        // const text = response.text();
+        // console.log(text);
     } catch (err) {
         console.log(err.stack);
     }
-    return await data
+    return data
+}
+
+export async function filterData(filter, data) {  
+    var newData = []
+    if(filter){
+        for (const iterator of data) {
+            if(filter.type == iterator.type){
+                newData.push(iterator)
+            }
+        }
+    }
+    return newData
 }
 
 export async function addNewURL(data) {
     var status = true
-    
     try {
         // check apakah sudah used di db short urlnya
-        console.log('why!S');
         if(await searchShortUrl(data.short)){
-                console.log('1');
-                // data ada kembar
-                status = false 
-            }else{
-                console.log('2');
-                //check type qr/bukan
-                console.log(data);
-                if(data.type  == 'qr' && data.short.length <= 0){
-                    var shortQrNew 
-                    do{
-                        const idQr = customAlphabet ('1234567890abcdefghijklmopqrstuvwxyz', 8)
-                        shortQrNew = idQr(8)
-                        data.short = shortQrNew
-                    }while(await searchShortUrl(shortQrNew))
-                    // data.qr_code = await qrcode.toDataURL(shortQrNew, async (err, src) => {
-                    //     return await src
-                    // });
-                    // await qrcode.toDataURL(shortQrNew, async (err, src) => {
-                    //     data.qr = src
-                    // });
-                }
-                // const p = await ShortUrl.insertOne(data);
-                const res = await db.collection(dbName).doc(data.short).set(data)
-                console.log(res);
-                return true
+            // data ada kembar
+            status = false 
+        }else{
+            //check type qr/bukan
+            if(data.type  == 'qr' && data.short.length <= 0){
+                var shortQrNew 
+                do{
+                    const idQr = customAlphabet ('1234567890abcdefghijklmopqrstuvwxyz', 8)
+                    shortQrNew = idQr(8)
+                    data.short = shortQrNew
+                }while(await searchShortUrl(shortQrNew))
             }
-        } catch (err) {
-            console.log(err.stack);
-            return false
-     }
+            const res = await db.collection(dbName).doc(data.short).set(data)
+            return true
+        }
+    } catch (err) {
+        console.log(err.stack);
+        return false
+    }
     return status
 }
 
-//done
 export async function searchShortUrl(param) {
     var find
     try {
-        find = await(await db.collection(dbName).doc(param).get()).data();
+        if(param){
+            find = await(await db.collection(dbName).doc(param).get()).data();
+        }
     } catch (err) {
         console.log(err.stack);
     }
@@ -102,7 +84,7 @@ export async function searchShortUrl(param) {
 }
 
 export async function updateClickShortUrl(param) {
-    var find, rawData
+    var find
     try { 
         find = await searchShortUrl(param)
         find.clicks++
