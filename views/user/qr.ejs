@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./parts/head.ejs');%>
+</head>
+<body>
+    <h1>Qr Codes</h1>
+    <%- include('./parts/sideNav.ejs');%>
+      
+    <div class="container">
+        <div>
+            <input required type="url" name="fullUrl" id="fullUrl"  placeholder="url">
+            <input type="text" name="shortUrl" id="suffixUrl"  placeholder="shorturl (optional)">
+            <button type="button" onclick="submitForm(this)">Submit</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Full Url</th>
+                    <th>ShortUrl</th>
+                    <th>Clicks</th>
+                    <th>QR</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (const key in allUrl) { %>
+                    <% const data = allUrl[key] %>
+                    <tr>
+                        <td><%= data.full %></td>
+                        <td><%= data.short %></td>
+                        <td><%= data.clicks %></td>
+                        <td id="qr_<%= key%>"></td>
+                        <script type="text/javascript">
+                            if("<%= data.type %>" == 'qr'){
+                                var qrcode = new QRCode(document.getElementById("qr_<%= key%>"), {
+                                //host/url
+                                text: "http://127.0.0.1/<%= data.short%>",
+                                width: 100,
+                                height: 100,
+                                colorDark : "#7368bf",
+                                colorLight : "#ffffff",
+                                correctLevel : QRCode.CorrectLevel.H
+                            });
+                            }
+                            
+                        </script>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+
+        <script>
+            function submitForm(e) {
+                // try {
+                const full = document.querySelector('#fullUrl').value
+                const short = document.querySelector('#suffixUrl').value
+                if (!full) {
+                    alert('Url must be filled !')
+                    return
+                }
+                const data = {
+                    full,
+                    short,
+                    clicks: 0,
+                    type: 'qr'
+                }
+                console.log(data);
+                    fetch('/api/qrcode', {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data), // body data type must match "Content-Type" header
+                    }).then(async (response) => {
+                        if (response.ok) {
+                            window.location.href = "/qr";
+                        }
+                        else if(response.status){
+                            alert('This Short URL is Already Exist !')
+                            console.log(response);
+                        }
+                        else{
+                        }
+                    }).catch((error) => {
+                        alert('WARNING!')
+                        console.log(error);
+                    });
+            }
+        </script>
+    </div>
+</body>
+</html>

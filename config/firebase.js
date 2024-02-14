@@ -1,0 +1,29 @@
+import { initializeApp, applicationDefault, cert } from 'firebase-admin/app'
+
+const serviceAccount = {
+    "type": "service_account",
+    "project_id": "tes-firebase-9bd08",
+    "private_key_id": "2b8af02099ba6296a3150059371f5f7a04fbc32a",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCgamR+pPWEZ16M\ny9iLfuSzW5Dy7axZjviFQhe4N9XVJHPEX/hv6AuEWnTJSwGDXvHFCUp3IDX5muGZ\nmtaFt3kVljSgWCNq6XnYRk6iQikbmAv5JrTmyCJy0d4lsFXPAIx+5vF6KuusJ4DS\n5GA3a7/ii3ZNAbOxZyh1P7xAznR/XEnqZ6cLwhBhUEluBGNorAKt1LYFe4PiyQIr\n/6EE8muogOybNxebXJ/fx5ZzremMAIm8+SJKCkSo+rXZtscWhmO9FHnK6JUoQpX/\ninltO8UsUZoW19O8rvT0wnxnEmUw44hk2c92dn3+YooI1+cENy8sbdmXwOM1qWHm\nEP505ZgPAgMBAAECggEAC0tCTqPowNnFD3ugmaQLw2omDxYKftzkHjNN8TasWhvK\nMy0glCk0E/oiyjNHyxe2eBot2t8MZDAldweVCyGkp3W4uDTl+9zhRIe6rI2k6eAi\nfUTeeRF/hcvFBkYSdiCcEHX/a78CDBy7fKplV2TBXaVWmGUox7IzToH38pLpvJ4T\nV/G3sKHbjBUooNs9Kia/Dcob1+MPRRAv7+9z1mXZTQJosFJvZLeGvtUMUrjYWv5R\ndumsbbcWwrgpi9EwLoqtdEHJfpqeEB0gKbmEnev6Oju466LTwpXJs5XfG/Syg9Tk\nNqaHFdS1Xc7laeiD6vBdlkJ5pHLW88/0ub6Xc2GRrQKBgQDLJERdEX5UvBHTLfve\nzmui+tB+ZXCsSwG84aoDN9eh7KFYzJqDZUxHYKDVaIhqJFtZ+AYl8PGml8j2yjj/\ngv1SF7SzcEu3+nYFxqDbXysZN3hIHYZU/iQ6fjmjDLhcRqaaBDhsI+vwEzyZ0lcs\nDTCpvrIefIf/eHZW3oLfpZlqfQKBgQDKKAsyXgCLmIKxdbVfDu9uQXxKM2iBAC0J\nMkn//ZoxEOpw3Nutips8c+k7gVvBP7db/KJq+XSDiQBJM3VeWlMUW25KqDcEbkaF\nFv3qfvi2OFQ7d5T2KGNUzfyppdzL8xv3fDxs2dtdPNS+ngDMWZtlGQq/loVnqVpc\ndHzfCNqGewKBgDlBt6Mj0x+/AqcrRtq+A8ikOS/nF6L4YT0Dvg+6JaUWNUP6J3Lx\nklZr/eko1YpVRQpOxizbhMEX9yTYSsh5+zywQdZxyGXKyolGOwCaCmPJJrXs3HgI\nSd3SxhwW8b/QihTPK7gPR+kbAvG4P6nC7fxqK3o8T3jKU1CY1vqCioNhAoGAT2w0\nGfG8nRuqHTZ1r4caomKwBib0Y9pB118em6hzL9vJf9YFqMTQAIw5kdtcxSvXShiT\nZxvintrwddH1xsAN6+2QA1zbYK5Cnn9N+xcvd8fhsAtnRt7PR742CiDUAnzc+/qf\nctSUzqjbnJhPD/oUhz+zbVohx3xNuA08EhRUZokCgYBqdBxmfdwpyVGPbRsE/ZUy\nGr0du7uqE6KaFPBMIOJd2gtGysy9IxvhcDYpguCNVm71c5bHqXSS2Ym5OmUD1KF2\n1+HwFnFIbhFtxm40t54zKbTnQMqLmecMxn+8oGKfAubLKHdwFP06o+ZPpZe+xyUE\nJFFGfRTohSGCA48qLU+BtQ==\n-----END PRIVATE KEY-----\n",
+    "client_email": "firebase-adminsdk-qn55b@tes-firebase-9bd08.iam.gserviceaccount.com",
+    "client_id": "103332832864299854457",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-qn55b%40tes-firebase-9bd08.iam.gserviceaccount.com",
+    "universe_domain": "googleapis.com"
+}
+
+// const firebaseConfig = {
+//     apiKey: "AIzaSyBbSnxXmL7hfOO45tD82qMwIHoCrSLP5XU",
+//     authDomain: "tes-firebase-9bd08.firebaseapp.com",
+//     projectId: "tes-firebase-9bd08",
+//     storageBucket: "tes-firebase-9bd08.appspot.com",
+//     messagingSenderId: "793446522014",
+//     appId: "1:793446522014:web:101440f7643611ffbc6f8f"
+// };
+  
+// export const fire = initializeApp(firebaseConfig);
+export const fire = initializeApp({
+    credential: cert(serviceAccount)
+});
