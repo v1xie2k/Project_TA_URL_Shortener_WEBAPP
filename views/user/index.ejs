@@ -11,7 +11,7 @@
     <div class="container">
         <div >
             <input required type="url" name="fullUrl" id="fullUrl"  placeholder="url">
-            <input required type="text" name="shortUrl" id="suffixUrl"  placeholder="shorturl">
+            <input required type="text" name="shortUrl" id="shortUrl"  placeholder="shorturl">
             <button type="button" onclick="submitForm(this)">Submit</button>
         </div>
     
@@ -19,7 +19,7 @@
         function submitForm(e) {
             // try {
             const full = document.querySelector('#fullUrl').value
-            const short = document.querySelector('#suffixUrl').value
+            const short = document.querySelector('#shortUrl').value
             if (!full || !short) {
                 return
             }
@@ -40,7 +40,6 @@
                     }
                     else if(response.status){
                         alert('This Short URL is Already Exist !')
-                        console.log(response);
                     }
                     else{
                     }

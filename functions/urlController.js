@@ -9,7 +9,17 @@ const dbName = 'shorturls'
 
 const genAI = new GoogleGenerativeAI(process.env.gemini_api_key);
 const model = genAI.getGenerativeModel({ model: "gemini-pro"});
-//done
+
+export async function promptUrlRecommendation(url) { 
+
+    const prompt = "Make 3 recommendation of short url for suffix only! for this url "+ url +" make the output only the suffix with 2 until 3 readable words seperated with dash mark and without slash mark, dont mind the main url, display in order using numbers"
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    return text
+}
+
 export async function getAllUrl() {
     var rawData
     var data = []
@@ -18,14 +28,6 @@ export async function getAllUrl() {
         rawData.forEach((doc) => {
             data.push(doc.data())
         });
-        // //tes gemini
-        // //url tingal diganti dengan long url yang mau dipakai
-        // const prompt = "Make 3 recommendation of short url for suffix only! this url   make the output only the suffix with 2 until 3 readable words seperated with dash mark and without slash mark, dont mind the main url"
-
-        // const result = await model.generateContent(prompt);
-        // const response = await result.response;
-        // const text = response.text();
-        // console.log(text);
     } catch (err) {
         console.log(err.stack);
     }

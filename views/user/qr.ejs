@@ -21,10 +21,15 @@
             <div class="mb-3 d-flex justify-content-around">
                 <input type="text" name="shortUrl"  value="127.0.0.1" class="form-control" disabled>
                 <h3 style="padding-left: 10px; padding-right: 10px;">/</h3>
-                <input type="text" name="shortUrl" id="suffixUrl"  placeholder="shorturl (optional)" class="form-control">
+                <input type="text" name="shortUrl" id="shortUrl"  placeholder="shorturl (optional)" class="form-control">
             </div>
-            <button type="button" onclick="promptRecommendation(this)" class="btn btn-primary">Prompt</button>
-            <button type="button" onclick="submitForm(this)" class="btn btn-primary">Submit</button>
+            <div id="promptResult" class="d-flex justify-content-between mb-3">
+                <!-- this area is for Gemini Recommendation -->
+            </div>
+            <div class="d-flex justify-content-between">
+                <button id="promptBtn" type="button" onclick="promptRecommendation(this)" class="btn btn-primary">Prompt</button>
+                <button type="button" onclick="submitForm(this)" class="btn btn-primary">Submit</button>
+            </div>
         </div>
 
         <% for (const key in allUrl) { %>
@@ -34,44 +39,7 @@
                 <div class="mb-3">
                     <div class="row g-0">
                       <div class="col-md-2">
-                        <!-- <div id="qr_<%= key%>" class="ps-4" short="<%= data.short%>"></div> -->
                         <canvas id="qr_<%= key%>" class="ps-1 mt-3" short="<%= data.short%>"></canvas>
-                      </div>
-                      <div class="col col-md-10">
-                        <div class="d-flex flex-row-reverse">
-                            <button type="button" onclick="deleteQR(this)" class="btn btn-danger"><i class="fa-solid fa-trash-can pe-2"></i>Delete</button>
-                            <button type="button" onclick="editQR(this)" class="btn btn-success mx-2"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
-                            <button type="button" onclick="downloadQR(this)" class="btn btn-secondary" value="qr_<%= key%>" short="<%= data.short%>"><i class="fa-solid fa-download pe-2"></i>Download</button>
-                        </div>
-                        <div class="text-left">
-                          <h4 class="card-title">Card title</h4>
-                          <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                          <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-            </div>
-        </div>
-        <% } %>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Full Url</th>
-                    <th>ShortUrl</th>
-                    <th>Clicks</th>
-                    <th>QR</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% for (const key in allUrl) { %>
-                    <% const data = allUrl[key] %>
-                    <tr>
-                        <td><%= data.full %></td>
-                        <td><%= data.short %></td>
-                        <td><%= data.clicks %></td>
-                        <td id="qr_<%= key%>"></td>
                         <script>
                             if("<%= data.type %>" == 'qr'){
                                 var qrcode = new QRious({
@@ -82,18 +50,95 @@
                                 })
                             }
                         </script>
-                    </tr>
-                <% } %>
-            </tbody>
-        </table>
+                      </div>
+                      <div class="col col-md-10">
+                        <div class="d-flex flex-row-reverse">
+                            <button type="button" onclick="deleteQR(this)" class="btn btn-danger"><i class="fa-solid fa-trash-can pe-2"></i>Delete</button>
+                            <button type="button" onclick="editQR(this)" class="btn btn-success mx-2"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                            <button type="button" onclick="downloadQR(this)" class="btn btn-secondary" value="qr_<%= key%>" short="<%= data.short%>"><i class="fa-solid fa-download pe-2"></i>Download</button>
+                        </div>
+                        <div class="text-left">
+                          <h4 class="card-title"><%= data.title%></h4>
+                          <a href="<%= data.full%>" style="text-decoration: none;"><%= data.full%></a>
+                          <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+        </div>
+        <% } %>
+
       <script>
+            function promptClick(e) {
+                var newVal = $(e).val()
+                $('#shortUrl').val(newVal)
+            }
             function promptRecommendation(e){
+                var fullUrl = $('#fullUrl').val()
+
+                Swal.fire({
+                    icon: "warning",
+                    title: "Prompting will cost you 1 credit! Are you sure about it?",
+                    showCancelButton: true,
+                    confirmButtonText: "Go",
+                }).then(async (result) => {
+                    if(result.isConfirmed){
+                        if(!fullUrl){
+                            Swal.fire("Destination must be filled first!");
+                        }else{
+                            $('#promptBtn').html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Loading...')
+                            $('#promptBtn').prop('disabled', true)
+                            const data = {
+                                full: fullUrl
+                            }
+                            fetch('/api/prompt', {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify(data),
+                            }).then(async (response) => {
+                                if (response.ok) {
+                                    $('#promptResult').html('')
+                                    const prompt = await response.json()
+                                    const list = prompt.promptResult.split("\n")
+                                    const newList = []
+                                    for (const iterator of list) {
+                                        var val = iterator.substr(2, iterator.length)
+                                        val = val.trim()
+                                        $('#promptResult').append('<button onclick="promptClick(this)" class="btn btn-secondary" value="'+ val + '">'+ val +' </button>')
+                                    }
+                                    $('#promptBtn').html('Prompt')
+                                    $('#promptBtn').prop('disabled', false)
+                                }
+                                else if(response.status){
+                                    Swal.fire({
+                                    icon: "error",
+                                    title: "Ooops....",
+                                    text: "Something wrong",
+                                    });
+                                    $('#promptBtn').html('Prompt')
+                                    $('#promptBtn').prop('disabled', false)
+                                }
+                                else{
+                                }
+                            }).catch((error) => {
+                                alert('WARNING!')
+                                console.log(error);
+                                $('#promptBtn').html('Prompt')
+                                $('#promptBtn').prop('disabled', false)
+                            });
+                        }
+                    }
+                })
 
             }
             function downloadQR(e) {  
                 var link = document.createElement('a');
                 var short = e.getAttribute('short')
-                var target = document.getElementById(e.value)
+                // var target = document.getElementById(e.value)
+                var target = $('#'+e.value)[0]
 
                 link.download = 'qr-'+short+'.png';
                 link.href = target.toDataURL()
@@ -107,11 +152,11 @@
             }
             function submitForm(e) {
                 // try {
-                const full = document.querySelector('#fullUrl').value
-                const title = document.querySelector('#titleUrl').value
-                const short = document.querySelector('#suffixUrl').value
-                if (!full) {
-                    alert('Url must be filled !')
+                const full = $('#fullUrl').val()
+                const title = $('#titleUrl').val()
+                const short = $('#shortUrl').val()
+                if (!full || !title) {
+                    Swal.fire("Destination & Title must be filled");
                     return
                 }
                 const data = {
@@ -121,7 +166,6 @@
                     clicks: 0,
                     type: 'qr'
                 }
-                console.log(data);
                     fetch('/api/qrcode', {
                         method: "POST",
                         headers: {
