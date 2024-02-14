@@ -1,4 +1,3 @@
-import { MongoClient, ServerApiVersion } from 'mongodb'
 import express from 'express'
 import { addNewURL, searchShortUrl, updateClickShortUrl } from '../functions/urlController.js';
 import session from 'express-session'
