@@ -96,6 +96,14 @@ export async function updateClickShortUrl(param) {
     }
 }
 
+export async function deleteShortUrl(param){
+    try{
+        const res = await db.collection(dbName).doc(param).delete()
+    }catch(err){
+        console.log(err.stack);
+    }
+}
+
 export async function generateCode(data) {
     
 }

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../parts/head.ejs');%>
+</head>
+<body>
+    <%- include('../parts/sideNav.ejs');%>
+    <script type="text/javascript" src="../../../public/js/qrFunctions.js"></script>
+    <div class="container">
+        <h1>Edit Qr Codes</h1>
+        <div class="row g-0">
+            <div class="col-md-8">
+                <h4>Destination</h4>
+                <div class="mb-3">
+                    <input required type="url" name="fullUrl" id="fullUrl"  placeholder="url" class="form-control" value="<%= data.full %>">
+                </div>
+                <h4>Title</h4>
+                <div class="mb-3">
+                    <input required type="text" name="title" id="titleUrl"  placeholder="title" class="form-control" value="<%= data.title %>">
+                </div>
+                <h4>Short Link</h4>
+                <div class="mb-3 d-flex justify-content-around">
+                    <input type="text" name="shortUrl"  value="127.0.0.1" class="form-control" disabled>
+                    <h3 style="padding-left: 10px; padding-right: 10px;">/</h3>
+                    <input type="text" name="shortUrl" id="shortUrl"  placeholder="shorturl (optional)" class="form-control" value="<%= data.short %>">
+                </div>
+                <div id="promptResult" class="d-flex justify-content-between mb-3">
+                    <!-- this area is for Gemini Recommendation -->
+                </div>
+                <div class="d-flex justify-content-between">
+                    <button id="promptBtn" type="button" onclick="promptRecommendation(this)" class="btn btn-primary">Prompt</button>
+                    <button type="button" onclick="addQr(this)" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class=" container">
+                    <canvas id="qrCode" class="ps-1 mt-3" short="<%= data.short%>" onload="generateQr('qrCode', '<%= data.short %>')"></canvas>
+                    <script>
+                        var short = $('#shortUrl').val()
+                        generateQr("qrCode", short)
+                        $("#shortUrl").change(function () {
+                            short = $('#shortUrl').val()
+                            generateQr("qrCode", short)
+                        })
+                        
+                    </script>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    
+</body>
+</html>

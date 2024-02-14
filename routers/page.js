@@ -27,7 +27,17 @@ router.get('/', (req, res)=>{
 
 router.get('/qr', async (req, res)=>{
     //jangan lupa nanti add filter untuk user 
-    res.render('user/qr', {allUrl: await filterData({type: 'qr'}, await getAllUrl())})
+    res.render('user/qr/qr', {allUrl: await filterData({type: 'qr'}, await getAllUrl())})
+})
+
+//lakukan pengechekan kalau yang bisa edit adalah user yang bersangkutan
+router.get('/qr/edit/:shortUrl', async(req, res) =>{
+    const shortUrl = await searchShortUrl(req.params.shortUrl)
+    if(shortUrl == null){
+        res.render('user/error404')
+    }else{
+        res.render('user/qr/qrEdit', {data: shortUrl})
+    }
 })
 
 router.get('/biolink', (req, res)=>{

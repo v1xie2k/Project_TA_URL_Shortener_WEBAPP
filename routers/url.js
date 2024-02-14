@@ -1,5 +1,5 @@
 import express from 'express'
-import { addNewURL, promptUrlRecommendation, searchShortUrl, updateClickShortUrl } from '../functions/urlController.js';
+import { addNewURL, deleteShortUrl, promptUrlRecommendation, searchShortUrl, updateClickShortUrl } from '../functions/urlController.js';
 import session from 'express-session'
 const router = express.Router()
 
@@ -51,4 +51,16 @@ router.post('/prompt', async(req, res)=>{
         return res.status(400).send(err)
     }
 })
+
+router.delete('/delete_url/:shortUrl', async(req, res)=>{
+    const shortUrl = await searchShortUrl(req.params.shortUrl)
+    if(shortUrl == null){
+        res.render('user/error404')
+    }else{
+        const param = req.params.shortUrl
+        deleteShortUrl(param)
+        return res.status(200).send('success')
+    }
+})
+
 export default router
