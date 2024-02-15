@@ -1,5 +1,5 @@
 import express from 'express'
-import { addNewURL, deleteShortUrl, promptUrlRecommendation, searchShortUrl, updateClickShortUrl } from '../functions/urlController.js';
+import { addNewURL, deleteShortUrl, editURL, promptUrlRecommendation, searchShortUrl, updateClickShortUrl } from '../functions/urlController.js';
 import session from 'express-session'
 const router = express.Router()
 
@@ -25,6 +25,24 @@ router.post('/qrcode', async(req, res)=>{
     const short = req.body.short
     try{
         const result = await addNewURL({full, short, title, clicks:0, type: 'qr', createdAt: new Date()}).catch(console.dir);
+        if(result){
+            return res.status(200).send('success')
+        }
+        else{
+            return res.status(400).send('error')
+        }
+    }catch(err){
+        return res.status(400).send(err)
+    }
+})
+
+router.post('/qrcode/edit', async(req, res)=>{
+    const full = req.body.full
+    const title = req.body.title
+    const short = req.body.short
+    const oldShort = req.body.oldShort
+    try{
+        const result = await editURL({full, short, oldShort, title, updatedAt: new Date()}).catch(console.dir);
         if(result){
             return res.status(200).send('success')
         }

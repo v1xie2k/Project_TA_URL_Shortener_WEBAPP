@@ -10,7 +10,6 @@ function generateQr(elementId, shortUrl){
 function downloadQR(e) {  
     var link = document.createElement('a');
     var short = e.getAttribute('short')
-    // var target = document.getElementById(e.value)
     var target = $('#'+e.value)[0]
 
     link.download = 'qr-'+short+'.png';
@@ -21,6 +20,9 @@ function downloadQR(e) {
 function promptClick(e) {
     var newVal = $(e).val()
     $('#shortUrl').val(newVal)
+    if($(location).attr("pathname").includes('/edit')){
+        generateQr("qrCode", newVal)
+    }
 }
 
 function promptRecommendation(e){
@@ -55,10 +57,8 @@ function promptRecommendation(e){
                         for (const iterator of list) {
                             var val = iterator.substr(2, iterator.length)
                             val = val.trim()
-                            $('#promptResult').append('<button onclick="promptClick(this)" class="btn btn-secondary" value="'+ val + '">'+ val +' </button>')
+                            $('#promptResult').append('<button onclick="promptClick(this)" class="btn btn-secondary prompt-res" value="'+ val + '">'+ val +' </button>')
                         }
-                        $('#promptBtn').html('Prompt')
-                        $('#promptBtn').prop('disabled', false)
                     }
                     else if(response.status){
                         Swal.fire({
@@ -66,11 +66,9 @@ function promptRecommendation(e){
                         title: "Ooops....",
                         text: "Something wrong",
                         });
-                        $('#promptBtn').html('Prompt')
-                        $('#promptBtn').prop('disabled', false)
                     }
-                    else{
-                    }
+                    $('#promptBtn').html('Prompt')
+                    $('#promptBtn').prop('disabled', false)
                 }).catch((error) => {
                     alert('WARNING!')
                     console.log(error);
@@ -84,7 +82,41 @@ function promptRecommendation(e){
 }
 
 function editQR(e) {  
-
+    const full = $('#fullUrl').val()
+    const title = $('#titleUrl').val()
+    const short = $('#shortUrl').val()
+    const oldShort = $('#oldShort').val()
+    const oldDestination = $('#oldDestination').val()
+    if (!full || !title) {
+        Swal.fire("Destination & Title must be filled");
+        return
+    }
+    const data = {
+        full,
+        short,
+        title,
+        oldShort
+    }
+    const checkShort = (oldShort != short)? true : false
+    const checkFull = (oldDestination != full)? true : false
+    var status = true
+    if(checkShort || checkFull){
+        status = false
+        Swal.fire({
+            icon: "warning",
+            title: "Changing Destination or Short Link will cost you 1 credit! Are you sure about it?",
+            showCancelButton: true,
+            confirmButtonText: "Go",
+        }).then(async (result) => {
+            if(result.isConfirmed){
+                status = true
+                fetchAPI('/api/qrcode/edit', 'POST', data, 'This Short URL is Already Taken!')
+            }
+        })
+    }else{
+        fetchAPI('/api/qrcode/edit', 'POST', data, 'This Short URL is Already Taken!')
+    }
+    
 }
 function deleteQR(e) {  
     const shortUrl = $(e).val()
@@ -95,28 +127,7 @@ function deleteQR(e) {
     confirmButtonText: "Yes",
     }).then((result) => {
         if (result.isConfirmed) {
-            fetch('/api/delete_url/'+shortUrl, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }).then(async (response) => {
-                if (response.ok) {
-                    window.location.href = "/qr";
-                }
-                else if(response.status){
-                    Swal.fire({
-                    icon: "error",
-                    title: "Ooops....",
-                    text: "Something went wrong while deleting the data!",
-                    });
-                }
-                else{
-                }
-            }).catch((error) => {
-                alert('WARNING!')
-                console.log(error);
-            });
+            fetchAPI('/api/delete_url/'+shortUrl, 'DELETE', null, 'Something went wrong while deleting the data!')
         }
     });
 }
@@ -134,15 +145,17 @@ function addQr(e) {
         short,
         title,
         clicks: 0,
-        type: 'qr'
+        type: 'qr',
     }
-    fetch('/api/qrcode', {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    }).then(async (response) => {
+    fetchAPI('/api/qrcode', 'POST', data, 'This Short URL is Already Taken!')
+}
+
+function fetchAPI(apiUrl, method, data, text){
+    var config = {method, headers: {"Content-Type": "application/json"}}
+    if(data){
+        config.body = JSON.stringify(data)
+    }
+    fetch(apiUrl, config).then(async (response) => {
         if (response.ok) {
             window.location.href = "/qr";
         }
@@ -150,7 +163,7 @@ function addQr(e) {
             Swal.fire({
             icon: "error",
             title: "Ooops....",
-            text: "This Short URL is Already Taken!",
+            text,
             });
         }
         else{

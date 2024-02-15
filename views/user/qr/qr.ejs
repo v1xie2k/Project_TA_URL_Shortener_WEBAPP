@@ -4,6 +4,7 @@
     <%- include('../parts/head.ejs');%>
 </head>
 <body>
+    <%- include('../parts/header.ejs');%>
     <%- include('../parts/sideNav.ejs');%>
     <script type="text/javascript" src="../../../public/js/qrFunctions.js"></script>
     <div class="container">
@@ -49,7 +50,9 @@
                       <div class="col col-md-10">
                         <div class="d-flex flex-row-reverse">
                             <button type="button" onclick="deleteQR(this)" class="btn btn-danger" value="<%= data.short%>"><i class="fa-solid fa-trash-can pe-2"></i>Delete</button>
-                            <button type="button" onclick="editQR(this)" class="btn btn-success mx-2" value="<%= data.short%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                            <a href="/qr/edit/<%= data.short%>">
+                                <button type="button" class="btn btn-success mx-2" value="<%= data.short%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                            </a>
                             <button type="button" onclick="downloadQR(this)" class="btn btn-secondary" value="qr_<%= key%>" short="<%= data.short%>"><i class="fa-solid fa-download pe-2"></i>Download</button>
                         </div>
                         <div class="text-left">

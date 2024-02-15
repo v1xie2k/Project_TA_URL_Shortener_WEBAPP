@@ -73,6 +73,34 @@ export async function addNewURL(data) {
     return status
 }
 
+export async function editURL(data) {
+    var status = true
+    try {
+        // check edit is include with short url changes or not
+        const editShortStatus = (data.oldShort != data.short)? true : false
+        //edit includes short url changes
+        var oldData = await searchShortUrl(data.oldShort)
+        oldData.full = data.full
+        oldData.short = data.short
+        oldData.title = data.title
+        oldData.updatedAt = data.updatedAt
+        if(editShortStatus){
+            if(await searchShortUrl(data.short)){
+                // check is url already reserved or not
+                status = false 
+            }else{
+                const del = await db.collection(dbName).doc(data.oldShort).delete()
+            }
+        }
+        const res = await db.collection(dbName).doc(data.short).set(oldData)
+        
+    } catch (err) {
+        console.log(err.stack);
+        return false
+    }
+    return status
+}
+
 export async function searchShortUrl(param) {
     var find
     try {
