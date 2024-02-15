@@ -4,11 +4,10 @@ import session from 'express-session'
 import { searchData } from '../functions/universal.js';
 const router = express.Router()
 
-router.post('/shortUrls', async(req, res)=>{
-    const full = req.body.full
-    const short = req.body.short
+router.post('/url', async(req, res)=>{
+    const data = req.body
     try{
-        const result = await addNewURL({full, short, clicks:0}).catch(console.dir);
+        const result = await addNewURL(data).catch(console.dir);
         if(result){
             return res.status(200).send('success')
         }
@@ -20,30 +19,10 @@ router.post('/shortUrls', async(req, res)=>{
     }
 })
 
-router.post('/qrcode', async(req, res)=>{
-    const full = req.body.full
-    const title = req.body.title
-    const short = req.body.short
+router.post('/url/edit', async(req, res)=>{
+    const data = req.body
     try{
-        const result = await addNewURL({full, short, title, clicks:0, type: 'qr', createdAt: new Date()}).catch(console.dir);
-        if(result){
-            return res.status(200).send('success')
-        }
-        else{
-            return res.status(400).send('error')
-        }
-    }catch(err){
-        return res.status(400).send(err)
-    }
-})
-
-router.post('/qrcode/edit', async(req, res)=>{
-    const full = req.body.full
-    const title = req.body.title
-    const short = req.body.short
-    const oldShort = req.body.oldShort
-    try{
-        const result = await editURL({full, short, oldShort, title, updatedAt: new Date()}).catch(console.dir);
+        const result = await editURL(data).catch(console.dir);
         if(result){
             return res.status(200).send('success')
         }

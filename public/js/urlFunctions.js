@@ -1,3 +1,8 @@
+var destination
+if(window.location.href.split('/')[3] == 'url') destination = '/url'
+if(window.location.href.split('/')[3] == 'qr') destination ='/qr'
+
+
 function generateQr(elementId, shortUrl){
     new QRious({
         element: document.getElementById(elementId),
@@ -81,44 +86,49 @@ function promptRecommendation(e){
     }
 }
 
-function editQR(e) {  
+async function editUrl(e) {  
     const full = $('#fullUrl').val()
     const title = $('#titleUrl').val()
     const short = $('#shortUrl').val()
     const oldShort = $('#oldShort').val()
     const oldDestination = $('#oldDestination').val()
+    
     if (!full || !title) {
         Swal.fire("Destination & Title must be filled");
+        return
+    }
+    if(!await checkUrl(short)){
+        Swal.fire("Can't use that url");
         return
     }
     const data = {
         full,
         short,
         title,
-        oldShort
+        oldShort,
+        updatedAt: new Date()
     }
     const checkShort = (oldShort != short)? true : false
     const checkFull = (oldDestination != full)? true : false
-    var status = true
-    if(checkShort || checkFull){
-        status = false
+    const switchBtn = $('#switch').prop('checked')
+    if(checkShort || checkFull || switchBtn){
         Swal.fire({
             icon: "warning",
-            title: "Changing Destination or Short Link will cost you 1 credit! Are you sure about it?",
+            title: "Adding QR Code, Changing Destination or Short Link will cost you 1 credit! Are you sure about it?",
             showCancelButton: true,
             confirmButtonText: "Go",
         }).then(async (result) => {
             if(result.isConfirmed){
-                status = true
-                fetchAPI('/api/qrcode/edit', 'POST', data, 'This Short URL is Already Taken!')
+                if(switchBtn) data.type = 'qr'
+                fetchAPI('/api/url/edit', 'POST', data, 'This Short URL is Already Taken!')
             }
         })
     }else{
-        fetchAPI('/api/qrcode/edit', 'POST', data, 'This Short URL is Already Taken!')
+        fetchAPI('/api/url/edit', 'POST', data, 'This Short URL is Already Taken!')
     }
     
 }
-function deleteQR(e) {  
+function deleteUrl(e) {  
     const shortUrl = $(e).val()
     Swal.fire({
     icon: "warning",
@@ -131,7 +141,7 @@ function deleteQR(e) {
         }
     });
 }
-function addQr(e) {
+async function addUrl(e) {
     // try {
     const full = $('#fullUrl').val()
     const title = $('#titleUrl').val()
@@ -140,14 +150,20 @@ function addQr(e) {
         Swal.fire("Destination & Title must be filled");
         return
     }
+    if(!await checkUrl(short)){
+        Swal.fire("Can't use that url");
+        return
+    }
     const data = {
         full,
         short,
         title,
         clicks: 0,
-        type: 'qr',
+        createdAt: new Date()
     }
-    fetchAPI('/api/qrcode', 'POST', data, 'This Short URL is Already Taken!')
+    if(destination == '/url') $('#switch').prop('checked') ? data.type = 'qr' : null
+    if(destination == '/qr') data.type = 'qr'
+    fetchAPI('/api/url', 'POST', data, 'This Short URL is Already Taken!')
 }
 
 function fetchAPI(apiUrl, method, data, text){
@@ -157,7 +173,7 @@ function fetchAPI(apiUrl, method, data, text){
     }
     fetch(apiUrl, config).then(async (response) => {
         if (response.ok) {
-            window.location.href = "/qr";
+            window.location.href = destination;
         }
         else if(response.status){
             Swal.fire({
@@ -172,4 +188,12 @@ function fetchAPI(apiUrl, method, data, text){
         alert('WARNING!')
         console.log(error);
     });
+}
+
+function checkUrl(url){
+    const urlShort = url.toLowerCase()
+    if(urlShort == 'qr' || urlShort == 'login' || urlShort == 'register' || urlShort =='url' || urlShort == 'biolink'){
+        return false
+    }
+    return true
 }

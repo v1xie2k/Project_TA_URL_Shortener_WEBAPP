@@ -38,10 +38,16 @@ export async function getAllUrl() {
 export async function filterData(filter, data) {  
     var newData = []
     if(filter){
+        var filterType = filter.type != undefined ? true : false 
         for (const iterator of data) {
             var title = iterator.title + ""
             title = title.toLowerCase()
-            if(filter.type == iterator.type && title.includes(filter.title)){
+            if(title.includes(filter.title)){
+                if(filterType){
+                    if(filter.type != iterator.type){
+                        continue
+                    }
+                }
                 newData.push(iterator)
             }
         }
@@ -86,6 +92,7 @@ export async function editURL(data) {
         oldData.short = data.short
         oldData.title = data.title
         oldData.updatedAt = data.updatedAt
+        if(data.type) oldData.type = data.type
         if(editShortStatus){
             const del = await db.collection(dbName).doc(data.oldShort).delete()
         }

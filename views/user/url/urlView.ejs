@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../parts/head/headQR.ejs');%>
+    <title>Short URL</title>
+</head>
+<body>
+    <%- include('../parts/header.ejs');%>
+    <%- include('../parts/sideNav.ejs');%>
+    <script type="text/javascript" src="../../../public/js/urlFunctions.js"></script>
+    <div class="container">
+        <h1>Create New Short Url</h1>
+        <div>
+            <h4>Destination</h4>
+            <div class="mb-3">
+                <input required type="url" name="fullUrl" id="fullUrl"  placeholder="url" class="form-control">
+            </div>
+            <h4>Title</h4>
+            <div class="mb-3">
+                <input required type="text" name="title" id="titleUrl"  placeholder="title" class="form-control">
+            </div>
+            <h4>Generate QR Code (optional)</h4>
+            <div class="form-check form-switch mb-4">
+                <input class="form-check-input" type="checkbox" role="switch" id="switch" style="height: 35px; width: 75px;">
+            </div>
+            <h4>Short Link</h4>
+            <div class="mb-3 d-flex justify-content-around">
+                <input type="text" name="shortUrl"  value="127.0.0.1" class="form-control" disabled>
+                <h3 style="padding-left: 10px; padding-right: 10px;">/</h3>
+                <input type="text" name="shortUrl" id="shortUrl"  placeholder="shorturl (optional)" class="form-control">
+            </div>
+            
+            <div id="promptResult" class="d-flex justify-content-between mb-3">
+                <!-- this area is for Gemini Recommendation -->
+            </div>
+            <div class="d-flex justify-content-between">
+                <button id="promptBtn" type="button" onclick="promptRecommendation(this)" class="btn btn-primary">Prompt</button>
+                <button type="button" onclick="addUrl(this)" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+
+        <% for (const key in allUrl) { %>
+            <% const data = allUrl[key] %>
+        <div class="card mt-4">
+            <div class="card-body" >
+                <div class="mb-3">
+                    <div class="row g-0">
+                      <div class="col-md-2">
+                        <canvas id="qr_<%= key%>" class="ps-1 mt-3" short="<%= data.short%>"></canvas>
+                        <script>
+                            if("<%= data.type %>" == 'qr'){
+                                generateQr("qr_<%= key%>", "<%= data.short%>")
+                            }
+                        </script>
+                      </div>
+                      <div class="col col-md-10">
+                        <div class="d-flex flex-row-reverse">
+                            <button type="button" onclick="deleteUrl(this)" class="btn btn-danger" value="<%= data.short%>"><i class="fa-solid fa-trash-can pe-2"></i>Delete</button>
+                            <a href="<% if(data.type == 'qr'){ %> /qr/edit/<%= data.short%> <% }else{  %> /url/edit/<%= data.short%> <%}%>" >
+                                <button type="button" class="btn btn-success mx-2" value="<%= data.short%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                            </a>
+                        </div>
+                        <div class="text-left">
+                          <h4 class="card-title"><%= data.title%></h4>
+                          <a href="<%= data.full%>" style="text-decoration: none;"><%= data.full%></a>
+                          <p class="card-text"><small class="text-body-secondary"><%= data.createdAt%></small></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+        </div>
+        <% } %>
+        
+    </div>
+</body>
+</html>
