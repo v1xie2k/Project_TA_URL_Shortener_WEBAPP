@@ -1,6 +1,7 @@
 import express from 'express'
-import { addNewURL, deleteShortUrl, editURL, promptUrlRecommendation, searchShortUrl, updateClickShortUrl } from '../functions/urlController.js';
+import { addNewURL, deleteShortUrl, editURL, promptUrlRecommendation, updateClickShortUrl } from '../functions/urlController.js';
 import session from 'express-session'
+import { searchData } from '../functions/universal.js';
 const router = express.Router()
 
 router.post('/shortUrls', async(req, res)=>{
@@ -71,9 +72,9 @@ router.post('/prompt', async(req, res)=>{
 })
 
 router.delete('/delete_url/:shortUrl', async(req, res)=>{
-    const shortUrl = await searchShortUrl(req.params.shortUrl)
+    const shortUrl = await searchData('shorturls', req.params.shortUrl)
     if(shortUrl == null){
-        res.render('user/error404')
+        res.render('error/error404')
     }else{
         const param = req.params.shortUrl
         deleteShortUrl(param)

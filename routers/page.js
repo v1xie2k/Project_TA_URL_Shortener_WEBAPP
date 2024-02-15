@@ -1,40 +1,37 @@
 import express from 'express'
-import { filterData, getAllUrl, searchShortUrl, updateClickShortUrl } from '../functions/urlController.js';
-import session from 'express-session'
+import { filterData, getAllUrl, updateClickShortUrl } from '../functions/urlController.js';
+import { searchData } from '../functions/universal.js';
+import { isLoggedIn } from '../middleware/middleware.js';
 
 const app = express() 
 const router = express.Router();
-
-app.use(session({
-    secret: 'my-secret-key',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true }
-}));
-
-const requireAuth = (req, res, next) => {
-    if (req.session.userId) {
-        next(); // User is authenticated, continue to next middleware
-    } else {
-        res.redirect('/login'); // User is not authenticated, redirect to login page
-    }
-}
 
 
 router.get('/', (req, res)=>{
     res.render('user/index')
 })
 
+router.get('/login', (req, res)=>{
+    res.render('user/login')
+})
+
+router.get('/register', (req, res)=>{
+    res.render('user/register')
+})
+//example used of middleware (if not loggedIn then can't access this particular page)
+// router.get('/qr', isLoggedIn, async (req, res)=>{
 router.get('/qr', async (req, res)=>{
+    //ex: if the url is /qr?mikochi, title variable value will be mikochi
+    const title = req.url.includes('?') ? req.url.split('?')[1] : ''
     //jangan lupa nanti add filter untuk user 
-    res.render('user/qr/qr', {allUrl: await filterData({type: 'qr'}, await getAllUrl())})
+    res.render('user/qr/qr', {allUrl: await filterData({type: 'qr', title}, await getAllUrl())})
 })
 
 //lakukan pengechekan kalau yang bisa edit adalah user yang bersangkutan
 router.get('/qr/edit/:shortUrl', async(req, res) =>{
-    const shortUrl = await searchShortUrl(req.params.shortUrl)
+    const shortUrl = await searchData('shorturls', req.params.shortUrl)
     if(shortUrl == null){
-        res.render('user/error404')
+        res.render('error/error404')
     }else{
         res.render('user/qr/qrEdit', {data: shortUrl})
     }
@@ -45,9 +42,9 @@ router.get('/biolink', (req, res)=>{
 })
 
 router.get('/:shortUrl', async(req,res)=>{
-    const shortUrl = await searchShortUrl(req.params.shortUrl)
+    const shortUrl = await searchData('shorturls', req.params.shortUrl)
     if(shortUrl == null){
-        res.render('user/error404')
+        res.render('error/error404')
     }else{
         const param = req.params.shortUrl
         updateClickShortUrl(param)

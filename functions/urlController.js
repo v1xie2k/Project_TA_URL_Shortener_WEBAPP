@@ -3,6 +3,7 @@ import {customAlphabet , random} from 'nanoid'
 import  { getFirestore, Timestamp, FieldValue, Filter } from 'firebase-admin/firestore'
 import '../config/firebase.js'
 import 'dotenv/config'
+import { searchData } from './universal.js'
 
 const db = getFirestore();
 const dbName = 'shorturls'
@@ -38,7 +39,9 @@ export async function filterData(filter, data) {
     var newData = []
     if(filter){
         for (const iterator of data) {
-            if(filter.type == iterator.type){
+            var title = iterator.title + ""
+            title = title.toLowerCase()
+            if(filter.type == iterator.type && title.includes(filter.title)){
                 newData.push(iterator)
             }
         }
@@ -50,9 +53,9 @@ export async function addNewURL(data) {
     var status = true
     try {
         // check apakah sudah used di db short urlnya
-        if(await searchShortUrl(data.short)){
+        if(await searchData(dbName, data.short)){
             // data ada kembar
-            status = false 
+            return false
         }else{
             //check type qr/bukan
             if(data.type  == 'qr' && data.short.length <= 0){
@@ -61,7 +64,7 @@ export async function addNewURL(data) {
                     const idQr = customAlphabet ('1234567890abcdefghijklmopqrstuvwxyz', 8)
                     shortQrNew = idQr(8)
                     data.short = shortQrNew
-                }while(await searchShortUrl(shortQrNew))
+                }while(await searchData(dbName, shortQrNew))
             }
             const res = await db.collection(dbName).doc(data.short).set(data)
             return true
@@ -70,7 +73,6 @@ export async function addNewURL(data) {
         console.log(err.stack);
         return false
     }
-    return status
 }
 
 export async function editURL(data) {
@@ -79,18 +81,13 @@ export async function editURL(data) {
         // check edit is include with short url changes or not
         const editShortStatus = (data.oldShort != data.short)? true : false
         //edit includes short url changes
-        var oldData = await searchShortUrl(data.oldShort)
+        var oldData = await searchData(dbName,data.oldShort)
         oldData.full = data.full
         oldData.short = data.short
         oldData.title = data.title
         oldData.updatedAt = data.updatedAt
         if(editShortStatus){
-            if(await searchShortUrl(data.short)){
-                // check is url already reserved or not
-                status = false 
-            }else{
-                const del = await db.collection(dbName).doc(data.oldShort).delete()
-            }
+            const del = await db.collection(dbName).doc(data.oldShort).delete()
         }
         const res = await db.collection(dbName).doc(data.short).set(oldData)
         
@@ -101,22 +98,10 @@ export async function editURL(data) {
     return status
 }
 
-export async function searchShortUrl(param) {
-    var find
-    try {
-        if(param){
-            find = await(await db.collection(dbName).doc(param).get()).data();
-        }
-    } catch (err) {
-        console.log(err.stack);
-    }
-    return find
-}
-
 export async function updateClickShortUrl(param) {
     var find
     try { 
-        find = await searchShortUrl(param)
+        find = await searchData(dbName, param)
         find.clicks++
         const res = await db.collection(dbName).doc(param).set(find)
     } catch (err) {
