@@ -14,7 +14,7 @@
             <div class="mb-3 d-flex justify-content-around">
                 <input type="text" name="shortUrl"  value="127.0.0.1/m" class="form-control" disabled>
                 <h3 style="padding-left: 10px; padding-right: 10px;">/</h3>
-                <input type="text" name="shortUrl" id="shortUrl"  placeholder="shorturl (optional)" class="form-control">
+                <input type="text" name="shortUrl" id="shortUrl"  placeholder="shorturl" class="form-control">
                 <button type="button" onclick="btnAddBioLink(this)" class="btn btn-primary ms-3">Create</button>
             </div>
         </div>
@@ -41,9 +41,11 @@
                             </a>
                         </div>
                         <div class="text-left">
-                          <h4 class="card-title"><%= data.short%></h4>
-                          <a href="<%= data.full%>" style="text-decoration: none;"><%= data.full%></a>
-                          <p class="card-text"><small class="text-body-secondary"><%= data.createdAt%></small></p>
+                            <a href="/biolink/edit/<%= data.short%>" style="text-decoration: none; color: black;">
+                                <h4 class="card-title"><%= data.short%></h4>
+                            </a>
+                            <a href="<%= data.full%>" style="text-decoration: none;"><%= data.full%></a>
+                            <p class="card-text"><small class="text-body-secondary"><%= data.createdAt%></small></p>
                         </div>
                       </div>
                     </div>

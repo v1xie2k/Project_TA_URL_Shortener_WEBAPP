@@ -1,4 +1,105 @@
-<h4>Destination２</h4>
+<h3>Profile</h3>
+<h4>Image</h4>
+<div class="mb-3 d-flex flex-row">
+    <%if(data.avatar){%>
+        <button id="btnImgAvatar" type="button" class="btn background-preview mt-3" data-bs-toggle="modal" data-bs-target="#exampleModalAvatar" style="width: 100px; height: 100px; padding: 0; background-image: url('<%=data.avatar%>');">
+        </button>
+        <input id="imgUrlAvatar" type="hidden" name="imgUrl" value="<%= data.avatar%>">
+    <%}else{%>
+        <button id="btnImgAvatar" type="button" class="btn background-preview mt-3" data-bs-toggle="modal" data-bs-target="#exampleModalAvatar" style="width: 120px; height: 100px; border-radius: 5px; padding: 0;">
+            <i class="fa-regular fa-image" style="font-size: 75px;"></i>
+        </button>
+    <%}%>
+    <div class="modal fade" id="exampleModalAvatar" tabindex="-1" aria-labelledby="exampleModalLabelAvatar" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabelAvatar"><%if(data.avatar){%>Edit<%}else{%>Add<%}%> Image</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="margin:15px; width: 465px; height: auto; border: 2px dashed gray;">
+                <img id="outputImgAvatar" width="100%"/>
+                <div id="containerUploadAvatar" style="margin:auto; text-align: center; align-items: center; width: 150px; height: 50px; margin-bottom: 25px;" >
+                    <input type="file" accept=".png,.jpg,.jpeg" name="image" id="fileAvatar" onchange="loadImage(event, this)" style="display: none;" key="Avatar">
+                    <label for="fileAvatar" style="cursor: pointer;border: 1px solid black; border-radius: 5px; width: 150px; height: 50px; padding-top: 10px;">Upload Image</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div>
+                    <p >Use JPG, JPEG or PNG. (max 3.5MB) </p>
+                </div>
+                <div class="d-flex justify-content-between w-100">
+                    <div>
+                        <button id="btnRemoveImgAvatar" key="Avatar" onclick="removeImg(this)" type="button" class="btn btn-warning" style="color:white; display: none;">Remove</button>
+                    </div>
+                    <div>
+                        <button id="btnCancelAvatar" type="button" class="btn btn-danger" data-bs-dismiss="modal"  onclick="removeImg(this)"  key="Avatar">Close</button>
+                        <button id="btnSaveAvatar" type="button" class="btn btn-primary" onclick="submitImg(this)" value="Avatar" short="<%= data.short%>" disabled>Save</button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        </div>
+    </div>
+    <div>
+        <button class="btnRemovePicture btn btn-secondary" onclick="btnDeleteImg(this)" style="margin-top: 40px; margin-left: 20px;" btnCategory="avatar" short="<%= data.short%>" imgUrl="<%= data.avatar%>">Remove Pict</button>
+    </div>
+</div>
+
+<h4>Page title (optional)</h4>
 <div class="mb-3">
-    <input required type="url" name="fullUrl" id="fullUrl"  placeholder="url" class="form-control" value="<%= data.full %>">
+    <input required type="url" name="pageTitle" id="pageTitle"  placeholder="url" class="form-control" value="<%= data.full %>">
+</div>
+<h4>Page Description (optional)</h4>
+<div class="mb-3">
+    <input type="url" name="pageDescription" id="pageDescription"  placeholder="url" class="form-control" value="<%= data.full %>">
+</div>
+<h4>Background</h4>
+<div class="mb-3 d-flex flex-row">
+    <%if(data.background){%>
+        <button id="btnImgBackground" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModalBackground" style="width: 100px; height: 100px; margin-top: 25px; padding: 0; background-image: url('<%=data.background%>');">
+        </button>
+        <input id="imgUrlBackground" type="hidden" name="imgUrl" value="<%= data.background%>">
+    <%}else{%>
+        <button id="btnImgBackground" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModalBackground" style="width: 120px; height: 100px; margin-top: 25px; border-radius: 5px; padding: 0;">
+            <i class="fa-regular fa-image" style="font-size: 75px;"></i>
+        </button>
+    <%}%>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalBackground" tabindex="-1" aria-labelledby="exampleModalLabelBackground" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabelBackground"><%if(data.background){%>Edit<%}else{%>Add<%}%> Image</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="margin:15px; width: 465px; height: auto; border: 2px dashed gray;">
+                <img id="outputImgBackground" width="100%"/>
+                <div id="containerUploadBackground" style="margin:auto; text-align: center; align-items: center; width: 150px; height: 50px; margin-bottom: 25px;" >
+                    <input type="file" accept=".png,.jpg,.jpeg" name="image" id="fileBackground" onchange="loadImage(event, this)" style="display: none;" key="Background">
+                    <label for="fileBackground" style="cursor: pointer;border: 1px solid black; border-radius: 5px; width: 150px; height: 50px; padding-top: 10px;">Upload Image</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div>
+                    <p >Use JPG, JPEG or PNG. (max 3.5MB) </p>
+                </div>
+                <div class="d-flex justify-content-between w-100">
+                    <div>
+                        <button id="btnRemoveImgBackground" key="Background" onclick="removeImg(this)" type="button" class="btn btn-warning" style="color:white; display: none;">Remove</button>
+                    </div>
+                    <div>
+                        <button id="btnCancelBackground" type="button" class="btn btn-danger" data-bs-dismiss="modal"  onclick="removeImg(this)"  key="Background">Close</button>
+                        <button id="btnSaveBackground" type="button" class="btn btn-primary" onclick="submitImg(this)" value="Background" short="<%= data.short%>" disabled>Save</button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        </div>
+    </div>
+    <div>
+        <button class="btnRemovePicture btn btn-secondary" onclick="btnDeleteImg(this)" style="margin-top: 50px; margin-left: 20px;" btnCategory="background" short="<%= data.short%>" imgUrl="<%= data.background%>">Remove Pict</button>
+    </div>
 </div>

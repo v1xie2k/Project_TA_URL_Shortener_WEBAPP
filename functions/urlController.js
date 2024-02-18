@@ -83,12 +83,14 @@ export async function editURL(data) {
         const editShortStatus = (data.oldShort != data.short)? true : false
         //edit includes short url changes
         var oldData = await searchData(dbName,data.oldShort)
-        oldData.updatedAt = data.updatedAt
+        if(data.updatedAt) oldData.updatedAt = data.updatedAt
         if(data.full) oldData.full = data.full
         if(data.short) oldData.short = data.short
         if(data.title) oldData.title = data.title
+        if(data.description) oldData.description = data.description
         if(data.img) oldData.img = data.img
         if(data.type) oldData.type = data.type
+        if(data.bioLink) oldData.bioLink = data.bioLink
         if(editShortStatus){
             const del = await db.collection(dbName).doc(data.oldShort).delete()
         }
@@ -116,29 +118,43 @@ export async function addNewBioLink(data) {
     }
 }
 
-// export async function editBioLink(data) {
-//     var status = true
-//     try {
-//         // check edit is include with short url changes or not
-//         const editShortStatus = (data.oldShort != data.short)? true : false
-//         //edit includes short url changes
-//         var oldData = await searchData('biolinks',data.oldShort)
-//         oldData.full = data.full
-//         oldData.short = data.short
-//         oldData.title = data.title
-//         oldData.updatedAt = data.updatedAt
-//         if(data.type) oldData.type = data.type
-//         if(editShortStatus){
-//             const del = await db.collection('biolinks').doc(data.oldShort).delete()
-//         }
-//         const res = await db.collection('biolinks').doc(data.short).set(oldData)
+export async function editBioLink(data) {
+    var status = true
+    try {
+        // check edit is include with short url changes or not
+        const editShortStatus = (data.oldShort != data.short)? true : false
+        //edit includes short url changes
+        var oldData = await searchData('biolinks',data.oldShort)
+        if(data.updatedAt) oldData.updatedAt = data.updatedAt
+        if(data.short) oldData.short = data.short
+        if(data.title) oldData.title = data.title
+        if(data.avatar) oldData.avatar = data.avatar
+        if(data.background) oldData.background = data.background
+        if(editShortStatus){
+            const del = await db.collection('biolinks').doc(data.oldShort).delete()
+        }
+        const res = await db.collection('biolinks').doc(data.short).set(oldData)
         
-//     } catch (err) {
-//         console.log(err.stack);
-//         return false
-//     }
-//     return status
-// }
+    } catch (err) {
+        console.log(err.stack);
+        return false
+    }
+    return status
+}
+
+export async function deleteField(data) {  
+    try{
+        const ref = db.collection(data.collection).doc(data.short);
+        const type = data.type
+        if(type == 'background')await ref.update({background: FieldValue.delete()})
+        if(type == 'avatar')await ref.update({avatar: FieldValue.delete()})
+        if(type == 'img') await ref.update({img: FieldValue.delete()})
+        return true
+    }catch(err){
+        console.log(err);
+    }
+    return false
+}
 
 export async function updateClickShortUrl(param) {
     var find
@@ -213,29 +229,36 @@ export async function sortDataBioLink(data) {
 
 export async function uploadImage(file) {  
     console.log("File found, trying to upload...");
-    const blob = bucket.file(file.originalname);
-    const blobStream = blob.createWriteStream({
-        resumable: false
-    });
-    
-    blobStream.on("finish", () => {
-        return true
-    });
-    blobStream.end(file.buffer);
+    try{
+        const blob = bucket.file(file.originalname);
+        const blobStream = blob.createWriteStream({
+            resumable: false
+        });
+        
+        blobStream.on("finish", () => {
+            return true
+        });
+        blobStream.end(file.buffer);
+    }catch(error){
+        console.log(error);
+    }
 }
 
 export async function deleteImage(fileName){
     new Promise((resolve, reject) => {
         //imageurl=parentfolder/childfolder/filename
-        console.log('masuk');
-        bucket.file(fileName).delete()
-        .then((image) => {
-            resolve(image)
-        })
-        .catch((e) => {
-            reject(e)
-        });
-        console.log('out');
+        try{
+            bucket.file(fileName).delete()
+            .then((image) => {
+                resolve(image)
+            })
+            .catch((e) => {
+                reject(e)
+            });
+        }catch(error){
+            console.log(error);
+        }
+        
         
     });
 }

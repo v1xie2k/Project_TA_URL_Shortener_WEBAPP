@@ -1,11 +1,8 @@
-<div class="hero-bg fullWidth" style=" background-position: center; background-image: url(&quot;https://storage.googleapis.com/bitly-image-upload/Io1f87A6luA&quot;); background-color: rgb(255, 255, 255); background-repeat: no-repeat; background-size: cover;">
-    
-    <!-- <% if (paramType =='web') { %>
-        
-    <%}else{%>  
-        
-            
-    <%}%> -->
+<%if(data.background){ %>
+<div class="hero-bg fullWidth" style=" background-position: center; background-image: url(<%= data.background%>); background-color: rgb(255, 255, 255); background-repeat: no-repeat; background-size: cover;">
+<%}else{%>
+<div class="hero-bg fullWidth">
+<%}%>
     <div class="contentBio">
         <header>
             <div class="avatar">
@@ -19,24 +16,47 @@
                     <% if (data.type =='youtube') { %>
                         <!-- content web -->
                         <% if (paramType =='web') { %>
-                            <iframe width="100%" height="500px" src="https://www.youtube.com/embed/<%= data.youtubeId%>" style="border-radius: 5px; box-shadow: 2px 4px;">
+                        <iframe width="100%" height="500rem" src="https://www.youtube.com/embed/<%= data.youtubeId%>" style="border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.75) 0.3rem 0.4rem 0px;">
+                        </iframe>
+                        <%}else{%>  
+                            <iframe width="100%" height="200rem" src="https://www.youtube.com/embed/<%= data.youtubeId%>" style="border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.75) 0.3rem 0.4rem 0px;">
                             </iframe>
-                            <%}else{%>  
-                                <iframe width="100%" height="125px" src="https://www.youtube.com/embed/<%= data.youtubeId%>" style="border-radius: 5px; box-shadow: 2px 4px;">
-                                </iframe>
-                            <%}%>
-                            <%}else{%>
-                                <a href="<%= data.full%>" style="text-decoration: none;">
-                                    <div class="links ">
-                                        <h5><%= data.title%></h5>
-                                        <% if (data.description) { %>
-                                            <h6><%= data.description%></h6>
-                                        <%}%>
-                                    </div>
-                                </a>
                         <%}%>
+                    <%}else{%>
+                        <a href="<%= data.full%>" style="text-decoration: none;" class="link">
+                        <%if(data.img != null){%>
+                            <img src="<%= data.img%>" alt="" class="link-image">
+                            <div class="link__content has-image">
+                        <%}else{%>
+                            <div class="link__content">
+                        <%}%>
+                            <span class="link__content__title"><%= data.title%></span>
+                            <span class="link__content__description"><%= data.description%></span>
+                        </div>
+                            <!-- <div class="links ">
+                                <%if(data.img != null){%>
+                                    <img src="<%= data.img%>" alt="" class="link-image">
+                                <%}%>
+                                <h5><%= data.title%></h5>
+                                <% if (data.description) { %>
+                                    <h6><%= data.description%></h6>
+                                <%}%>
+                            </div> -->
+                        </a>
+                        <!-- <a href="<%= data.full%>" style="text-decoration: none;">
+                            <div class="links ">
+                                <%if(data.img != null){%>
+                                    <img src="<%= data.img%>" alt="" class="link-image">
+                                <%}%>
+                                <h5><%= data.title%></h5>
+                                <% if (data.description) { %>
+                                    <h6><%= data.description%></h6>
+                                <%}%>
+                            </div>
+                        </a> -->
                     <%}%>
                 </div>
+            <%}%>
         </section>
     </div>
       

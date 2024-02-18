@@ -10,6 +10,8 @@
     <%- include('../parts/sideNav.ejs');%>
     <script type="text/javascript" src="../../../public/js/bioFunctions.js"></script>
     <input type="hidden" name="bioLink" id="bioLink" value="<%= data.short%>">
+    <input type="hidden" name="shortUrl" id="shortUrlEdit">
+    <input type="hidden" name="shortUrl" id="oldDestination">
     <div class="container">
         <div class="d-flex justify-content-between">
             <div class="d-flex flex-row">
@@ -19,9 +21,9 @@
                 </div>
             </div>
             
-            <div>
+            <!-- <div>
                 <button class="btn btn-success mt-2">Publish Changes</button>
-            </div>
+            </div> -->
         </div>
         <div class="row g-0">
             <div class="col-md-8">
@@ -40,10 +42,10 @@
                 <%}%>
             </div>
             <div class="col-md-4">
-                <div class=" container">
+                <div class="container">
                     <div class="ps-5 ">
-                        <div class="bg-primary preview mb-3">Preview</div>
-                        <div class="previewContent bg-primary">
+                        <div class="preview mb-3">Preview</div>
+                        <div class="previewContent" style="box-shadow:  5px 10px 20px 5px #888888">
                             <%- include('../parts/bioLinkContent.ejs') %>
                         </div>
                     </div>

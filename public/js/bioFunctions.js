@@ -10,6 +10,7 @@ async function btnAddBioLink(e){
     }
     const data = {
         short,
+        title: short,
         clicks: 0,
         createdAt: new Date()
     }
@@ -17,12 +18,12 @@ async function btnAddBioLink(e){
 
 }
 
-//delete bio link = delete all url inside of it (JANGAN LUPA DIBUAT!)
 function btnDeleteBioLink(e) {  
     const shortUrl = $(e).val()
     Swal.fire({
     icon: "warning",
-    title: "Do you want to Delete this Data?",
+    title: "Do you want to Delete this Bio Link?",
+    text: "All Short URL inside this Bio Link will also be deleted",
     showCancelButton: true,
     confirmButtonText: "Yes",
     }).then((result) => {
@@ -30,6 +31,43 @@ function btnDeleteBioLink(e) {
             fetchAPI('/api/delete_bio_link/'+shortUrl, 'DELETE', null, 'Something went wrong while deleting the data!', '/biolink')
         }
     });
+}
+
+async function btnEditBioLink(e) {  
+    const newBio = $('#editShortBio').val()
+    const oldBio = $('#bioLink').val()
+    const title = newBio
+    if (!newBio) {
+        Swal.fire("Short Url must be filled!");
+        return
+    }
+    if(!await checkUrl(newBio)){
+        Swal.fire("Can't use that url");
+        return
+    }
+    const data = {
+        short: newBio,
+        title,
+        oldShort: oldBio,
+        updatedAt: new Date()
+    }
+    console.log(data);
+    const checkShort = (newBio != oldBio)? true : false
+    if(checkShort){
+        Swal.fire({
+            icon: "warning",
+            title: "Changing Short URL will cost you 1 credit! Are you sure about it?",
+            showCancelButton: true,
+            confirmButtonText: "Go",
+        }).then(async (result) => {
+            if(result.isConfirmed){
+                fetchAPI('/api/biolink/edit', 'POST', data, 'This Short Bio Link is Already Taken!', '/biolink/edit/'+newBio)
+            }
+        })
+    }else{
+        fetchAPI('/api/biolink/edit', 'POST', data, 'This Short Bio Link is Already Taken!', '/biolink/edit/'+newBio)
+    }
+
 }
 
 async function btnToogleLink(e) {  
@@ -92,8 +130,82 @@ async function btnAddUrl(e) {
     $('.form-bio-link').hide()
 }
 
+async function btnClickEditUrl(e) { 
+    $('.form-youtube').hide()
+    $('.form-bio-link').hide()
+    const short = $(e).val()
+    const title = $(e).attr('urlTitle')
+    const youtubeId = $(e).attr('youtubeId')
+    const destination = $(e).attr('destination')
+    const description = $(e).attr('description')
+    $('#shortUrlEdit').val(short)
+    $('#oldDestination').val(destination)
+    $('#fullUrl').val(destination)
+    $('#btnSubmitUrl').hide()
+    $('#btnSaveUrl').show()
+    if(youtubeId){
+        $('.form-youtube').show()
+        await loadThumbnail(youtubeId)
+    }else{
+        $('.form-bio-link').show()
+        $('#titleUrl').val(title)
+        $('#description').val(description)
+    }
+}
+
+async function btnEditUrl(e) {  
+    const isYoutube = $(e).val()
+    const full = isYoutube ? $('#youtubeUrl').val() : $('#fullUrl').val()
+    const youtubeId = await validateYouTubeUrl(full)
+    if(isYoutube){
+        await loadThumbnail(youtubeId)
+    }
+    const title = $('#titleUrl').val()
+    const short = $('#shortUrlEdit').val()
+    const oldShort = short
+    const description = $('#description').val()
+    const oldDestination = $('#oldDestination').val()
+    
+    if (!full || !title) {
+        Swal.fire("Destination & Title must be filled");
+        return
+    }
+    if(!await isHttpValid(full)){
+        Swal.fire("Invalid url");
+        return
+    }
+    const data = {
+        full,
+        short,
+        title,
+        oldShort,
+        description,
+        updatedAt: new Date()
+    }
+    if(isYoutube){
+        data.youtubeId = youtubeId
+    }
+    const checkFull = (oldDestination != full)? true : false
+    if(checkFull){
+        Swal.fire({
+            icon: "warning",
+            title: "Changing Destination will cost you 1 credit! Are you sure about it?",
+            showCancelButton: true,
+            confirmButtonText: "Go",
+        }).then(async (result) => {
+            if(result.isConfirmed){
+                fetchAPI('/api/url/edit', 'POST', data, 'This Short URL is Already Taken!', '?build')
+            }
+        })
+    }else{
+        fetchAPI('/api/url/edit', 'POST', data, 'This Short URL is Already Taken!', '?build')
+    }
+}
+
 function btnDeleteUrl(e) {  
-    const shortUrl = $(e).val()
+    const key = $(e).val()
+    const shortUrl = $(e).attr('short')
+    const imgUrl = $('#imgUrl'+key).val()
     Swal.fire({
     icon: "warning",
     title: "Do you want to Delete this Data?",
@@ -101,6 +213,15 @@ function btnDeleteUrl(e) {
     confirmButtonText: "Yes",
     }).then((result) => {
         if (result.isConfirmed) {
+            if(imgUrl){
+                const imgName = imgUrl.split('/')[4]
+                fetch("/api/deleteImg/"+imgName, {method: "DELETE", body: JSON.stringify(imgName)}).then(async (response) =>{
+                    if(response.ok) console.log('Success Delete');
+                }).catch((error) => {
+                    alert('WARNINGHUH!')
+                    console.log(error);
+                });
+            }
             fetchAPI('/api/delete_url/'+shortUrl, 'DELETE', null, 'Something went wrong while deleting the data!', '?')
         }
     });
@@ -144,6 +265,9 @@ function clearInput(type) {
         $("#youtubeTitle").html('<p style="padding-top: 35px;">Add a YouTube URL above to preview the video</p>')
         $("#youtubePlaceHolder").html('<div style="padding-top: 22px;"><span class="video-placeholder"><svg width="3rem" height="3rem" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" ><path d="M47.044 12.3709C46.7726 11.3498 46.2378 10.4178 45.493 9.66825C44.7483 8.91872 43.8197 8.37794 42.8003 8.10003C39.0476 7.09094 24.0476 7.09094 24.0476 7.09094C24.0476 7.09094 9.04761 7.09094 5.29488 8.10003C4.27547 8.37794 3.34693 8.91872 2.60218 9.66825C1.85744 10.4178 1.32262 11.3498 1.05124 12.3709C0.0476075 16.14 0.0476074 24 0.0476074 24C0.0476074 24 0.0476075 31.86 1.05124 35.6291C1.32262 36.6503 1.85744 37.5823 2.60218 38.3318C3.34693 39.0813 4.27547 39.6221 5.29488 39.9C9.04761 40.9091 24.0476 40.9091 24.0476 40.9091C24.0476 40.9091 39.0476 40.9091 42.8003 39.9C43.8197 39.6221 44.7483 39.0813 45.493 38.3318C46.2378 37.5823 46.7726 36.6503 47.044 35.6291C48.0476 31.86 48.0476 24 48.0476 24C48.0476 24 48.0476 16.14 47.044 12.3709Z" fill="#FF0302"></path><path d="M19.1385 31.1373V16.8628L31.684 24.0001L19.1385 31.1373Z" fill="#FEFEFE"></path></svg></span></div>  ');
         $('#alertYoutube').hide()
+    }else{
+        $('#btnSaveUrl').hide()   
+        $('#btnSubmitUrl').show()
     }
     $('#fullUrl').val(null)
     $('#titleUrl').val(null)
@@ -220,16 +344,6 @@ async function submitImg(e) {
     const key = $(e).val()
     const short = $(e).attr('short')
     const imgUrl = $('#imgUrl'+key).val()
-    //if want to replace image -> run the delete function the first image
-    if(imgUrl){
-        const imgName = imgUrl.split('/')[4]
-        fetch("/api/deleteImg/"+imgName, {method: "DELETE", body: JSON.stringify(imgName)}).then(async (response) =>{
-            if(response.ok) console.log('Success Delete');
-        }).catch((error) => {
-            alert('WARNINGHUH!')
-            console.log(error);
-        });
-    }
     let postid = uuidv4();
     let inputElem = document.getElementById("file"+key);
     let file = inputElem.files[0];
@@ -240,22 +354,73 @@ async function submitImg(e) {
     $('#btnSave'+key).html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Loading...')
     $('#btnCancel'+key).prop('disabled', true)
     $('#btnRemoveImg'+key).prop('disabled', true)
-    fetch("/api/addImg/url/"+short, {
+    var apiUrl = "/api/addImg/url/" + short
+    var location = "?build"
+    if(key == "Background") apiUrl = "/api/addImg/background/" + short
+    if(key == "Avatar") apiUrl = "/api/addImg/avatar/" + short
+    if(key == "Avatar" || key == "Background") location ="?profile"
+    fetch(apiUrl, {
         method: "POST",
         body: formData,
     }).then(async (response) => {
         if (response.ok) {
-            // window.location.href = '?build';
-            const img = await response.json()
+            //if want to replace image -> run the delete function the first image
+            if(imgUrl){
+                const imgName = imgUrl.split('/')[4]
+                fetch("/api/deleteImg/"+imgName, {method: "DELETE", body: JSON.stringify(imgName)}).then(async (response) =>{
+                    if(response.ok) console.log('Success Delete');
+                }).catch((error) => {
+                    alert('WARNINGHUH!')
+                    console.log(error);
+                });
+            }
+            const img = await response.text()
+            const url = `url('${img}')`.toString()
             $('#imgUrl'+key).val('img')
             const btnImg = document.getElementById('btnImg'+key)
-            btnImg.style.backgroundImage = `url('${img.img}')`;
-            console.log(img.img);
+            setTimeout(() => {
+                btnImg.style.backgroundImage = url;
+                window.location.href = location;
+                location.load()
+            }, 4700);
+        }
+        else if(response.status){
+            Swal.fire({
+            icon: "error",
+            title: "Ooops....",
+            text: 'file must be lesser than 3.5MB',
+            });
+            $('#btnCancel'+key).prop('disabled', false)
+            $('#btnRemoveImg'+key).prop('disabled', false)
+            $('#btnRemoveImg'+ key).show()
+            $('#containerUpload'+ key).hide()
+            $('#btnSave'+key).html('Save')
         }
     }).catch((error) => {
         alert('WARNING!!?@#?!@')
         console.log(error);
     });
+}
+
+function btnDeleteImg(e) {  
+    const type = $(e).attr('btnCategory')
+    const short = $(e).attr('short')
+    const imgUrl = $(e).attr('imgUrl')
+    const imgName = imgUrl.split('/')[4]
+    const data = {updatedAt: new Date(), short, oldShort: short, collection:'biolinks', type}
+    var destination = '?profile'
+    fetch("/api/deleteImg/"+imgName, {method: "DELETE", body: JSON.stringify(imgName)}).then(async (response) =>{
+        if(response.ok) console.log('Success Delete');
+    }).catch((error) => {
+        alert('WARNINGHUH!')
+        console.log(error);
+    })
+    if(type == 'img'){
+        data.type = 'img'
+        data.collection= 'shorturls'
+        destination = '?build'
+    }
+    fetchAPI('/api/deleteField', 'POST', data, 'This Short Bio Link is Already Taken!', destination)
 }
 
 function checkUrl(url){
@@ -273,4 +438,5 @@ function uuidv4() {
         (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
       ).toString(16)
     );
-  }
+}
+
