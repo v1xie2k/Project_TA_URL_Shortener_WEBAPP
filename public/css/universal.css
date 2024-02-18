@@ -1,7 +1,3 @@
-body {
-    font-family: "Lato", sans-serif;
-    margin-left: 300px;
-}
 .container{
     float: left;
 }
@@ -12,6 +8,9 @@ h1 {
 h4{
     font-weight: bold;
 }
+h5{
+  font-weight: bold;
+}
 
 .b-example-divider {
     height: 3rem;
@@ -19,30 +18,100 @@ h4{
     border: solid rgba(0, 0, 0, .15);
     border-width: 1px 0;
     box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
-  }
+}
+
+.form-control-dark {
+  color: #fff;
+  background-color: var(--bs-dark);
+  border-color: var(--bs-gray);
+}
+.form-control-dark:focus {
+  color: #fff;
+  background-color: var(--bs-dark);
+  border-color: #fff;
+  box-shadow: 0 0 0 .25rem rgba(255, 255, 255, .25);
+}
+
+.bi {
+  vertical-align: -.125em;
+  fill: currentColor;
+}
+
+.text-small {
+  font-size: 85%;
+}
+
+.dropdown-toggle {
+  outline: 0;
+}
+.form-bio-link, .form-youtube{
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  border: 3px solid #111;
+  border-radius: 15px;
+  padding: 15px;
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
   
-  .form-control-dark {
-    color: #fff;
-    background-color: var(--bs-dark);
-    border-color: var(--bs-gray);
-  }
-  .form-control-dark:focus {
-    color: #fff;
-    background-color: var(--bs-dark);
-    border-color: #fff;
-    box-shadow: 0 0 0 .25rem rgba(255, 255, 255, .25);
-  }
+.previewContent {
+  border-radius: 20px;
+  height: 500px;
+  width: 300px;
+  overflow-y: scroll;
   
-  .bi {
-    vertical-align: -.125em;
-    fill: currentColor;
-  }
-  
-  .text-small {
-    font-size: 85%;
-  }
-  
-  .dropdown-toggle {
-    outline: 0;
-  }
-  
+}
+.previewContent::-webkit-scrollbar {
+  display: none;
+}
+.contentBio{
+  text-align: center;
+  align-items: center;
+}
+
+.fullWidth{
+  width: 100%;
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+.fullWidth::-webkit-scrollbar {
+  display: none;
+}
+
+.contentBio{
+  width: 75%;
+  text-align: center;
+  align-items: center;
+  margin: auto;
+}
+
+.links{
+  color: black;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  padding: 10px;
+  box-shadow: 2px 4px;
+  border-radius: 5px;
+  background-color: #fff;
+}
+.contentList{
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+.background-preview {
+  background-color: #f4f6fa;
+  background-position: 50%;
+  background-size: cover;
+  border-radius: 0.4rem;
+  padding: 3rem;
+  color: #96a3bd;
+  height: 12.8rem;
+  width: 12.8rem;
+  border: 0.1rem solid #dbe0eb;
+  transition: color .4s,background-color .4s;
+  cursor: pointer;
+  border: none;
+}

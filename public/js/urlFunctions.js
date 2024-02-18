@@ -86,7 +86,36 @@ function promptRecommendation(e){
     }
 }
 
-async function editUrl(e) {  
+async function btnAddUrl(e) {
+    // try {
+    const full = $('#fullUrl').val()
+    const title = $('#titleUrl').val()
+    const short = $('#shortUrl').val()
+    if (!full || !title) {
+        Swal.fire("Destination & Title must be filled");
+        return
+    }
+    if(!await checkUrl(short)){
+        Swal.fire("Can't use that url");
+        return
+    }
+    if(!await isHttpValid(full)){
+        Swal.fire("Invalid url");
+        return
+    }
+    const data = {
+        full,
+        short,
+        title,
+        clicks: 0,
+        createdAt: new Date()
+    }
+    if(destination == '/url') $('#switch').prop('checked') ? data.type = 'qr' : null
+    if(destination == '/qr') data.type = 'qr'
+    fetchAPI('/api/url', 'POST', data, 'This Short URL is Already Taken!')
+}
+
+async function btnEditUrl(e) {  
     const full = $('#fullUrl').val()
     const title = $('#titleUrl').val()
     const short = $('#shortUrl').val()
@@ -99,6 +128,10 @@ async function editUrl(e) {
     }
     if(!await checkUrl(short)){
         Swal.fire("Can't use that url");
+        return
+    }
+    if(!await isHttpValid(full)){
+        Swal.fire("Invalid url");
         return
     }
     const data = {
@@ -128,7 +161,7 @@ async function editUrl(e) {
     }
     
 }
-function deleteUrl(e) {  
+function btnDeleteUrl(e) {  
     const shortUrl = $(e).val()
     Swal.fire({
     icon: "warning",
@@ -140,30 +173,6 @@ function deleteUrl(e) {
             fetchAPI('/api/delete_url/'+shortUrl, 'DELETE', null, 'Something went wrong while deleting the data!')
         }
     });
-}
-async function addUrl(e) {
-    // try {
-    const full = $('#fullUrl').val()
-    const title = $('#titleUrl').val()
-    const short = $('#shortUrl').val()
-    if (!full || !title) {
-        Swal.fire("Destination & Title must be filled");
-        return
-    }
-    if(!await checkUrl(short)){
-        Swal.fire("Can't use that url");
-        return
-    }
-    const data = {
-        full,
-        short,
-        title,
-        clicks: 0,
-        createdAt: new Date()
-    }
-    if(destination == '/url') $('#switch').prop('checked') ? data.type = 'qr' : null
-    if(destination == '/qr') data.type = 'qr'
-    fetchAPI('/api/url', 'POST', data, 'This Short URL is Already Taken!')
 }
 
 function fetchAPI(apiUrl, method, data, text){
@@ -190,9 +199,18 @@ function fetchAPI(apiUrl, method, data, text){
     });
 }
 
+function isHttpValid(str) {
+    try {
+        new URL(str);
+        return true;
+    } catch (err) {
+        return false;
+    }
+}
+
 function checkUrl(url){
     const urlShort = url.toLowerCase()
-    if(urlShort == 'qr' || urlShort == 'login' || urlShort == 'register' || urlShort =='url' || urlShort == 'biolink'){
+    if(urlShort == 'qr' || urlShort == 'login' || urlShort == 'register' || urlShort =='url' || urlShort == 'biolink' || urlShort == 'm'){
         return false
     }
     return true

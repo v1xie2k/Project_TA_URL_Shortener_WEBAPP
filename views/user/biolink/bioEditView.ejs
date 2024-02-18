@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../parts/head/headUrl.ejs');%>
+    <link rel="stylesheet" href="../../../public/css/bioLink-nav.css">
+    <title>Bio Link</title>
+</head>
+<body>
+    <%- include('../parts/header/headerNoSearch.ejs');%>
+    <%- include('../parts/sideNav.ejs');%>
+    <script type="text/javascript" src="../../../public/js/bioFunctions.js"></script>
+    <input type="hidden" name="bioLink" id="bioLink" value="<%= data.short%>">
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <div class="d-flex flex-row">
+                <h1>127.0.0.1/m/<%= data.short%></h1>
+                <div>
+                    <button class="btn btn-primary mt-2 ms-3" onClick="btnCopyClick(this)" value="127.0.0.1/m/<%= data.short%>">Copy</button>
+                </div>
+            </div>
+            
+            <div>
+                <button class="btn btn-success mt-2">Publish Changes</button>
+            </div>
+        </div>
+        <div class="row g-0">
+            <div class="col-md-8">
+                <div id="navBar" class="navBar">
+                    <a href="?build">Build</a>
+                    <a href="?profile">Profile</a>
+                    <a href="?track">Track</a>
+                </div>
+                <hr>
+                <%if(paramType == 'profile'){%>
+                    <%- include('./bioProfile.ejs');%>
+                <%}else if(paramType == 'track'){%>
+                    <%- include('./bioTrack.ejs');%>
+                <%}else{%>
+                    <%- include('./bioBuild.ejs');%>
+                <%}%>
+            </div>
+            <div class="col-md-4">
+                <div class=" container">
+                    <div class="ps-5 ">
+                        <div class="bg-primary preview mb-3">Preview</div>
+                        <div class="previewContent bg-primary">
+                            <%- include('../parts/bioLinkContent.ejs') %>
+                        </div>
+                    </div>
+                    <!-- <canvas id="qrCode" class="ps-1 mt-3" short="<%= data.short%>" onload="generateQr('qrCode', '<%= data.short %>')"></canvas>
+                    <script>
+                        var short = $('#shortUrl').val()
+                        generateQr("qrCode", short)
+                        $("#shortUrl").change(function () {
+                            short = $('#shortUrl').val()
+                            generateQr("qrCode", short)
+                        })
+                        
+                    </script> -->
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    
+</body>
+</html>

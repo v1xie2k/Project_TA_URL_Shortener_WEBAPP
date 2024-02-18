@@ -1,0 +1,13 @@
+.navBar{
+    font-size: 25px;
+    display: block;
+    transition: 0.3s;
+}
+.navBar a{
+    text-decoration: none;
+    color: black;
+    margin-right: 15px;
+}
+.navBar a:hover {
+    font-weight: bolder;
+}

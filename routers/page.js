@@ -1,5 +1,5 @@
 import express from 'express'
-import { filterData, getAllUrl, updateClickShortUrl } from '../functions/urlController.js';
+import { filterData, getAllBioLink, getAllUrl, sortDataBioLink, updateClickShortUrl } from '../functions/urlController.js';
 import { searchData } from '../functions/universal.js';
 import { isLoggedIn } from '../middleware/middleware.js';
 
@@ -28,7 +28,7 @@ router.get('/url', async (req, res)=>{
 
 router.get('/url/edit/:shortUrl', async(req, res) =>{
     const shortUrl = await searchData('shorturls', req.params.shortUrl)
-    if(shortUrl == null){
+    if(!shortUrl){
         res.render('error/error404')
     }else{
         res.render('user/url/urlEditView', {data: shortUrl})
@@ -47,20 +47,48 @@ router.get('/qr', async (req, res)=>{
 //lakukan pengechekan kalau yang bisa edit adalah user yang bersangkutan
 router.get('/qr/edit/:shortUrl', async(req, res) =>{
     const shortUrl = await searchData('shorturls', req.params.shortUrl)
-    if(shortUrl == null || shortUrl.type != 'qr'){
+    if(!shortUrl || shortUrl.type != 'qr'){
         res.render('error/error404')
     }else{
         res.render('user/qr/qrEditView', {data: shortUrl})
     }
 })
 
-router.get('/biolink', (req, res)=>{
-    res.render('user/biolink')
+router.get('/biolink', async (req, res)=>{
+    const title = req.url.includes('?') ? req.url.split('?')[1] : ''
+    //jangan lupa nanti add filter untuk user 
+    res.render('user/biolink/bioView', {allUrl: await filterData({title}, await getAllBioLink())})
 })
+
+router.get('/biolink/edit/:bioLink', async(req, res) =>{
+    const param = req.params.bioLink
+    const bioLink = await searchData('biolinks', req.params.bioLink)
+    const paramType = req.url.includes('?') ? req.url.split('?')[1] : 'build'
+    var allUrl = await filterData({bioLink: param}, await getAllUrl()) 
+    var sortedUrl = await sortDataBioLink(allUrl)
+    if(!bioLink){
+        res.render('error/error404')
+    }else{
+        res.render('user/biolink/bioEditView', {data: bioLink, paramType, allUrl: sortedUrl})
+    }
+})
+
+router.get('/m/:bioLink', async (req, res)=>{
+    const param = req.params.bioLink
+    const bioLink = await searchData('biolinks', req.params.bioLink)
+    var allUrl = await filterData({bioLink: param}, await getAllUrl()) 
+    var sortedUrl = await sortDataBioLink(allUrl)
+    if(!bioLink){
+        res.render('error/error404')
+    }else{
+        res.render('user/biolink/bioPreview', {data: bioLink, allUrl: sortedUrl, paramType: 'web'})
+    }
+})
+
 
 router.get('/:shortUrl', async(req,res)=>{
     const shortUrl = await searchData('shorturls', req.params.shortUrl)
-    if(shortUrl == null){
+    if(!shortUrl){
         res.render('error/error404')
     }else{
         const param = req.params.shortUrl

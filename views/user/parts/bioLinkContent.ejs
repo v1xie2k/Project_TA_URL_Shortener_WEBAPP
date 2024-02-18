@@ -1,0 +1,49 @@
+<div class="hero-bg fullWidth" style=" background-position: center; background-image: url(&quot;https://storage.googleapis.com/bitly-image-upload/Io1f87A6luA&quot;); background-color: rgb(255, 255, 255); background-repeat: no-repeat; background-size: cover;">
+    
+    <!-- <% if (paramType =='web') { %>
+        
+    <%}else{%>  
+        
+            
+    <%}%> -->
+    <div class="contentBio">
+        <header>
+            <div class="avatar">
+                tes
+            </div>
+        </header>
+        <section style="margin-top: 15px;">
+            <% for (const key in allUrl) { %>
+                <% const data = allUrl[key] %>
+                <div class="contentList">
+                    <% if (data.type =='youtube') { %>
+                        <!-- content web -->
+                        <% if (paramType =='web') { %>
+                            <iframe width="100%" height="500px" src="https://www.youtube.com/embed/<%= data.youtubeId%>" style="border-radius: 5px; box-shadow: 2px 4px;">
+                            </iframe>
+                            <%}else{%>  
+                                <iframe width="100%" height="125px" src="https://www.youtube.com/embed/<%= data.youtubeId%>" style="border-radius: 5px; box-shadow: 2px 4px;">
+                                </iframe>
+                            <%}%>
+                            <%}else{%>
+                                <a href="<%= data.full%>" style="text-decoration: none;">
+                                    <div class="links ">
+                                        <h5><%= data.title%></h5>
+                                        <% if (data.description) { %>
+                                            <h6><%= data.description%></h6>
+                                        <%}%>
+                                    </div>
+                                </a>
+                        <%}%>
+                    <%}%>
+                </div>
+        </section>
+    </div>
+      
+    
+    <!-- content preview -->
+</div>
+
+
+
+

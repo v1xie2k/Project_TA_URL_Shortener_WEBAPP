@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "axial-serenity-410804",
+  "private_key_id": "a302a53130ab11af8b4a032ec1851f26fe12158a",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDNRdpG6pp8Rjz1\n/WhZi2Si8Nk8RmiWte0lhxw4c1xWKqt6avNCSF1ZC3TPO1eh4NpINUJcXqrf682C\nB4GrJ8zZwNUYKL3cODM8oqkuO6SX3wG3VUbj+ioUyefTs9s7/Xu1gECjEoqWAZxT\nZHjyDd16YtQpe+H7/EEtY2Su/JrUfZXh5BLemhNYRhcmmKzvcHQ3B8qMt+mgoOxP\nVeaa+TTiwe9JicYWDcugmZesEED/9Lylm4cTbjosD+pZEOK3U5G/2OK9UbyHnGGE\ndU3QnxEToMKyO5VNoKdIKof3BYYznY8ehEbMncbF6TTg9yWLIpQXwYY7Wlei4Agj\na/dMYL7jAgMBAAECggEAARQ7bAECs+GIo4BkAoh9jG+4rJzwIs6tAvP9XXyZwSgz\nQ475XWFVAElToV09/i9Y5mVFRogG3Ot35pWUhGpOpNxjIl/gc55mAo0WV5Rfrp6w\n+x47I6qmevp+ufmpjtyrwE3+yPypdtVmVXfjPN5+ygxn8hnhG7p9OzhZCKRySeim\nrowlw4ckIwnPPJnFuUh4+IGn8YR2Aw8gKJdeAq42YaBvMOvTnINL6X4P225ogAIn\nKbj4l4QUPvD20hP/HWHQVG1CFA95Ou9Sczcj9PjEsvCNzMQHeMP0Duqs3EIN5b5m\nFusMTci0tdBom3jUmIBa5pRzJcUAyqFVAnkFj1p6oQKBgQDnZ0LvLbrC1oe3UMN1\nssbvrTbJyqS4O+Hb/cHGq05Dol6/5u9jcAs8L2RAfFJAG0MPyFRunPCgUZt96bIU\nQn+stVAEv6bMceKJ3DGvL9Juz8CP+mNyAz8m5h6Zpkhw910+w2NKp1V4kIk+OPqP\naWlg/dmL04iJWCy+nsDpwVq8oQKBgQDjF403QLvk/qAS/ZURTB8chORcZx2TGNjp\nJPkcjobbE/AjmlKmww8/txRiVo7eB4GeGEFJ45mk/BwrwOBVyrWkNlAEBizD8CkF\ns7cLaOYk5a9YwCU+kQgWlkMWHwOP/3fMlzfbM8QJdNJ10OdbjSOJWY2Fky3n1HRk\nCyWkHWLpAwKBgBEnLGUCZMewk1rZV8PPvsNheaA3r0Ig3jsqckTBygllbdSXz8L1\nOT/621mUXZx26N+wn+GbLJMVuYr52cN6snAg+I+BjWG2R26kreIoj1a7e7CwhNKc\nvv+pKzeEhfYpv/W5EhEkmkdXn3THUHt0+uS/rHKa+ZIEwTxYFEC/nnRBAoGBANyS\nGJiNKLNAWex4H1zgqetCbKgPg9tHLBAv2EJTcUrC7+E02IifN2V0hrkJR9UCR3Ru\nLKP/DFICib45pevOa2UnV8rA0KQz1TRznRvY9IjsCsdSQhqmNcvygRCwaP5pbUvr\nqNYhToy8ylqi4MS8rsKOl/YgwVrGsZImfZYM8PBPAoGANnx05Y46K9/soLMnmI0q\nUq37DVbpWRYK9cyz2N1s5+kGdFN7OYTnITQjH8LkWWz3/+HRGKAszxz7U3B3HLlG\nat5O4+iT5tkWsxuJJK37a1vh2/nfh0SlJFphlX7MsjPJW5P5heze9kgPlKT5A4nF\nqfmoWC8shpT+8iCrcIushL0=\n-----END PRIVATE KEY-----\n",
+  "client_email": "cloudstorageadmin-190@axial-serenity-410804.iam.gserviceaccount.com",
+  "client_id": "110461150267751299354",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/cloudstorageadmin-190%40axial-serenity-410804.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

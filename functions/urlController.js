@@ -4,6 +4,7 @@ import  { getFirestore, Timestamp, FieldValue, Filter } from 'firebase-admin/fir
 import '../config/firebase.js'
 import 'dotenv/config'
 import { searchData } from './universal.js'
+import { bucket } from '../config/cloudStorage.js'
 
 const db = getFirestore();
 const dbName = 'shorturls'
@@ -35,24 +36,18 @@ export async function getAllUrl() {
     return data
 }
 
-export async function filterData(filter, data) {  
-    var newData = []
-    if(filter){
-        var filterType = filter.type != undefined ? true : false 
-        for (const iterator of data) {
-            var title = iterator.title + ""
-            title = title.toLowerCase()
-            if(title.includes(filter.title)){
-                if(filterType){
-                    if(filter.type != iterator.type){
-                        continue
-                    }
-                }
-                newData.push(iterator)
-            }
-        }
+export async function getAllBioLink() {  
+    var rawData
+    var data = []
+    try {
+        rawData = await db.collection('biolinks').get();
+        rawData.forEach((doc) => {
+            data.push(doc.data())
+        });
+    } catch (err) {
+        console.log(err.stack);
     }
-    return newData
+    return data
 }
 
 export async function addNewURL(data) {
@@ -63,8 +58,8 @@ export async function addNewURL(data) {
             // data ada kembar
             return false
         }else{
-            //check type qr/bukan
-            if(data.type  == 'qr' && data.short.length <= 0){
+            //check type qr&biolink/bukan
+            if(data.type  == 'qr' || data.short == undefined){
                 var shortQrNew 
                 do{
                     const idQr = customAlphabet ('1234567890abcdefghijklmopqrstuvwxyz', 8)
@@ -88,10 +83,11 @@ export async function editURL(data) {
         const editShortStatus = (data.oldShort != data.short)? true : false
         //edit includes short url changes
         var oldData = await searchData(dbName,data.oldShort)
-        oldData.full = data.full
-        oldData.short = data.short
-        oldData.title = data.title
         oldData.updatedAt = data.updatedAt
+        if(data.full) oldData.full = data.full
+        if(data.short) oldData.short = data.short
+        if(data.title) oldData.title = data.title
+        if(data.img) oldData.img = data.img
         if(data.type) oldData.type = data.type
         if(editShortStatus){
             const del = await db.collection(dbName).doc(data.oldShort).delete()
@@ -105,6 +101,45 @@ export async function editURL(data) {
     return status
 }
 
+export async function addNewBioLink(data) {
+    var status = true
+    try {
+        if(await searchData('biolinks', data.short)){
+            return false
+        }else{
+            const res = await db.collection('biolinks').doc(data.short).set(data)
+            return true
+        }
+    } catch (err) {
+        console.log(err.stack);
+        return false
+    }
+}
+
+// export async function editBioLink(data) {
+//     var status = true
+//     try {
+//         // check edit is include with short url changes or not
+//         const editShortStatus = (data.oldShort != data.short)? true : false
+//         //edit includes short url changes
+//         var oldData = await searchData('biolinks',data.oldShort)
+//         oldData.full = data.full
+//         oldData.short = data.short
+//         oldData.title = data.title
+//         oldData.updatedAt = data.updatedAt
+//         if(data.type) oldData.type = data.type
+//         if(editShortStatus){
+//             const del = await db.collection('biolinks').doc(data.oldShort).delete()
+//         }
+//         const res = await db.collection('biolinks').doc(data.short).set(oldData)
+        
+//     } catch (err) {
+//         console.log(err.stack);
+//         return false
+//     }
+//     return status
+// }
+
 export async function updateClickShortUrl(param) {
     var find
     try { 
@@ -116,14 +151,91 @@ export async function updateClickShortUrl(param) {
     }
 }
 
-export async function deleteShortUrl(param){
+export async function deleteUrl(param, colName){
     try{
-        const res = await db.collection(dbName).doc(param).delete()
+        const res = await db.collection(colName).doc(param).delete()
     }catch(err){
         console.log(err.stack);
     }
 }
 
-export async function generateCode(data) {
+export async function filterData(filter, data) {  
+    var newData = []
+    if(filter){
+        var filterType = filter.type != undefined ? true : false 
+        var filterBioLink = filter.bioLink != undefined ? true : false 
+        if(filter.title == undefined) filter.title = ''
+        for (const iterator of data) {
+            var title = iterator.title + ""
+            title = title.toLowerCase()
+            if(title.includes(filter.title)){
+                if(filterType){
+                    if(filter.type != iterator.type){
+                        continue
+                    }
+                }
+                if(filterBioLink){
+                    if(filter.bioLink != iterator.bioLink){
+                        continue
+                    }
+                }
+                newData.push(iterator)
+            }
+        }
+    }
+    return newData
+}
+
+export async function sortDataBioLink(data) {  
+    var list =[]
+    var youtubeList = []
+    var linkList = []
+    list = data.sort((a, b)=> {
+        const titleA = a.title.toUpperCase()
+        const titleB = b.title.toUpperCase();
+        if (titleA < titleB) {
+            return -1;
+        }
+        if (titleA > titleB) {
+            return 1;
+        }
+        return 0;
+    })
+    for (const iterator of list) {
+        if(iterator.type == 'youtube'){
+            youtubeList.push(iterator)
+        }else{
+            linkList.push(iterator)
+        }
+    }
+    return linkList.concat(youtubeList)
+}
+
+export async function uploadImage(file) {  
+    console.log("File found, trying to upload...");
+    const blob = bucket.file(file.originalname);
+    const blobStream = blob.createWriteStream({
+        resumable: false
+    });
     
+    blobStream.on("finish", () => {
+        return true
+    });
+    blobStream.end(file.buffer);
+}
+
+export async function deleteImage(fileName){
+    new Promise((resolve, reject) => {
+        //imageurl=parentfolder/childfolder/filename
+        console.log('masuk');
+        bucket.file(fileName).delete()
+        .then((image) => {
+            resolve(image)
+        })
+        .catch((e) => {
+            reject(e)
+        });
+        console.log('out');
+        
+    });
 }
