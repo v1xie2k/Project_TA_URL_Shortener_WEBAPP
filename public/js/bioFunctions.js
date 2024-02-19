@@ -302,24 +302,6 @@ function btnCopyClick(e){
     navigator.clipboard.writeText($(e).val());
 }
 
-function isHttpValid(str) {
-    try {
-        new URL(str);
-        return true;
-    } catch (err) {
-        return false;
-    }
-}
-
-function validateYouTubeUrl(url)
-{
-    const p = new RegExp(/^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/|watch\?.+&v=))((\w|-){11})(?:\S+)?$/);
-    if(url.match(p)){
-        return url.match(p)[1]
-    }
-    return false;
-}
-
 function loadImage(e, t){
     var key = $(t).attr('key')
     var image = document.getElementById('outputImg'+key);
@@ -409,23 +391,72 @@ function btnDeleteImg(e) {
     const imgName = imgUrl.split('/')[4]
     const data = {updatedAt: new Date(), short, oldShort: short, collection:'biolinks', type}
     var destination = '?profile'
-    fetch("/api/deleteImg/"+imgName, {method: "DELETE", body: JSON.stringify(imgName)}).then(async (response) =>{
-        if(response.ok) console.log('Success Delete');
-    }).catch((error) => {
-        alert('WARNINGHUH!')
-        console.log(error);
-    })
+    if(imgName){
+        fetch("/api/deleteImg/"+imgName, {method: "DELETE", body: JSON.stringify(imgName)}).then(async (response) =>{
+            if(response.ok) console.log('Success Delete');
+        }).catch((error) => {
+            alert('WARNINGHUH!')
+            console.log(error);
+        })
+    }
     if(type == 'img'){
         data.type = 'img'
         data.collection= 'shorturls'
         destination = '?build'
     }
-    fetchAPI('/api/deleteField', 'POST', data, 'This Short Bio Link is Already Taken!', destination)
+    fetchAPI('/api/deleteField', 'POST', data, 'Something wrong while deleting the data!', destination)
+}
+
+async function btnEditProfile(e) {  
+    var config = {method: 'POST', headers: {"Content-Type": "application/json"}}
+    const short = $(e).attr('short')
+    const title = $('#pageTitle').val()
+    const description = $('#pageDescription').val()
+    const instagram = $('#socialInstagram').val()
+    const facebook = $('#socialFacebook').val()
+    const youtube = $('#socialYoutube').val()
+    if(instagram){
+        if(!await checkSocialMedia(instagram, 'instagram')) {
+            Swal.fire("Please enter a valid instagram URL");
+            return
+        }
+    }
+    if(facebook){
+        if(!await checkSocialMedia(facebook, 'facebook')) {
+            Swal.fire("Please enter a valid facebook URL");
+            return
+        }
+    }
+    if(youtube){
+        if(!await checkSocialMedia(youtube, 'youtube')) {
+            Swal.fire("Please enter a valid youtube URL");
+            return
+        }
+    }
+    const data = {updatedAt: new Date(), short, oldShort: short, collection:'biolinks', pageTitle: title, pageDescription: description, instagram, facebook, youtube}
+    if(!title) data.deletePageTitle = true
+    if(!description) data.deletePageDescription = true
+    if(!instagram) data.deleteInstagram = true
+    if(!facebook) data.deleteFacebook = true
+    if(!youtube) data.deleteYoutube = true
+    if(data){
+        config.body = JSON.stringify(data)
+    }
+    $('#btnSaveUrl').html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Saving...')
+    await fetch('/api/deleteField', config).then(async (response) => {
+        if (response.ok) {
+         console.log('success');
+        }
+    }).catch((error) => {
+        alert('WARNING ERROR WHILE DELETING!')
+        console.log(error);
+    });
+    await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while editing the data!', '?profile')
 }
 
 function checkUrl(url){
     const urlShort = url.toLowerCase()
-    if(urlShort == 'qr' || urlShort == 'login' || urlShort == 'register' || urlShort =='url' || urlShort == 'biolink' || urlShort == 'm'){
+    if(urlShort == 'qr' || urlShort == 'login' || urlShort == 'register' || urlShort =='url' || urlShort == 'biolink' || urlShort == 'm' || urlShort == 'plan' || urlShort == 'user' || urlShort == 'analytic' || urlShort == 'admin'){
         return false
     }
     return true
@@ -440,3 +471,29 @@ function uuidv4() {
     );
 }
 
+function checkSocialMedia(url, type) {
+    var pattern
+    if(type == 'instagram') pattern = new RegExp(/^https:\/\/www\.instagram\.com\/[a-zA-Z0-9_.-]+\/?$/)
+    if(type == 'facebook') pattern = new RegExp(/^https:\/\/www\.facebook\.com\/[a-zA-Z0-9_.-]+\/?$/)
+    if(type == 'youtube') pattern = new RegExp(/^https:\/\/www\.youtube\.com\/(?:c\/|channel\/|user\/|@)?[a-zA-Z0-9_-]+$/)
+    if(url.match(pattern)) return true
+    return false
+}
+
+function isHttpValid(str) {
+    try {
+        new URL(str);
+        return true;
+    } catch (err) {
+        return false;
+    }
+}
+
+function validateYouTubeUrl(url)
+{
+    const p = new RegExp(/^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/|watch\?.+&v=))((\w|-){11})(?:\S+)?$/);
+    if(url.match(p)){
+        return url.match(p)[1]
+    }
+    return false;
+}

@@ -6,6 +6,7 @@ import axios from 'axios'
 import Multer from 'multer'
 import 'dotenv/config'
 import { bucket } from '../config/cloudStorage.js';
+import { edituser } from '../functions/loginRegisterController.js';
 
 const router = express.Router()
 
@@ -97,6 +98,7 @@ router.post('/biolink/edit', async(req, res)=>{
 router.post('/deleteField', async(req, res)=>{
     const data = req.body
     try{
+        console.log(data);
         const result = await deleteField(data).catch(console.dir);
         if(result){
             return res.status(200).send('success')
@@ -188,6 +190,10 @@ router.post('/addImg/:type/:shortId', multer.single("imgfile"), async(req, res)=
             }else if(type == 'avatar'){
                 data.avatar = img
                 await editBioLink(data).catch(console.dir)
+            }else if(type == 'user'){
+                data.profile = img 
+                data.email = shortId
+                await edituser(data).catch(console.dir)
             }
             await uploadImage(req.file)
             res.status(200).send(img)

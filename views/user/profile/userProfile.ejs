@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../parts/head/headUrl.ejs');%>
+    <title>Profile</title>
+    
+</head>
+<body>
+    <%- include('../parts/header/headerNoSearch.ejs');%>
+    <%- include('../parts/sideNav.ejs');%>
+    <script type="text/javascript" src="../../../public/js/userFunctions.js"></script>
+    <div class="container">
+        <h1>User Profile</h1>
+        <div class="row g-0">
+            <div class="col-md-2">
+                <%if(data.profile){%>
+                    <button id="btnImgProfile" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModalProfile" style="width: 10rem; height: 10rem; margin-top: 25px; padding: 0; background-image: url('<%=data.profile%>');">
+                    </button>
+                    <input id="imgUrlProfile" type="hidden" name="imgUrl" value="<%= data.profile%>">
+                <%}else{%>
+                    <button id="btnImgProfile" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModalProfile" style="width: 10rem; height: 10rem; margin-top: 25px; border-radius: 5px; padding: 0;">
+                        <i class="fa-regular fa-image" style="font-size: 75px;"></i>
+                    </button>
+                <%}%>
+                <div class="modal fade" id="exampleModalProfile" tabindex="-1" aria-labelledby="exampleModalLabelProfile" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabelProfile"><%if(data.profile){%>Edit<%}else{%>Add<%}%> Image</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" style="margin:15px; width: 465px; height: auto; border: 2px dashed gray;">
+                            <img id="outputImgProfile" width="100%"/>
+                            <div id="containerUploadProfile" style="margin:auto; text-align: center; align-items: center; width: 150px; height: 50px; margin-bottom: 25px;" >
+                                <input type="file" accept=".png,.jpg,.jpeg" name="image" id="fileProfile" onchange="loadImage(event, this)" style="display: none;" key="Profile">
+                                <label for="fileProfile" style="cursor: pointer;border: 1px solid black; border-radius: 5px; width: 150px; height: 50px; padding-top: 10px;">Upload Image</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div>
+                                <p >Use JPG, JPEG or PNG. (max 3.5MB) </p>
+                            </div>
+                            <div class="d-flex justify-content-between w-100">
+                                <div>
+                                    <button id="btnRemoveImgProfile" key="Profile" onclick="removeImg(this)" type="button" class="btn btn-warning" style="color:white; display: none;">Remove</button>
+                                </div>
+                                <div>
+                                    <button id="btnCancelProfile" type="button" class="btn btn-danger" data-bs-dismiss="modal"  onclick="removeImg(this)"  key="Profile">Close</button>
+                                    <button id="btnSaveProfile" type="button" class="btn btn-primary" onclick="submitImg(this)" value="Profile" email="<%= data.email%>" disabled>Save</button>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <div>
+                    <%if(data.profile){%>
+                        <button class="btnRemovePicture btn mt-4" onclick="btnDeleteImg(this)" btnCategory="profile" email="<%= data.email%>" imgUrl="<%= data.profile%>">Remove Pict</button>
+                    <%}%>
+                </div>
+            </div>
+            <div class="col-md-8 mt-4">
+                <h4>Email: <%= data.email%></h4>
+                <h4>Name: <%= data.name%></h4>
+                <h4>Credit:</h4>
+                <div class="container">
+                    <h5>Short Link: -</h5>
+                    <h5>QR Codes: -</h5>
+                    <h5>Bio Link: -</h5>
+                </div>
+                <h4>Total Link Created: - </h4>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

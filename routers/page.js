@@ -2,6 +2,7 @@ import express from 'express'
 import { filterData, getAllBioLink, getAllUrl, sortDataBioLink, updateClickShortUrl } from '../functions/urlController.js';
 import { searchData } from '../functions/universal.js';
 import { isLoggedIn } from '../middleware/middleware.js';
+import { getAllPriceList } from '../functions/planController.js';
 
 const app = express() 
 const router = express.Router();
@@ -17,6 +18,17 @@ router.get('/login', (req, res)=>{
 
 router.get('/register', (req, res)=>{
     res.render('user/register')
+})
+
+router.get('/user', async (req, res)=>{
+    // ini nanti diambil email dari session lalu dilakukan search data untuk get user yang bersangkutan
+    // console.log(await searchData('users', 'botan@gmail.com'));
+    // dikasi middleware juga kalau sudah login atau belum
+    res.render('user/profile/userProfile', {data: await searchData('users', 'botan@gmail.com')})
+})
+
+router.get('/plan/custom', async (req, res)=>{
+    res.render('user/plan/customPlans', {plans: await getAllPriceList()})
 })
 
 router.get('/url', async (req, res)=>{
@@ -69,7 +81,7 @@ router.get('/biolink/edit/:bioLink', async(req, res) =>{
     if(!bioLink){
         res.render('error/error404')
     }else{
-        res.render('user/biolink/bioEditView', {data: bioLink, paramType, allUrl: sortedUrl})
+        res.render('user/biolink/bioEditView', {data: bioLink, paramType, allUrl: sortedUrl, path: 'edit'})
     }
 })
 
@@ -81,7 +93,7 @@ router.get('/m/:bioLink', async (req, res)=>{
     if(!bioLink){
         res.render('error/error404')
     }else{
-        res.render('user/biolink/bioPreview', {data: bioLink, allUrl: sortedUrl, paramType: 'web'})
+        res.render('user/biolink/bioPreview', {data: bioLink, allUrl: sortedUrl, paramType: 'web', path: 'webview'})
     }
 })
 

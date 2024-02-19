@@ -105,8 +105,8 @@ h2, h3, h4, h5, h6{
   border-radius: 0.4rem;
   padding: 3rem;
   color: #96a3bd;
-  height: 12.8rem;
-  width: 12.8rem;
+  height: 7rem;
+  width: 7rem;
   border: 0.1rem solid #dbe0eb;
   transition: color .4s,background-color .4s;
   cursor: pointer;
@@ -171,4 +171,60 @@ h2, h3, h4, h5, h6{
 
 .has-image{
   padding-inline: 5.1rem;
+}
+
+.btnRemovePicture{
+  border: 1px solid lightcoral;
+  color: red;
+}
+
+.btnRemovePicture:not(.bioEdit){
+  margin-top: 50px; 
+  margin-left: 20px;
+}
+
+.btnRemovePicture:hover{
+  background-color: rgb(248, 62, 62);
+  color:white;
+}
+
+.orb-avatar:not(.small):not(.card) {
+  width: 9.6rem;
+  height: 9.6rem;
+  border-radius: 4.8rem;
+}
+
+.orb-avatar.image {
+  background-color: initial;
+  border: unset;
+}
+
+.orb-avatar {
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 3.75rem;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: poiner;
+  margin:auto;
+  margin-top: 20px;
+}
+
+.youtubeLink {
+  color: red;
+}
+.youtubeLink:hover{
+  color:rgb(220, 3, 3)
+}
+
+.instagramLink{
+  color: rgb(247, 0, 255);
+}
+
+.instagramLink:hover{
+  color:rgb(215, 0, 223)
 }

@@ -210,7 +210,7 @@ function isHttpValid(str) {
 
 function checkUrl(url){
     const urlShort = url.toLowerCase()
-    if(urlShort == 'qr' || urlShort == 'login' || urlShort == 'register' || urlShort =='url' || urlShort == 'biolink' || urlShort == 'm'){
+    if(urlShort == 'qr' || urlShort == 'login' || urlShort == 'register' || urlShort =='url' || urlShort == 'biolink' || urlShort == 'm' || urlShort == 'plan' || urlShort == 'user' || urlShort == 'analytic' || urlShort == 'admin'){
         return false
     }
     return true

@@ -77,7 +77,6 @@ export async function addNewURL(data) {
 }
 
 export async function editURL(data) {
-    var status = true
     try {
         // check edit is include with short url changes or not
         const editShortStatus = (data.oldShort != data.short)? true : false
@@ -95,12 +94,11 @@ export async function editURL(data) {
             const del = await db.collection(dbName).doc(data.oldShort).delete()
         }
         const res = await db.collection(dbName).doc(data.short).set(oldData)
-        
+        return true
     } catch (err) {
         console.log(err.stack);
         return false
     }
-    return status
 }
 
 export async function addNewBioLink(data) {
@@ -130,6 +128,11 @@ export async function editBioLink(data) {
         if(data.title) oldData.title = data.title
         if(data.avatar) oldData.avatar = data.avatar
         if(data.background) oldData.background = data.background
+        if(data.pageTitle) oldData.pageTitle = data.pageTitle
+        if(data.pageDescription) oldData.pageDescription = data.pageDescription
+        if(data.instagram) oldData.instagram = data.instagram
+        if(data.facebook) oldData.facebook = data.facebook
+        if(data.youtube) oldData.youtube = data.youtube
         if(editShortStatus){
             const del = await db.collection('biolinks').doc(data.oldShort).delete()
         }
@@ -144,11 +147,18 @@ export async function editBioLink(data) {
 
 export async function deleteField(data) {  
     try{
+        
         const ref = db.collection(data.collection).doc(data.short);
         const type = data.type
         if(type == 'background')await ref.update({background: FieldValue.delete()})
         if(type == 'avatar')await ref.update({avatar: FieldValue.delete()})
         if(type == 'img') await ref.update({img: FieldValue.delete()})
+        if(type == 'profile') await ref.update({profile: FieldValue.delete()})
+        if(data.deletePageTitle) await ref.update({pageTitle: FieldValue.delete()})
+        if(data.deletePageDescription) await ref.update({pageDescription: FieldValue.delete()})
+        if(data.deleteInstagram) await ref.update({instagram: FieldValue.delete()})
+        if(data.deleteFacebook) await ref.update({facebook: FieldValue.delete()})
+        if(data.deleteYoutube) await ref.update({youtube: FieldValue.delete()})
         return true
     }catch(err){
         console.log(err);

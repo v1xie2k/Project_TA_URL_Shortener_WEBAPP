@@ -2,11 +2,11 @@
 <h4>Image</h4>
 <div class="mb-3 d-flex flex-row">
     <%if(data.avatar){%>
-        <button id="btnImgAvatar" type="button" class="btn background-preview mt-3" data-bs-toggle="modal" data-bs-target="#exampleModalAvatar" style="width: 100px; height: 100px; padding: 0; background-image: url('<%=data.avatar%>');">
+        <button id="btnImgAvatar" type="button" class="btn background-preview mt-3" data-bs-toggle="modal" data-bs-target="#exampleModalAvatar" style="padding: 0; background-image: url('<%=data.avatar%>');">
         </button>
         <input id="imgUrlAvatar" type="hidden" name="imgUrl" value="<%= data.avatar%>">
     <%}else{%>
-        <button id="btnImgAvatar" type="button" class="btn background-preview mt-3" data-bs-toggle="modal" data-bs-target="#exampleModalAvatar" style="width: 120px; height: 100px; border-radius: 5px; padding: 0;">
+        <button id="btnImgAvatar" type="button" class="btn background-preview mt-3" data-bs-toggle="modal" data-bs-target="#exampleModalAvatar" style="border-radius: 5px; padding: 0;">
             <i class="fa-regular fa-image" style="font-size: 75px;"></i>
         </button>
     <%}%>
@@ -43,26 +43,71 @@
         </div>
     </div>
     <div>
-        <button class="btnRemovePicture btn btn-secondary" onclick="btnDeleteImg(this)" style="margin-top: 40px; margin-left: 20px;" btnCategory="avatar" short="<%= data.short%>" imgUrl="<%= data.avatar%>">Remove Pict</button>
+        <%if(data.avatar){%>
+            <button class="btnRemovePicture btn" onclick="btnDeleteImg(this)" btnCategory="avatar" short="<%= data.short%>" imgUrl="<%= data.avatar%>">Remove Pict</button>
+        <%}%>
     </div>
 </div>
 
 <h4>Page title (optional)</h4>
 <div class="mb-3">
-    <input required type="url" name="pageTitle" id="pageTitle"  placeholder="url" class="form-control" value="<%= data.full %>">
+    <input required type="url" name="pageTitle" id="pageTitle"  placeholder="url" class="form-control" value="<%= data.pageTitle %>">
 </div>
 <h4>Page Description (optional)</h4>
 <div class="mb-3">
-    <input type="url" name="pageDescription" id="pageDescription"  placeholder="url" class="form-control" value="<%= data.full %>">
+    <input type="url" name="pageDescription" id="pageDescription"  placeholder="url" class="form-control" value="<%= data.pageDescription %>">
+</div>
+<h4>Social Profile Icon (optional)</h4>
+<div class="container mb-3 ps-5" style="background-color: lightgrey; border-radius: 5px;">
+    <div class="mb-3 mt-3 row g-0">
+        <div class="col-md-3">
+            <div class="form-control">
+                <i class="fa-brands fa-instagram"></i>
+                Instagram
+            </div>
+        </div>
+        <div class="col-md-8" style="margin: auto;">
+            <input type="url" name="socialInstagram" id="socialInstagram"  placeholder="https://instagram.com/yourinstagramprofile" class="form-control" value="<%= data.instagram %>">
+        </div>
+    </div>
+    <div class="mb-3 row g-0">
+        <div class="col-md-3">
+            <div class="form-control">
+                <i class="fa-brands fa-square-facebook"></i>
+                Facebook
+            </div>
+        </div>
+        <div class="col-md-8" style="margin: auto;">
+            <input type="url" name="socialFacebook" id="socialFacebook"  placeholder="https://facebook.com/yourfacebookprofile" class="form-control" value="<%= data.facebook %>">
+        </div>
+
+    </div>
+    <div class="mb-3 row g-0">
+        <div class="col-md-3">
+            <div class="form-control">
+                <i class="fa-brands fa-youtube"></i>
+                Youtube
+            </div>            
+        </div>
+        <div class="col-md-8" style="margin: auto;">
+            <input type="url" name="socialYoutube" id="socialYoutube"  placeholder="https://www.youtube.com/@youryoutubechannel" class="form-control" value="<%= data.youtube %>">
+        </div>
+    </div>
+    
+</div>
+<div class="container mb-3">
+    <div class="d-flex flex-row-reverse">
+        <button id="btnSaveUrl" type="button" onclick="btnEditProfile(this)" class="btn btn-primary ms-3" short="<%= data.short%>">Save</button>
+    </div>
 </div>
 <h4>Background</h4>
 <div class="mb-3 d-flex flex-row">
     <%if(data.background){%>
-        <button id="btnImgBackground" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModalBackground" style="width: 100px; height: 100px; margin-top: 25px; padding: 0; background-image: url('<%=data.background%>');">
+        <button id="btnImgBackground" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModalBackground" style="margin-top: 25px; padding: 0; background-image: url('<%=data.background%>');">
         </button>
         <input id="imgUrlBackground" type="hidden" name="imgUrl" value="<%= data.background%>">
     <%}else{%>
-        <button id="btnImgBackground" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModalBackground" style="width: 120px; height: 100px; margin-top: 25px; border-radius: 5px; padding: 0;">
+        <button id="btnImgBackground" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModalBackground" style="margin-top: 25px; border-radius: 5px; padding: 0;">
             <i class="fa-regular fa-image" style="font-size: 75px;"></i>
         </button>
     <%}%>
@@ -100,6 +145,8 @@
         </div>
     </div>
     <div>
-        <button class="btnRemovePicture btn btn-secondary" onclick="btnDeleteImg(this)" style="margin-top: 50px; margin-left: 20px;" btnCategory="background" short="<%= data.short%>" imgUrl="<%= data.background%>">Remove Pict</button>
+        <%if(data.background){%>
+            <button class="btnRemovePicture btn" onclick="btnDeleteImg(this)" btnCategory="background" short="<%= data.short%>" imgUrl="<%= data.background%>">Remove Pict</button>
+        <%}%>
     </div>
 </div>

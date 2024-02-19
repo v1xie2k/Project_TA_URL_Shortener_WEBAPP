@@ -1,4 +1,4 @@
-<h4>Edit Bio Link</h4>
+<h4>Edit Back Half Bio Link</h4>
 <div class="d-flex flex-row">
     <input type="text" name="short" id="editShortBio" class="form-control" value="<%= data.short%>">
     <div>
@@ -32,11 +32,11 @@
                             <!-- Button trigger modal -->
                             
                             <%if(data.img){%>
-                                <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style="width: 100px; height: 100px; margin-top: 25px; padding: 0; background-image: url('<%=data.img%>');">
+                                <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style=" margin-top: 25px; padding: 0; background-image: url('<%=data.img%>');">
                                 </button>
                                 <input id="imgUrl<%=key%>" type="hidden" name="imgUrl" value="<%= data.img%>">
                             <%}else{%>
-                                <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style="width: 120px; height: 100px; margin-top: 25px; border-radius: 5px; padding: 0;">
+                                <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style=" margin-top: 25px; border-radius: 5px; padding: 0;">
                                     <i class="fa-regular fa-image" style="font-size: 75px;"></i>
                                 </button>
                             <%}%>
@@ -80,7 +80,7 @@
                             <button type="button" onclick="btnDeleteUrl(this)" class="btn btn-danger" short="<%= data.short%>" value="<%= key%>"><i class="fa-solid fa-trash-can pe-2"></i>Delete</button>
                             <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" value="<%= data.short%>" urlTitle="<%= data.title%>" destination="<%= data.full%>" description="<%= data.title%>" youtubeId="<%= data.youtubeId%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
                             <%if(data.img){%>
-                                <button class="btnRemovePicture btn btn-secondary" onclick="btnDeleteImg(this)" btnCategory="img" short="<%= data.short%>" imgUrl="<%= data.img%>"><i class="fa-solid fa-xmark pe-2"></i>Remove Pict</button>
+                                <button class="btnRemovePicture bioEdit btn" onclick="btnDeleteImg(this)" btnCategory="img" short="<%= data.short%>" imgUrl="<%= data.img%>"><i class="fa-solid fa-xmark pe-2"></i>Remove Pict</button>
                             <%}%>
                         </div>
                         <div class="text-left">

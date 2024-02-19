@@ -45,4 +45,5 @@ router.post('/logout', async(req, res)=>{
     return res.status(200).send('success')
     
 })
+
 export default router

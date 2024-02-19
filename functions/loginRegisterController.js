@@ -13,7 +13,6 @@ export async function comparePassword(plaintextPassword, hash) {
     return result;
 }
 
-
 export async function addNewUser(data) {
     try {
         
@@ -30,6 +29,22 @@ export async function addNewUser(data) {
             return true
         }
     } catch (err) {
+        console.log(err.stack);
+        return false
+    }
+}
+
+export async function edituser(data) {  
+    try{
+        var oldData = await searchData(dbName, data.email)
+        if(data.updatedAt) oldData.updatedAt = data.updatedAt
+        if(data.profile) oldData.profile = data.profile
+        if(data.credit) oldData.credit = data.credit
+        if(data.name) oldData.name = data.name
+        if(data.password) oldData.password = data.password
+        const res = await db.collection(dbName).doc(data.email).set(oldData)
+        return true
+    }catch(err){
         console.log(err.stack);
         return false
     }

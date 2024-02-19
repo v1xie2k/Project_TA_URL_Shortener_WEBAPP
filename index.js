@@ -7,7 +7,7 @@ import sessions from 'express-session'
 import cookieParser from 'cookie-parser'
 import pageRouter from './routers/page.js'
 import urlRouter from './routers/url.js'
-import credentialRouter from './routers/loginRegister.js'
+import credentialRouter from './routers/user.js'
 
 const oneDay = 1000 * 60 * 60 * 24;
 
