@@ -1,4 +1,73 @@
-<h4>Destination3</h4>
-                <div class="mb-3">
-                    <input required type="url" name="fullUrl" id="fullUrl"  placeholder="url" class="form-control" value="<%= data.full %>">
-                </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div id="reportData" style="display: none;">
+    <%= JSON.stringify(allUrl) %>
+</div>
+
+<div>
+    <div>
+        <h6>Date Anchor</h6>
+        <input type="date" name="dateAnchor" id="dateAnchor" onchange="dateChange(this)" class="form-control" style="width: 15em;">
+        <label for="dateAnchor">This date anchor is used as an anchor for the next 7 days after that day</label>
+    </div>
+    <h4>Overview</h4>
+    <div class="">
+        <canvas id="lineChart"></canvas>
+    </div>
+    <div class="row g-0 mt-3 " >
+        <div class="col-md-3" >
+            <h4>Clicks by device</h4>
+            <canvas id="pieChart" ></canvas>
+        </div>
+        <div class="container col-md-8 me-0">
+            <h4>Clicks by location</h4>
+            <table id="countryTable" class="display" >
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Country</th>
+                        <th>Click</th>
+                    </tr>
+                </thead>
+                <tbody id="countryBodyTable">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+</div>
+<div>
+    <div class="mt-3 container">
+        <h4>Link Activity</h4>
+        <table id="linkTable" class="display">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>title</th>
+                    <th>link</th>
+                    <th>short</th>
+                    <th>Click</th>
+                </tr>
+            </thead>
+            <tbody id="linkBodyTable">
+                <% for (const key in allUrl) { %>
+                    <% const data = allUrl[key] %>
+                    <tr>
+                        <% const ctr = +key + 1 %>
+                        <td><%= ctr%></td>
+                        <td><%= data.title%></td>
+                        <td><%= data.full%></td>
+                        <td><%= data.short%></td>
+                        <td><%= data.clicks%></td>
+                    </tr>
+                <%}%>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    if(getData().length > 0){
+            document.getElementById('dateAnchor').valueAsDate = new Date()
+            loadData(getData(), {})
+    }
+</script>

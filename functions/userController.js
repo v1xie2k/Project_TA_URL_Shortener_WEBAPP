@@ -2,7 +2,7 @@ import pkg from 'bcrypt'
 import  { getFirestore, Timestamp, FieldValue, Filter } from 'firebase-admin/firestore'
 import '../config/firebase.js'
 import 'dotenv/config'
-import { searchData } from './universal.js';
+import { formatDate, searchData } from './universal.js';
 
 const bcrypt = pkg
 const db = getFirestore();
@@ -20,10 +20,11 @@ export async function addNewUser(data) {
             // duplicate data found
             return false 
         }else{
+            data.ban = -1
             bcrypt.genSalt(10, async (err, salt) => {
                 bcrypt.hash(data.password, salt, async function(err, hash) {
                     data.password = await hash
-                    const res = await db.collection(dbName).doc(data.email).set(await data)
+                    await db.collection(dbName).doc(data.email).set(await data)
                 });
             })
             return true
@@ -42,10 +43,30 @@ export async function edituser(data) {
         if(data.credit) oldData.credit = data.credit
         if(data.name) oldData.name = data.name
         if(data.password) oldData.password = data.password
+        if(data.ban) oldData.ban = data.ban
         const res = await db.collection(dbName).doc(data.email).set(oldData)
         return true
     }catch(err){
         console.log(err.stack);
         return false
     }
+}
+
+export async function getUsers(email) {  
+    var rawData
+    var data = []
+    try {
+        rawData = await db.collection('users').get();
+        rawData.forEach((doc) => {
+            if(email != doc.data().user){
+                const obj = doc.data()
+                obj.dateCreated = formatDate(doc.data().createdAt)
+                //dont push the admin that loggedin (email == admin that logged in into the system)
+                data.push(obj)
+            }
+        })
+    } catch (err) {
+        console.log(err.stack);
+    }
+    return data
 }

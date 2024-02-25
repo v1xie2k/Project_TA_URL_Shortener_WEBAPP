@@ -58,7 +58,7 @@
                             </iframe>
                         <%}%>
                     <%}else{%>
-                        <a href="<%= data.full%>" style="text-decoration: none;" class="link">
+                        <a href="http://localhost:8080/<%= data.short%>" style="text-decoration: none;" class="link">
                         <%if(data.img != null){%>
                             <img src="<%= data.img%>" alt="" class="link-image">
                             <div class="link__content has-image">
@@ -68,27 +68,7 @@
                             <span class="link__content__title"><%= data.title%></span>
                             <span class="link__content__description"><%= data.description%></span>
                         </div>
-                            <!-- <div class="links ">
-                                <%if(data.img != null){%>
-                                    <img src="<%= data.img%>" alt="" class="link-image">
-                                <%}%>
-                                <h5><%= data.title%></h5>
-                                <% if (data.description) { %>
-                                    <h6><%= data.description%></h6>
-                                <%}%>
-                            </div> -->
                         </a>
-                        <!-- <a href="<%= data.full%>" style="text-decoration: none;">
-                            <div class="links ">
-                                <%if(data.img != null){%>
-                                    <img src="<%= data.img%>" alt="" class="link-image">
-                                <%}%>
-                                <h5><%= data.title%></h5>
-                                <% if (data.description) { %>
-                                    <h6><%= data.description%></h6>
-                                <%}%>
-                            </div>
-                        </a> -->
                     <%}%>
                 </div>
             <%}%>

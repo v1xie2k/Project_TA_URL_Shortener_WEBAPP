@@ -6,12 +6,13 @@
           <input type="search" id="myInput" onsearch="searchUrl()" class="form-control" placeholder="Search..." aria-label="Search">
         </form>
 
-
         <div class="dropdown text-end me-3">
           <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-            <!-- <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle"> -->
-            <!-- Nanti jangan lupa image diganti dengan image yang telah dilempar dari session(jangan lupa lempar session data juga) -->
-            <img src="https://storage.googleapis.com/url-shortener-storage/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202023-10-24%20204843.png" alt="mdo" width="32" height="32" class="rounded-circle">
+            <%if(user.profile){%>
+              <img src="<%=user.profile%>" alt="mdo" width="32" height="32" class="rounded-circle">
+              <%}else{%>
+                <img src="https://storage.googleapis.com/url-shortener-storage/anonymous-user.png" alt="mdo" width="32" height="32" class="rounded-circle">
+            <%}%>
           </a>
           <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
             <li><a class="dropdown-item" href="#">Profile</a></li>

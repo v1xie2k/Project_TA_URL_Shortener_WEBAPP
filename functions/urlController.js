@@ -5,6 +5,8 @@ import '../config/firebase.js'
 import 'dotenv/config'
 import { searchData } from './universal.js'
 import { bucket } from '../config/cloudStorage.js'
+import moment from 'moment'
+import { UAParser } from 'ua-parser-js';
 
 const db = getFirestore();
 const dbName = 'shorturls'
@@ -59,7 +61,14 @@ export async function addNewURL(data) {
             return false
         }else{
             //check type qr&biolink/bukan
-            if(data.type  == 'qr' || data.short == undefined){
+            if(data.type  == 'qr' && data.short == undefined){
+                var shortQrNew 
+                do{
+                    const idQr = customAlphabet ('1234567890abcdefghijklmopqrstuvwxyz', 8)
+                    shortQrNew = idQr(8)
+                    data.short = shortQrNew
+                }while(await searchData(dbName, shortQrNew))
+            }else if(data.short == undefined){
                 var shortQrNew 
                 do{
                     const idQr = customAlphabet ('1234567890abcdefghijklmopqrstuvwxyz', 8)
@@ -67,7 +76,15 @@ export async function addNewURL(data) {
                     data.short = shortQrNew
                 }while(await searchData(dbName, shortQrNew))
             }
+            data.device = {
+                desktop: 0,
+                mobile: 0,
+                tablet: 0,
+                smarttv: 0
+            }
+            // console.log('data', data);
             const res = await db.collection(dbName).doc(data.short).set(data)
+            // console.log(res);
             return true
         }
     } catch (err) {
@@ -107,6 +124,13 @@ export async function addNewBioLink(data) {
         if(await searchData('biolinks', data.short)){
             return false
         }else{
+            data.device = {
+                desktop: 0,
+                mobile: 0,
+                tablet: 0,
+                smarttv: 0
+            }
+            data.type = 'biolink'
             const res = await db.collection('biolinks').doc(data.short).set(data)
             return true
         }
@@ -166,17 +190,6 @@ export async function deleteField(data) {
     return false
 }
 
-export async function updateClickShortUrl(param) {
-    var find
-    try { 
-        find = await searchData(dbName, param)
-        find.clicks++
-        const res = await db.collection(dbName).doc(param).set(find)
-    } catch (err) {
-        console.log(err.stack);
-    }
-}
-
 export async function deleteUrl(param, colName){
     try{
         const res = await db.collection(colName).doc(param).delete()
@@ -205,7 +218,14 @@ export async function filterData(filter, data) {
                         continue
                     }
                 }
-                newData.push(iterator)
+                if(filter.public){
+                    newData.push(iterator)
+                }else{
+                    if(filter.user == iterator.createdBy){
+                        newData.push(iterator)
+                    }
+                }
+                
             }
         }
     }
@@ -271,4 +291,144 @@ export async function deleteImage(fileName){
         
         
     });
+}
+
+export async function updateClickShortUrl(collection, param, userAgent, country) {
+    var data
+    try { 
+        const parser = new UAParser(userAgent);
+        let parserResults = parser.getResult();
+        const device = parserResults.device
+        
+        data = await searchData(collection, param)
+        const logData = data.logClicks
+        const now = moment().format('l'); 
+        if(!device.type) device.type = 'desktop'
+        const bodyData = {date: now, click: 1}
+        if(logData){
+            var status = true
+            var statusCountry = true
+            for (const iterator of logData) {
+                if(iterator.date == now){
+                    status = false
+                    iterator.click += 1
+                    for (const countryData of iterator.countryList) {
+                        if(countryData.country == country){
+                            statusCountry = false 
+                            countryData.click += 1
+                        }
+                    }
+                    for (const deviceData of iterator.device) {
+                        if(deviceData.type == device.type) deviceData.click += 1
+                    }
+                    if(statusCountry){
+                        iterator.countryList.push({country, click: 1})
+                    }
+                }
+            }
+            if(status){
+                bodyData.device = [{type: 'mobile', click: 0}, {type: 'tablet', click: 0}, {type: 'desktop', click: 0}]
+                for (const iterator of bodyData.device) {
+                    if(iterator.type == device.type) iterator.click += 1
+                }
+                bodyData.countryList = [{country, click: 1}]
+                data.logClicks.push(bodyData)
+            }
+        }else{
+            bodyData.device = [{type: 'mobile', click: 0}, {type: 'tablet', click: 0}, {type: 'desktop', click: 0}]
+            for (const iterator of bodyData.device) {
+                if(iterator.type == device.type) iterator.click += 1
+            }
+            bodyData.countryList = [{country, click: 1}]
+            data.logClicks = [bodyData]
+        }
+        data.clicks += 1
+        const res = await db.collection(collection).doc(param).set(data)
+    } catch (err) {
+        console.log(err.stack);
+    }
+}
+
+export async function getReports(email) {  
+    var list = {}
+    var data = []
+    const allUrl = await filterData({user: email}, await getAllUrl())
+    const allBioLink = await filterData({user: email}, await getAllBioLink())
+    for (let index = 0; index < allUrl.length; index++) {
+        if(allUrl[index].logClicks){
+            for (const object of allUrl[index].logClicks) {
+                allUrl[index].type ? object.type = 'qr' : object.type = 'url'
+                data.push(object)
+            }
+        }
+    }
+    for (let index = 0; index < allBioLink.length; index++) {
+        if(allBioLink[index].logClicks){
+            for (const object of allBioLink[index].logClicks) {
+                object.type = 'biolink'
+                data.push(object)
+            }
+        }
+    }
+
+    const groupedData = {};
+  
+    // Step 1: Group by type
+    data.forEach(item => {
+      // Initialize array for each type if it doesn't exist
+      groupedData[item.type] = groupedData[item.type] || [];
+  
+      // Push the item to its corresponding type array
+      groupedData[item.type].push(item);
+    });
+  
+    // Step 2 and 3: Group by date and summarize clicks for each type
+    Object.keys(groupedData).forEach(type => {
+      const typeData = groupedData[type];
+      const groupedByDate = {};
+  
+      typeData.forEach(item => {
+        const date = item.date;
+  
+        // Initialize object for each date if it doesn't exist
+        groupedByDate[date] = groupedByDate[date] || {
+          date: date,
+          totalClicks: 0,
+          deviceClicks: [{type: 'mobile' , click: 0},{type: 'tablet' , click: 0},{type: 'desktop' , click: 0}],
+          countryClicks: []
+        };
+  
+        // Summarize clicks for each date
+        groupedByDate[date].totalClicks += item.click;
+  
+        item.device.forEach(device => {
+            for (const iterator of groupedByDate[date].deviceClicks) {
+                if(device.type == iterator.type){
+                    iterator.click += device.click
+                }
+            }
+        });
+  
+        if (item.countryList) {
+            item.countryList.forEach(country => {
+                var found = false
+                for (const iterator of groupedByDate[date].countryClicks) {
+                    if(iterator.country == country.country){
+                        iterator.click += country.click
+                        found = true
+                    }
+                }
+                if(!found){
+                    const countryName = country.country
+                    const countryClick = country.click
+                    groupedByDate[date].countryClicks.push({country: countryName, click: countryClick})
+                }
+            });
+        }
+      });
+  
+      // Convert object to array of grouped data for each type
+      groupedData[type] = Object.values(groupedByDate);
+    });
+    return groupedData
 }

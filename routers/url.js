@@ -1,12 +1,13 @@
 import express from 'express'
-import { addNewBioLink, addNewURL, deleteField, deleteImage, deleteUrl, editBioLink, editURL, getAllUrl, promptUrlRecommendation, updateClickShortUrl, uploadImage } from '../functions/urlController.js';
+import { addNewBioLink, addNewURL, deleteField, deleteImage, deleteUrl, editBioLink, editURL, getAllUrl, promptUrlRecommendation, uploadImage } from '../functions/urlController.js';
 import { searchData } from '../functions/universal.js';
 import session from 'express-session'
 import axios from 'axios'
 import Multer from 'multer'
 import 'dotenv/config'
 import { bucket } from '../config/cloudStorage.js';
-import { edituser } from '../functions/loginRegisterController.js';
+import { edituser } from '../functions/userController.js';
+import { addCreditToUser, createInvoice, deleteInvoice, getToken, updateInvoice, updateService } from '../functions/planController.js';
 
 const router = express.Router()
 
@@ -20,6 +21,7 @@ const multer = Multer({
 router.post('/url', async(req, res)=>{
     const data = req.body
     try{
+        data.createdBy = req.session.user.email
         const result = await addNewURL(data).catch(console.dir);
         if(result){
             return res.status(200).send('success')
@@ -61,6 +63,7 @@ router.delete('/delete_url/:shortUrl', async(req, res)=>{
 router.post('/biolink', async(req, res)=>{
     const data = req.body
     try{
+        data.createdBy = req.session.user.email
         const result = await addNewBioLink(data).catch(console.dir);
         if(result){
             return res.status(200).send('success')
@@ -98,7 +101,7 @@ router.post('/biolink/edit', async(req, res)=>{
 router.post('/deleteField', async(req, res)=>{
     const data = req.body
     try{
-        console.log(data);
+        if(data.type == 'profile') req.session.user.profile = null
         const result = await deleteField(data).catch(console.dir);
         if(result){
             return res.status(200).send('success')
@@ -193,6 +196,7 @@ router.post('/addImg/:type/:shortId', multer.single("imgfile"), async(req, res)=
             }else if(type == 'user'){
                 data.profile = img 
                 data.email = shortId
+                req.session.user.profile = img
                 await edituser(data).catch(console.dir)
             }
             await uploadImage(req.file)
@@ -213,5 +217,6 @@ router.delete('/deleteImg/:fileName', async(req, res)=>{
         res.status(500).send(error);
     }
 })
+
 
 export default router

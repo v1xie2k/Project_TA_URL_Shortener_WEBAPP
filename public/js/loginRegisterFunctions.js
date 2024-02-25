@@ -15,8 +15,12 @@ function addUser(e) {
             name,
             email,
             password,
-            credit: 0,
             role: 'user',
+            creditBioLink: 0,
+            creditShortUrl: 0,
+            creditQr: 0,
+            creditPrompt: 0,
+            createdAt: new Date()
         }
         fetchAPI('/credential/register', 'POST', data, 'This Email is Already Taken!', '/login')
     }

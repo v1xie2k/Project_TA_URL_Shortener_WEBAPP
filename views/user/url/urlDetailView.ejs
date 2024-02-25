@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../parts/head/headUrl.ejs');%>
+    <title>Detail</title>
+</head>
+<body>
+    <%- include('../parts/sideNav.ejs');%>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>
+    <script type="text/javascript" src="../../../public/js/urlFunctions.js"></script>
+    <input type="hidden" name="createdAtDate" id="createdAtDate" value="<%= data.createdAt %>">
+    <div id="reportData" style="display: none;">
+        <%= JSON.stringify(data) %>
+        
+    </div>
+    <div class="container">
+        <div class="row g-0">
+            <div class="col-md-10">
+                <div class="d-flex flex-row">
+                    <h1><%= data.title%></h1>
+                    <div>
+                        <button class="btn btn-primary mt-2 ms-3" onClick="btnCopyClick(this)" value="127.0.0.1/<%= data.short%>">Copy</button>
+                    </div>
+                </div>
+                <div>
+                    <a href="127.0.0.1/<%= data.short%>">127.0.0.1/<%= data.short%></a>
+                </div>
+                <div class="mt-1">
+                    <a href="<%= data.full%>" style="text-decoration: none; color: black;"><%= data.full%></a>
+                </div>
+                <div class="mt-1 d-flex flex-row">
+                    <i class="fa-regular fa-calendar me-2"></i>
+                    <p id="createdAt"></p>
+                </div>
+                <hr>
+                <%if(data.logClicks){%>
+                    <div>
+                        <div>
+                            <h6>Date Anchor</h6>
+                            <input type="date" name="dateAnchor" id="dateAnchor" onchange="dateChange(this)" class="form-control" style="width: 15em;">
+                            <label for="dateAnchor">This date anchor is used as an anchor for the next 7 days after that day</label>
+                        </div>
+                        <h4>Overview</h4>
+                        <div class="">
+                            <canvas id="lineChart"></canvas>
+                        </div>
+                        <div class="row g-0 mt-3 " >
+                            <div class="col-md-3" >
+                                <h4>Clicks by device</h4>
+                                <canvas id="pieChart" ></canvas>
+                            </div>
+                            <div class="container col-md-8 me-0">
+                                <h4>Clicks by location</h4>
+                                <table id="countryTable" class="display" >
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Country</th>
+                                            <th>Click</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="countryBodyTable">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                <%}else{%>
+                   No Data Yet 
+                <%}%>
+            </div>
+
+            <div class="col-md-2 ps-1 mt-3">
+                <%if(data.type=='qr'){%>
+                    <div class="preview" style="margin-left: 35px;">Preview</div>
+                    <div class=" container">
+                        <canvas id="qrCode" class="" short="<%= data.short%>" onload="generateQr('qrCode', '<%= data.short %>')"></canvas>
+                        <script>
+                            var short = $('#shortUrl').val()
+                            generateQr("qrCode", short)
+                            $("#shortUrl").change(function () {
+                                short = $('#shortUrl').val()
+                                generateQr("qrCode", short)
+                            })
+                            
+                        </script>
+                    </div>
+                <%}%>
+            </div>
+        </div>
+        
+    </div>
+    <script>
+        const formatedDate = formatDate($('#createdAtDate').val())
+        $('#createdAt').html(formatedDate)
+        if(getData().length > 0){
+            document.getElementById('dateAnchor').valueAsDate = new Date()
+            loadData(getData(), {})
+        }
+        
+    </script>
+</body>
+</html>

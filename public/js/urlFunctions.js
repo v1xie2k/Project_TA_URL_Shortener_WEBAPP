@@ -110,6 +110,7 @@ async function btnAddUrl(e) {
         clicks: 0,
         createdAt: new Date()
     }
+    console.log(data);
     if(destination == '/url') $('#switch').prop('checked') ? data.type = 'qr' : null
     if(destination == '/qr') data.type = 'qr'
     fetchAPI('/api/url', 'POST', data, 'This Short URL is Already Taken!')
@@ -210,8 +211,192 @@ function isHttpValid(str) {
 
 function checkUrl(url){
     const urlShort = url.toLowerCase()
-    if(urlShort == 'qr' || urlShort == 'login' || urlShort == 'register' || urlShort =='url' || urlShort == 'biolink' || urlShort == 'm' || urlShort == 'plan' || urlShort == 'user' || urlShort == 'analytic' || urlShort == 'admin'){
+    if(urlShort == 'qr' || urlShort == 'login' || urlShort == 'register' || urlShort =='url' || urlShort == 'biolink' || urlShort == 'm' || urlShort == 'plan' || urlShort == 'user' || urlShort == 'analytic' || urlShort == 'admin' || urlShort == 'view'){
         return false
     }
     return true
+}
+
+function btnCopyClick(e){
+    navigator.clipboard.writeText($(e).val());
+}
+
+function getData() {  
+    const reportDataElement = document.getElementById('reportData');
+    const reportDataString = reportDataElement.textContent;
+    const reportData = JSON.parse(reportDataString);
+    console.log(reportData);
+    const data = []
+    const groupedData = {}
+    if(reportData.logClicks){
+        for (const logData of reportData.logClicks) {
+            data.push(logData)
+        }
+    }
+    
+    data.forEach(item => {
+        const { date, click, device, countryList } = item;
+
+        if (!groupedData[date]) {
+            groupedData[date] = {
+                date: date,
+                totalClick: click,
+                deviceClicks: [{type: 'mobile' , click: 0},{type: 'tablet' , click: 0},{type: 'desktop' , click: 0}],
+                countryClicks: []
+            };
+        } else {
+            groupedData[date].totalClick += click;
+        }
+
+        // Combine device clicks
+        device.forEach(dev => {
+            for (const iterator of groupedData[date].deviceClicks) {
+                if(dev.type == iterator.type){
+                    iterator.click += dev.click
+                }
+            }
+        });
+
+        // Combine country clicks
+        countryList.forEach(country => {
+            var found = false
+            for (const iterator of groupedData[date].countryClicks) {
+                if(iterator.country == country.country){
+                    iterator.click += country.click
+                    found = true
+                }
+            }
+            if(!found){
+                const countryName = country.country
+                const countryClick = country.click
+                groupedData[date].countryClicks.push({country: countryName, click: countryClick})
+            }
+        });
+    });
+    console.log(Object.values(groupedData));
+    return Object.values(groupedData)
+}
+
+function loadData(rawReport, filter) {  
+    var lineChartData = new Array(7).fill(0);
+    var pieChartData = new Array(3).fill(0);
+    var tableData = []
+    let totalClicks = 0;
+    var labelDate = filter.dateFrom ? generateNext7Days(filter.dateFrom) : generateLast7Days(new Date())
+    rawReport.forEach(item => {
+        for (let index = 0; index < labelDate.length; index++) {
+            if(labelDate[index] == item.date){
+                lineChartData[index] = item.totalClick
+                console.log('item', item);
+                for (const country of item.countryClicks) {
+                    var found = false 
+                    for (const iterator of tableData) {
+                        if(iterator.country == country.country){
+                            found = true 
+                            iterator.click += country.click
+                        }
+                    }
+                    if(!found){
+                        tableData.push({country: country.country, click: country.click})
+                    }
+                }
+                for (const object of item.deviceClicks) {
+                    if(object.type == 'mobile') pieChartData[0] += object.click
+                    if(object.type == 'tablet') pieChartData[1] += object.click
+                    if(object.type == 'desktop') pieChartData[2] += object.click
+                    console.log(object);
+                }
+                totalClicks += item.totalClick
+            }
+        }
+    });
+    console.log(pieChartData);
+    const dataLineChart = {
+        labels: labelDate,
+        datasets: [{
+            label: 'Clicks',
+            data: lineChartData,
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    }
+    const dataPieChart = {
+        labels: ['Mobile', 'Tablet', 'Desktop'],
+        datasets: [{
+            label: 'clicks',
+            data: pieChartData,
+            backgroundColor: [
+            'rgb(255, 99, 132)',
+            'rgb(54, 162, 235)',
+            'rgb(255, 205, 86)'
+            ],
+            hoverOffset: 4  
+        }]
+    }
+    const canvasLineChart = document.getElementById('lineChart').getContext('2d');
+    const canvasPieChart = document.getElementById('pieChart').getContext('2d');
+    if(Chart.getChart('lineChart') != undefined) Chart.getChart('lineChart').destroy()
+    if(Chart.getChart('pieChart') != undefined) Chart.getChart('pieChart').destroy()
+    const lineChart = new Chart(canvasLineChart, {
+        type: 'line',
+        data: dataLineChart
+    });
+
+    const pieChart = new Chart(canvasPieChart, {
+        type: 'pie',
+        data: dataPieChart,
+        options: {   
+            plugins: {
+            legend: {
+                display: true,
+                position: 'right'
+            }
+            }
+        }
+    });
+    var ctr = 1
+    var htmlSyntax = ''
+    tableData.forEach(item=>{
+        htmlSyntax += '<tr><td>'+ctr+'</td>'+'<td>'+item.country+'</td>'+'<td>'+item.click+'</td></tr>'
+        ctr++
+    })
+    const countryBodyTable = $('#countryBodyTable').html(htmlSyntax)
+    new DataTable('#countryTable')
+    new DataTable('#linkTable')
+}
+
+
+function generateLast7Days(dateFilter) {
+    const labels = []
+    for (let i = 6; i >= 0; i--) {
+    const date = new Date(dateFilter)
+    date.setDate(dateFilter.getDate() - i)
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+    const year = date.getFullYear()
+    labels.push(`${month}/${day}/${year}`)
+    }
+    return labels;
+}
+
+function generateNext7Days(dateFilter) {
+    const labels = []
+    for (let i = 0; i <= 6; i++) {
+        const date = new Date(dateFilter)
+        date.setDate(dateFilter.getDate() + i)
+        const month = date.getMonth() + 1
+        const day = date.getDate()
+        const year = date.getFullYear()
+        labels.push(`${month}/${day}/${year}`)
+    }
+    return labels;
+}
+
+
+async function dateChange(e){
+    const dateAnchor =  $(e).val();
+    const filter = {}
+    filter.dateFrom = new Date(dateAnchor)
+    loadData(getData(), filter)
 }

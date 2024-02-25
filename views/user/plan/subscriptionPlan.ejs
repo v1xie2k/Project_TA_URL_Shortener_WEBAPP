@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../parts/head/headUrl.ejs');%>
+    <title>Subscription Plan</title>
+</head>
+<body >
+    <%- include('../parts/sideNav.ejs');%>
+    <script type="text/javascript" src="../../../public/js/subscriptionFunctions.js"></script>
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="<%= midtransClientKey%>"></script>
+    <div class="container">
+        <h1>Subscription Plan</h1>
+        <% for (const key in plans) { %>
+            <% const data = plans[key] %>
+            <div class="card mt-4">
+                <div class="card-body row g-0 mb-3" >
+                    <div class="col col-md-6">
+                        <h2><%= data.name%></h2>
+                        <div class="d-flex flex-row">
+                            <ul>
+                                <% if(data.url > 0){%>
+                                    <li>Short URL: <%= data.url%> Credit</li>
+                                <% }%>
+                                <% if(data.qr > 0){%>
+                                    <li>QR Code: <%= data.qr%> Credit</li>
+                                <% }%>
+                            </ul>
+                            <ul>
+                                <% if(data.bio > 0){%>
+                                    <li>Bio Link: <%= data.bio%> Credit</li>
+                                <% }%>
+                                <% if(data.prompt > 0){%>
+                                    <li>Prompt: <%= data.prompt%> Credit</li>
+                                <% }%>
+                            </ul>
+                        </div>
+                        
+                    </div>
+                    <div class="col col-md-6">
+                        <div class="d-flex flex-row-reverse me-1">
+                            <h4 id="subtotal<%= data.price%>"><%= data.price%></h4>
+                            <h4>Rp.</h4>
+                        </div>
+                        <div class="d-flex align-items-end flex-column" style="height: 90%;">
+                            <div class="mt-auto p-2 bd-highlight">
+                                <button type="button" onclick="btnBuySubscriptionPlan(this)" class="form-control btn btn-primary" value="<%= data.planId%>" price="<%= data.price%>" url="<%= data.url%>" qr="<%= data.qr%>" bio="<%= data.bio%>" prompt="<%= data.prompt%>">Buy</button>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        <% }%>
+    </div>
+</body>
+</html>

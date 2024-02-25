@@ -1,114 +1,200 @@
 import express from 'express'
-import { filterData, getAllBioLink, getAllUrl, sortDataBioLink, updateClickShortUrl } from '../functions/urlController.js';
+import { filterData, getAllBioLink, getAllUrl, getReports, sortDataBioLink, updateClickShortUrl } from '../functions/urlController.js';
 import { searchData } from '../functions/universal.js';
-import { isLoggedIn } from '../middleware/middleware.js';
-import { getAllPriceList } from '../functions/planController.js';
+import { isAdmin, isLoggedIn } from '../middleware/middleware.js';
+import { getAllInvoice, getAllPlans, getAllPriceList } from '../functions/planController.js';
+import 'dotenv/config'
+import moment from 'moment';
+import { getUsers } from '../functions/userController.js';
 
 const app = express() 
 const router = express.Router();
 
-
 router.get('/', (req, res)=>{
+    res.locals.user = req.session.user
     res.render('user/home')
 })
 
 router.get('/login', (req, res)=>{
-    res.render('user/login')
+    if(req.session.user){
+        res.redirect('back')
+    }else{
+        res.render('user/login')
+    }
 })
 
 router.get('/register', (req, res)=>{
-    res.render('user/register')
+    if(req.session.user){
+        res.redirect('back')
+    }else{
+        res.render('user/register')
+    }
 })
 
-router.get('/user', async (req, res)=>{
+router.get('/user', isLoggedIn, async (req, res)=>{
     // ini nanti diambil email dari session lalu dilakukan search data untuk get user yang bersangkutan
-    // console.log(await searchData('users', 'botan@gmail.com'));
-    // dikasi middleware juga kalau sudah login atau belum
-    res.render('user/profile/userProfile', {data: await searchData('users', 'botan@gmail.com')})
+    res.locals.user = req.session.user
+    res.render('user/profile/userProfile', {data: await searchData('users', req.session.user.email)})
 })
 
-router.get('/plan/custom', async (req, res)=>{
-    res.render('user/plan/customPlans', {plans: await getAllPriceList()})
+// router.get('/plan', isLoggedIn, async (req, res)=>{
+router.get('/plan', async (req, res)=>{
+    res.locals.user = req.session.user
+    const midtransClientKey = process.env.midtrans_client_key
+    const plans = await getAllPlans()
+    res.render('user/plan/subscriptionPlan', {plans, midtransClientKey})
 })
 
-router.get('/url', async (req, res)=>{
+router.get('/plan/custom', isLoggedIn, async (req, res)=>{
+    res.locals.user = req.session.user
+    const midtransClientKey = process.env.midtrans_client_key
+    res.render('user/plan/customPlans', {plans: await getAllPriceList(), midtransClientKey})
+})
+
+router.get('/plan/history', isLoggedIn, async (req, res)=>{
+    res.locals.user = req.session.user
+    
+    const dateFrom = req.url.includes('df=') ? req.url.split('df=')[1].substring(0, 10) : moment().startOf('month').format('YYYY-MM-DD')
+    const dateTo = req.url.includes('dt=') ? req.url.split('dt=')[1] : moment().endOf('month').format('YYYY-MM-DD')
+    const filter = {}
+    if(dateFrom) filter.dateFrom = dateFrom
+    if(dateTo) filter.dateTo = dateTo
+    const allInvoice = await getAllInvoice(req.session.user.email, filter)
+    const midtransClientKey = process.env.midtrans_client_key
+    res.render('user/plan/historySubscription', {midtransClientKey, allInvoice, dateFrom, dateTo})
+})
+
+router.get('/analytic', isLoggedIn, async (req, res)=>{
+    res.locals.user = req.session.user
+    const report = await getReports(req.session.user.email)
+    // nanti getReport ini ambil semua log data dari url & biolink yang ada, lalu di get semua dan di send semua (nanti filter dll di frontend)
+    res.render('user/analytic/dashboard', {report})
+})
+
+router.get('/admin', isAdmin, async (req, res)=>{
+    res.locals.user = req.session.user
+    const users = await getUsers(req.session.user.email)
+    res.render('admin/userReport', {users})
+})
+
+router.get('/admin/plan', isAdmin,async (req, res)=>{
+    res.locals.user = req.session.user
+    const services = await getAllPriceList()
+    const plans = await getAllPlans()
+    res.render('admin/subscriptionPlan', {services, plans})
+})
+
+router.get('/url', isLoggedIn, async (req, res)=>{
+    res.locals.user = req.session.user
     //ex: if the url is /qr?mikochi, title variable value will be mikochi
     const title = req.url.includes('?') ? req.url.split('?')[1] : ''
-    //jangan lupa nanti add filter untuk user 
-    res.render('user/url/urlView', {allUrl: await filterData({title}, await getAllUrl())})
+    res.render('user/url/urlView', {allUrl: await filterData({user: req.session.user.email, title}, await getAllUrl())})
 })
 
-router.get('/url/edit/:shortUrl', async(req, res) =>{
+router.get('/url/edit/:shortUrl', isLoggedIn, async (req, res) =>{
+    res.locals.user = req.session.user
     const shortUrl = await searchData('shorturls', req.params.shortUrl)
     if(!shortUrl){
         res.render('error/error404')
     }else{
-        res.render('user/url/urlEditView', {data: shortUrl})
+        if(shortUrl.createdBy != req.session.user.email){
+            res.render('error/error403')
+        }else{
+            res.render('user/url/urlEditView', {data: shortUrl})
+        }
     }
 })
 
-//example used of middleware (if not loggedIn then can't access this particular page)
-// router.get('/qr', isLoggedIn, async (req, res)=>{
-router.get('/qr', async (req, res)=>{
-    //ex: if the url is /qr?mikochi, title variable value will be mikochi
-    const title = req.url.includes('?') ? req.url.split('?')[1] : ''
-    //jangan lupa nanti add filter untuk user 
-    res.render('user/qr/qrView', {allUrl: await filterData({type: 'qr', title}, await getAllUrl())})
+router.get('/view/:shortUrl', isLoggedIn, async (req, res)=>{
+    res.locals.user = req.session.user
+    const shortUrl = await searchData('shorturls', req.params.shortUrl)
+    if(!shortUrl){
+        res.render('error/error404')
+    }else{
+        if(shortUrl.createdBy != req.session.user.email){
+            res.render('error/error403')
+        }else{
+            res.render('user/url/urlDetailView', {data: shortUrl})
+        }
+    }
 })
 
-//lakukan pengechekan kalau yang bisa edit adalah user yang bersangkutan
-router.get('/qr/edit/:shortUrl', async(req, res) =>{
+router.get('/qr', isLoggedIn, async (req, res)=>{
+    res.locals.user = req.session.user
+    //ex: if the url is /qr?mikochi, title variable value will be mikochi
+    const title = req.url.includes('?') ? req.url.split('?')[1] : ''
+    res.render('user/qr/qrView', {allUrl: await filterData({user: req.session.user.email, type: 'qr', title}, await getAllUrl())})
+})
+
+router.get('/qr/edit/:shortUrl', isLoggedIn, async (req, res) =>{
+    res.locals.user = req.session.user
     const shortUrl = await searchData('shorturls', req.params.shortUrl)
     if(!shortUrl || shortUrl.type != 'qr'){
         res.render('error/error404')
     }else{
-        res.render('user/qr/qrEditView', {data: shortUrl})
+        if(shortUrl.createdBy != req.session.user.email){
+            res.render('error/error403')
+        }else{
+            res.render('user/qr/qrEditView', {data: shortUrl})
+        }
     }
 })
 
-router.get('/biolink', async (req, res)=>{
+router.get('/biolink', isLoggedIn, async (req, res)=>{
+    res.locals.user = req.session.user
     const title = req.url.includes('?') ? req.url.split('?')[1] : ''
     //jangan lupa nanti add filter untuk user 
-    res.render('user/biolink/bioView', {allUrl: await filterData({title}, await getAllBioLink())})
+    res.render('user/biolink/bioView', {allUrl: await filterData({user: req.session.user.email, title}, await getAllBioLink())})
 })
 
-router.get('/biolink/edit/:bioLink', async(req, res) =>{
+router.get('/biolink/edit/:bioLink', isLoggedIn, async (req, res) =>{
+    res.locals.user = req.session.user
     const param = req.params.bioLink
     const bioLink = await searchData('biolinks', req.params.bioLink)
     const paramType = req.url.includes('?') ? req.url.split('?')[1] : 'build'
-    var allUrl = await filterData({bioLink: param}, await getAllUrl()) 
+    var allUrl = await filterData({user: req.session.user.email, bioLink: param}, await getAllUrl()) 
     var sortedUrl = await sortDataBioLink(allUrl)
     if(!bioLink){
         res.render('error/error404')
     }else{
-        res.render('user/biolink/bioEditView', {data: bioLink, paramType, allUrl: sortedUrl, path: 'edit'})
+        if(bioLink.createdBy != req.session.user.email){
+            res.render('error/error403')
+        }else{
+            res.render('user/biolink/bioEditView', {data: bioLink, paramType, allUrl: sortedUrl, path: 'edit'})
+        }
     }
 })
 
 router.get('/m/:bioLink', async (req, res)=>{
     const param = req.params.bioLink
     const bioLink = await searchData('biolinks', req.params.bioLink)
-    var allUrl = await filterData({bioLink: param}, await getAllUrl()) 
+    var allUrl = await filterData({bioLink: param, public: true}, await getAllUrl()) 
     var sortedUrl = await sortDataBioLink(allUrl)
     if(!bioLink){
         res.render('error/error404')
     }else{
+        // this api is for detecting user's region(location)
+        var fetchCountry = await fetch(`https://ipapi.co/${req.ips}/json/`);
+        var getCountry = await fetchCountry.json()
+        updateClickShortUrl('biolinks', param, req.headers['user-agent'], getCountry.country_name)
         res.render('user/biolink/bioPreview', {data: bioLink, allUrl: sortedUrl, paramType: 'web', path: 'webview'})
     }
 })
 
 
-router.get('/:shortUrl', async(req,res)=>{
+router.get('/:shortUrl', async (req,res)=>{
     const shortUrl = await searchData('shorturls', req.params.shortUrl)
     if(!shortUrl){
         res.render('error/error404')
     }else{
         const param = req.params.shortUrl
-        updateClickShortUrl(param)
+        //this api is for detecting user's region(location)
+        var fetchCountry = await fetch(`https://ipapi.co/${req.ips}/json/`);
+        var getCountry = await fetchCountry.json()
+        updateClickShortUrl('shorturls', param, req.headers['user-agent'], getCountry.country_name)
         res.redirect(shortUrl.full)
     }
 })
-
 
 
 export default router

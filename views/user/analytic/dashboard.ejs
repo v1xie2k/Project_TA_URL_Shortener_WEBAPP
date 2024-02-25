@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../parts/head/headUrl.ejs');%>
+    <title>Analytic</title>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>
+    <script type="text/javascript" src="../../../public/js/analyticFunctions.js"></script>
+    <%- include('../parts/header/headerNoSearch.ejs');%>
+    <%- include('../parts/sideNav.ejs');%>
+    <input type="hidden" name="report" id="report" value="<%= report%>">
+    <div id="reportData" style="display: none;">
+        <%= JSON.stringify(report) %>
+    </div>
+    <div class="">
+        <h1>Analytic</h1>
+        <div>
+            <h6>Date Anchor</h6>
+            <div class="d-flex flex-row">
+                <input type="date" name="dateAnchor" id="dateAnchor" onchange="dateChange(this)" class="form-control" style="width: 15em;">
+                
+                <select name="filterType" id="filterType" onchange="changeType(this)" class="form-control ms-3" style="width: 15em;">
+                    <option value="all">All Type</option>
+                    <option value="url">Short URL</option>
+                    <option value="qr">QR Code</option>
+                    <option value="bio">Bio Link</option>
+                </select>
+            </div>
+            <label for="dateAnchor">This date anchor is used as an anchor for the next 7 days after that day</label>
+        </div>
+        <hr>
+        <div class="row g-0">
+            <div class="col-md-7">
+                <h4>Clicks over time</h4>
+                <canvas id="lineChart"></canvas>
+            </div>
+            <div class="col-md-4 ms-5">
+                <div style="position: relative; height: 50vh;">
+                    <h4>Clicks by device</h4>
+                    <canvas id="pieChart" ></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="mt-3 container col-md-7">
+            <h4>Clicks by location</h4>
+            <table id="countryTable" class="display">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Country</th>
+                        <th>Click</th>
+                    </tr>
+                </thead>
+                <tbody id="countryBodyTable">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        getStarted()
+        document.getElementById('dateAnchor').valueAsDate = new Date()
+       
+    </script>
+</body>
+</html>

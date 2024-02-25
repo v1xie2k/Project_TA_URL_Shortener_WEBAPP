@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../user/parts/head/headUrl.ejs');%>
+    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>
+    <title>Subscription Plan</title>
+</head>
+<body>
+    <%- include('./parts/sideNav.ejs');%>
+    <script type="text/javascript" src="../../public/js/adminFunctions.js"></script>
+    <div class="container">
+        <h1>Subscription Plan</h1>
+        <hr>
+        <h3>Services</h3>
+        <div class="container">
+            <div class="row g-0">
+                <% for(const key in services){%>
+                    <% const data = services[key]%>
+                    <div class="me-3 card mb-3 d-flex flex-row" style="width:38em">
+                        <%if(data.type == 'url'){%>
+                            <div class="ms-3" style="margin-top: 5em;">
+                                <i class="fa-solid fa-link fa-5x"></i>
+                            </div>
+                        <%}else if(data.type == 'qr'){%>
+                            <div class="ms-3" style="margin-top: 5em;">
+                                <i class="fa-solid fa-qrcode fa-6x"></i>
+                            </div>
+                        <%}else if(data.type == 'prompt'){%>
+                            <div class="ms-3" style="margin-top: 5em;">
+                                <i class="fa-solid fa-terminal fa-5x"></i>
+                            </div>
+                        <%}else{%>
+                            <span class="orb-icon" title="Link-in-bio Icon">
+                                <svg fill="none" viewBox="0 0 20 20" height="100" width="100" style="margin-top: 5em;">
+                                    <path fill="#273144" d="M11.667 6.667a1.667 1.667 0 11-3.334 0 1.667 1.667 0 013.334 0zM12.5 14.167c0 .5-.333.833-.833.833H8.333c-.5 0-.833-.333-.833-.833 0-.5.333-.834.833-.834h3.334c.5 0 .833.334.833.834zM8.333 11.667h3.334c.5 0 .833-.334.833-.834 0-.5-.333-.833-.833-.833H8.333c-.5 0-.833.333-.833.833 0 .5.333.834.833.834z"></path>
+                                    <path fill="#273144" fill-rule="evenodd" d="M5.833 1.667h8.334c.916 0 1.666.75 1.666 1.666v13.334c0 .916-.75 1.666-1.666 1.666H5.833c-.916 0-1.666-.75-1.666-1.666V3.333c0-.916.75-1.666 1.666-1.666zm0 1.666v13.334h8.334V3.333H5.833z" clip-rule="evenodd"></path>
+                                </svg>
+                            </span>
+                        <%}%>
+                        <div class="mt-3 ms-3">
+                            <h4><%= data.name%></h4>
+                            <h6>Price per credit</h6>
+                            <input type="number" class="form-control" name="price<%= data.type%>" id="price<%= data.service%>" value="<%= data.price%>">
+                            <h6>Description</h6>
+                            <textarea id="textArea<%= data.service %>" name="textArea<%= data.service %>" rows="3" cols="50" class="form-control"><%= data.description%></textarea>
+                            <div class="d-flex flex-row-reverse mt-3 mb-3">
+                                <button type="button" class="btn btn-primary" onclick="btnUpdateService(this)" value="<%= data.service%>">Update</button>
+                            </div>
+                        </div>
+                    </div>
+                <% }%>
+            </div>
+        </div>
+        <h3>Plans</h3>
+        <hr>
+        <div class="container">
+            <h4>Make Plan</h4>
+            <h6>Plan Name</h6>
+            <input type="text" name="planName" id="planName" class="form-control mt-3" style="width: 35em;">
+            <h6>Plan Price</h6>
+            <input type="text" name="planPrice" id="planPrice" class="form-control mt-3" style="width: 35em;">
+            <h6>Plan Service</h6>
+            <div class="d-flex flex-row mt-3">
+                <div class="d-flex flex-row me-3">
+                    <i class="fa-solid fa-link fa-5x"></i>
+                    <input type="number" name="qtyUrl" id="qtyUrl" class="form-control" value="0" min="0" style="width: 4em; height:2em; margin-left: 1em; margin-right: 1em; margin-top: 1em; background-color: lightgrey;">
+                </div>
+                <div class="d-flex flex-row me-3">
+                    <i class="fa-solid fa-qrcode fa-5x"></i>
+                    <input type="number" name="qtyQr" id="qtyQr" class="form-control" value="0" min="0" style="width: 4em; height:2em; margin-left: 1em; margin-right: 1em; margin-top: 1em; background-color: lightgrey;">
+                </div>
+                <div class="d-flex flex-row me-3">
+                    <i class="fa-solid fa-terminal fa-5x"></i>
+                    <input type="number" name="qtyPrompt" id="qtyPrompt" class="form-control" value="0" min="0" style="width: 4em; height:2em; margin-left: 1em; margin-right: 1em; margin-top: 1em; background-color: lightgrey;">
+                </div>
+                <div class="d-flex flex-row me-3">
+                    <span class="orb-icon" title="Link-in-bio Icon">
+                        <svg fill="none" viewBox="0 0 23 23" height="100" width="100">
+                            <path fill="#273144" d="M11.667 6.667a1.667 1.667 0 11-3.334 0 1.667 1.667 0 013.334 0zM12.5 14.167c0 .5-.333.833-.833.833H8.333c-.5 0-.833-.333-.833-.833 0-.5.333-.834.833-.834h3.334c.5 0 .833.334.833.834zM8.333 11.667h3.334c.5 0 .833-.334.833-.834 0-.5-.333-.833-.833-.833H8.333c-.5 0-.833.333-.833.833 0 .5.333.834.833.834z"></path>
+                            <path fill="#273144" fill-rule="evenodd" d="M5.833 1.667h8.334c.916 0 1.666.75 1.666 1.666v13.334c0 .916-.75 1.666-1.666 1.666H5.833c-.916 0-1.666-.75-1.666-1.666V3.333c0-.916.75-1.666 1.666-1.666zm0 1.666v13.334h8.334V3.333H5.833z" clip-rule="evenodd"></path>
+                        </svg>
+                    </span>
+                    <input type="number" name="qtyBio" id="qtyBio" class="form-control" value="0" min="0" style="width: 4em; height:2em; margin-top: 1em; background-color: lightgrey;">
+
+                </div>
+            </div>
+            <button type="button" id="btnCreate" class="btn btn-primary form-control mb-5" style="width: 7.5em;" onclick="btnCreatePlan(this)" mode="add">Create Plan</button>
+            <button type="button" id="btnCancel" class="btn btn-danger form-control mb-5" style="width: 7.5em; display: none;" onclick="btnCancelEditPlan(this)" mode="add">Cancel</button>
+            
+            <table id="planTable" class="display mt-3">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Item</th>
+                        <th>Created At</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (const key in plans) { %>
+                        <% const data = plans[key] %>
+                        <% const ctr = +key + 1 %>
+                        <tr>
+                            <td><%= ctr%></td>
+                            <td><%= data.name%></td>
+                            <td><%= data.price%></td>
+                            <td>
+                                <ul>
+                                    <%if(data.url > 0){%>
+                                        <li>Short URL: <%= data.url%> credit</li>
+                                    <%}%>
+                                    <%if(data.qr > 0){%>
+                                        <li>QR Code: <%= data.qr%> credit</li>
+                                    <%}%>
+                                    <%if(data.bio > 0){%>
+                                        <li>Bio Link: <%= data.bio%> credit</li>
+                                    <%}%>
+                                    <%if(data.prompt > 0){%>
+                                        <li>Prompt: <%= data.prompt%> credit</li>
+                                    <%}%>
+                                </ul>
+                            </td>
+                            <td><%= data.date%></td>
+                            <td>
+                                <button type="button" class="form-control btn btn-success me-2" style="width: 5em;" value="<%= data.planId%>" onclick="btnEditPlan(this)" planName="<%= data.name%>" planPrice="<%= data.price%>" url="<%= data.url%>" qr="<%= data.qr%>" bio="<%= data.bio%>" prompt="<%= data.prompt%>">Edit</button>
+                                <button type="button" class="form-control btn btn-danger me-2" style="width: 5em;" value="<%= data.planId%>" onclick="btnDeletePlan(this)">Delete</button>
+                            </td>
+                        </tr>
+                    <%}%>
+                    
+                </tbody>
+            </table>
+            <script>
+                new DataTable('#planTable')
+            </script>
+        </div>
+    </div>
+</body>
+</html>

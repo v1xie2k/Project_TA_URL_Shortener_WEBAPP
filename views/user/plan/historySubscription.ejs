@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../parts/head/headUrl.ejs');%>
+    <title>Subscription History</title>
+</head>
+<body >
+    <%- include('../parts/header/headerNoSearch.ejs');%>
+    <%- include('../parts/sideNav.ejs');%>
+    <script type="text/javascript" src="../../../public/js/subscriptionFunctions.js"></script>
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="<%= midtransClientKey%>"></script>
+    <div id="reportData" style="display: none;">
+        <%= JSON.stringify(allInvoice) %>
+    </div>
+    <div class="container">
+        <h1>Subscription History</h1>
+        <div class="d-flex flex-row">
+            <input class="form-control me-3" type="date" name="dateFrom" id="dateFrom" onchange="dateChange(this)" value="<%= dateFrom%>" style="width:15em;">
+            <input class="form-control me-3" type="date" name="dateTo" id="dateTo" onchange="dateChange(this)" value="<%= dateTo %>" style="width:15em;">
+            <button class="btn btn-secondary form-control" onclick="btnSearchDate(this)" style="width:5em;">Search</button>
+        </div>
+        <hr>
+        <% for (const key in allInvoice) { %>
+            <% const data = allInvoice[key] %>
+            <div class="card mt-4">
+                <div class="card-body" >
+                    <div class="mb-3">
+                        <div class="row g-0">
+                            <div class="col col-md-7 me-5">
+                                <div class="d-flex flex-row">
+                                    <i class="fa-regular fa-calendar me-2"></i>
+                                    <h6><%= data.date%></h6>
+                                </div>
+                                <h2><%= data.type%></h2>
+                                <ul class="list-group ms-4">
+                                    <% for (const itemKey in data.items) { %>
+                                        <% const item = data.items[itemKey] %>
+                                        <li><%= item.name%> (<%= item.quantity%> Credit)</li>
+                                    <%}%>
+                                </ul>
+                            </div>
+                            <div class="col col-md-4 ms-5">
+                                <div class="d-flex flex-row-reverse me-1">
+                                    <h4 id="subtotal<%= key%>"><%= data.grandTotal%></h4>
+                                    <h4>Rp.</h4>
+                                </div>
+                                <div class="d-flex align-items-end flex-column mb-3" style="height: 90%">
+                                    <div class="mt-auto p-2">
+                                        <button type="button" class="mt-auto form-control btn btn-primary" onclick="btnBuyAgain(this)" value="<%= key%>" invoiceId="<%= data.invoiceId%>">Buy Again</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>        
+        <%}%>
+    </div>
+</body>
+</html>

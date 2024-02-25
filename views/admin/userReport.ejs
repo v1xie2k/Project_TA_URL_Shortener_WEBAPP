@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../user/parts/head/headUrl.ejs');%>
+    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>
+    <title>User Report</title>
+</head>
+<body>
+    <%- include('./parts/sideNav.ejs');%>
+    <script type="text/javascript" src="../../public/js/adminFunctions.js"></script>
+    <div class="container">
+        <h1>User's Data</h1>
+        <table id="userTable" class="display">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Email</th>
+                    <th>Name</th>
+                    <th>Created At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (const key in users) { %>
+                    <% const data = users[key] %>
+                    <% const ctr = +key + 1 %>
+                    <tr>
+                        <td><%= ctr%></td>
+                        <td><%= data.email%></td>
+                        <td><%= data.name%></td>
+                        <td><%= data.dateCreated%></td>
+                        <td>
+                            <% if(data.ban == 1){%>
+                                <button type="button" style="width: 7em;" value="<%= data.email%>" typeBan="unbanned"  onclick="btnActionUser(this)" class="btn btn-success form-control">Unbanned</button>
+                            <% }else{%>
+                                <button type="button" style="width: 7em;" value="<%= data.email%>" typeBan="banned" onclick="btnActionUser(this)" class="btn btn-danger form-control">Banned</button>
+                            <% }%>
+                        </td>
+                    </tr>
+                <%}%>
+            </tbody>
+        </table>
+        <hr>
+        <h3>Add new admin</h3>
+        <div>
+            <div class="form-outline mb-4">
+                <input type="text" id="name" class="form-control form-control-lg" />
+                <label class="form-label" for="name">Name</label>
+              </div>
+
+              <div class="form-outline mb-4">
+                <input type="email" id="email" class="form-control form-control-lg" />
+                <label class="form-label" for="email">Email</label>
+              </div>
+
+              <div class="form-outline mb-4">
+                <input type="password" id="password" class="form-control form-control-lg" />
+                <label class="form-label" for="password">Password</label>
+              </div>
+
+              <div class="form-outline mb-4">
+                <input type="password" id="confirmPassword" class="form-control form-control-lg" />
+                <label class="form-label" for="confirmPassword">Confirmation password</label>
+              </div>
+
+              <div class="d-flex ">
+                <button onclick="addUser(this)" type="button"class="btn btn-primary btn-block btn-lg bg-success">Register</button>
+              </div>
+        </div>
+        <script>
+            new DataTable('#userTable')
+        </script>
+    </div>
+</body>
+</html>
