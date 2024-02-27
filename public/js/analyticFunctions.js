@@ -7,6 +7,7 @@ function getStarted() {
   console.log('rawReport', rawReport);
   loadData(rawReport, {})
 }
+
 function loadData(rawReport, filter) {  
   var lineChartData = new Array(7).fill(0);
   var pieChartData = new Array(3).fill(0);

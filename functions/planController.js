@@ -35,9 +35,7 @@ export async function getToken(parameter) {
             serverKey: midtransServerKey,
             clientKey: midtransClientKey
         });
-        console.log(parameter);
         snap.createTransaction(parameter).then((transaction) => {
-            console.log('token', transaction.token)
             resolve(transaction.token)
         }).catch((err) => {
             reject(err)
@@ -138,6 +136,85 @@ export async function getAllInvoice(user, filter) {
     return data
 }
 
+export async function getInvoices(filter) {  
+    var rawData, plans
+    var data = []
+    try {
+        rawData = await db.collection('transactions').get();
+        plans = await db.collection('plans').get()
+        rawData.forEach((doc) => {
+            if(doc.data().status == 2){
+                doc.data().date = formatDate(doc.data().createdAt)
+                const obj = doc.data()
+                obj.date = formatDate(doc.data().createdAt)
+                plans.forEach((plan)=>{
+                    if(plan.data().planId == obj.planId) obj.plan = plan.data().name
+                })
+                if(filter){
+                    const dateCreated = moment(doc.data().createdAt).format('YYYY-MM-DD')
+                    if(filter.dateFrom && filter.dateTo){
+                        if(filter.dateFrom <= dateCreated && dateCreated <= filter.dateTo  ){
+                            if(filter.type && filter.type != 0){
+                                if(filter.type == 1){
+                                    if(obj.planId) data.push(obj)
+                                }else if(filter.type == 2){
+                                    if(obj.type == 'customplan') data.push(obj)
+                                }
+                            }else{
+                                data.push(obj)
+                            }
+                        }
+                    }
+                }else{
+                    data.push(obj)
+                }
+            }
+        });
+    } catch (err) {
+        console.log(err.stack);
+    }
+    return data
+}
+
+export async function getIncome(filter) {  
+    var rawData
+    var totalIncome = 0 , planIncome = 0 , customIncome = 0
+    var data = {}
+    try{
+        rawData = await db.collection('transactions').get()
+        rawData.forEach((doc) => {
+            if(doc.data().status == 2){
+                if(filter){
+                    const dateCreated = moment(doc.data().createdAt).format('YYYY-MM-DD')
+                    if(filter.dateFrom && filter.dateTo){
+                        if(filter.dateFrom <= dateCreated && dateCreated <= filter.dateTo  ){
+                            totalIncome += parseInt(doc.data().grandTotal)
+                            if(doc.data().type == 'plan'){
+                                planIncome += parseInt(doc.data().grandTotal)
+                            }else{
+                                customIncome += parseInt(doc.data().grandTotal)
+                            }
+                        }
+                    }
+                }else{
+                    totalIncome += parseInt(doc.data().grandTotal)
+                    if(doc.data().type == 'plan'){
+                        planIncome += parseInt(doc.data().grandTotal)
+                    }else{
+                        customIncome += parseInt(doc.data().grandTotal)
+                    }
+                }
+            }
+        })
+        data.totalIncome = totalIncome
+        data.customIncome = customIncome
+        data.planIncome = planIncome
+        return data
+    }catch (err) {
+        console.log(err.stack);
+    }
+}
+
 export async function updateService(data) {  
     try{
         var oldData = await searchData('services', data.service)
@@ -212,6 +289,32 @@ export async function deletePlan(planId) {
     return false
 }
 
+export function sortPlans(data, sort) {  
+    var list =[]
+    list = data.sort((a, b)=> {
+        const nameA = a.name.toUpperCase()
+        const nameB = b.name.toUpperCase();
+        const priceA = a.price
+        const priceB = b.price
+        if(sort == 'priceDesc'){
+            if(priceA < priceB) return 1
+            if(priceA > priceB) return -1
+        }else if(sort == 'nameAsc'){
+            if(nameA < nameB) return -1
+            if(nameA > nameB) return 1
+
+        }else if(sort == 'nameDesc'){
+            if(nameA < nameB) return 1
+            if(nameA > nameB) return -1
+        }else{
+            if(priceA < priceB) return -1
+            if(priceA > priceB) return 1
+        }
+        return 0;
+    })
+
+    return list
+}
 
 function formatDate(dateString) {
     const options = { 

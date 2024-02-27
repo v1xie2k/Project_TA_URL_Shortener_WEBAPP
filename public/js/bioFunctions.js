@@ -589,7 +589,7 @@ function loadData(rawReport, filter) {
             }
         }
     });
-    console.log(pieChartData);
+    
     const dataLineChart = {
         labels: labelDate,
         datasets: [{

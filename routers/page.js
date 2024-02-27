@@ -1,8 +1,8 @@
 import express from 'express'
-import { filterData, getAllBioLink, getAllUrl, getReports, sortDataBioLink, updateClickShortUrl } from '../functions/urlController.js';
+import { filterData, getAllBioLink, getAllQr, getAllShortUrl, getAllUrl, getReports, sortDataBioLink, updateClickShortUrl } from '../functions/urlController.js';
 import { searchData } from '../functions/universal.js';
 import { isAdmin, isLoggedIn } from '../middleware/middleware.js';
-import { getAllInvoice, getAllPlans, getAllPriceList } from '../functions/planController.js';
+import { getAllInvoice, getAllPlans, getAllPriceList, getIncome, getInvoices, sortPlans } from '../functions/planController.js';
 import 'dotenv/config'
 import moment from 'moment';
 import { getUsers } from '../functions/userController.js';
@@ -37,12 +37,12 @@ router.get('/user', isLoggedIn, async (req, res)=>{
     res.render('user/profile/userProfile', {data: await searchData('users', req.session.user.email)})
 })
 
-// router.get('/plan', isLoggedIn, async (req, res)=>{
-router.get('/plan', async (req, res)=>{
+router.get('/plan', isLoggedIn, async (req, res)=>{
     res.locals.user = req.session.user
     const midtransClientKey = process.env.midtrans_client_key
-    const plans = await getAllPlans()
-    res.render('user/plan/subscriptionPlan', {plans, midtransClientKey})
+    const sort = req.url.includes('?') ? req.url.split('?')[1] : ''
+    const plans = await sortPlans(await getAllPlans(), sort)
+    res.render('user/plan/subscriptionPlan', {plans, midtransClientKey, sort})
 })
 
 router.get('/plan/custom', isLoggedIn, async (req, res)=>{
@@ -82,6 +82,29 @@ router.get('/admin/plan', isAdmin,async (req, res)=>{
     const services = await getAllPriceList()
     const plans = await getAllPlans()
     res.render('admin/subscriptionPlan', {services, plans})
+})
+
+
+router.get('/admin/service', isAdmin, async (req, res)=>{
+    res.locals.user = req.session.user
+    const allUrl = await getAllShortUrl()
+    const allQr = await getAllQr()
+    const allBioLink = await getAllBioLink()
+    res.render('admin/serviceReport', {allUrl, allQr, allBioLink})
+})
+
+router.get('/admin/transaction', isAdmin, async (req, res)=>{
+    res.locals.user = req.session.user
+    const filter = {}
+    const dateFrom = req.url.includes('df=') ? req.url.split('df=')[1].substring(0, 10) : moment().startOf('month').format('YYYY-MM-DD')
+    const dateTo = req.url.includes('dt=') ? req.url.split('dt=')[1].substring(0, 10) : moment().endOf('month').format('YYYY-MM-DD')
+    const type = req.url.includes('type=') ? req.url.split('type=')[1].substring(0, 1) : undefined
+    if(dateFrom) filter.dateFrom = dateFrom
+    if(dateTo) filter.dateTo = dateTo
+    if(type) filter.type = type
+    const transactions = await getInvoices(filter)
+    const income = await getIncome(filter)
+    res.render('admin/transactionReport', {transactions, dateFrom, dateTo, type, income})
 })
 
 router.get('/url', isLoggedIn, async (req, res)=>{

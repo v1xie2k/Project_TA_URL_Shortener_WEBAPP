@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../user/parts/head/headUrl.ejs');%>
+    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Service Report</title>
+</head>
+<body>
+    <%- include('../user/parts/header/headerNoSearch.ejs');%>
+    <%- include('./parts/sideNav.ejs');%>
+    <div id="reportUrl" style="display: none;">
+        <%= JSON.stringify(allUrl) %>
+    </div>
+    <div id="reportQr" style="display: none;">
+        <%= JSON.stringify(allQr) %>
+    </div>
+    <div id="reportBio" style="display: none;">
+        <%= JSON.stringify(allBioLink) %>
+    </div>
+    <script type="text/javascript" src="../../public/js/adminFunctions.js"></script>
+    <div class="container">
+        <h1>Service Report</h1>
+        <div class="col-md-8">
+            <h4>Service Created Overtime</h4>
+            <div class="d-flex flex-row">
+                <div class="card me-3 p-3 pt-4 mt-3 mb-3 flex-row" style="width: 30em; height: 8em;">
+                    <i class="fa-solid fa-link fa-5x ms-2"></i>
+                    <h1 class="mt-3 ms-5"><%= allUrl.length%></h1>
+                </div>
+                <div class="card me-3 p-3 pt-4 mt-3 mb-3 flex-row" style="width: 30em; height: 8em;">
+                    <i class="fa-solid fa-qrcode fa-5x ms-2"></i>
+                    <h1 class="mt-3 ms-5"><%= allQr.length%></h1>
+                </div>
+                <div class="card me-3 p-3 pt-4 mt-3 mb-3 flex-row" style="width: 30em; height: 8em;">
+                    <span class="orb-icon" title="Link-in-bio Icon">
+                        <svg fill="none" viewBox="0 0 24 24" height="100" width="100" >
+                            <path fill="#273144" d="M11.667 6.667a1.667 1.667 0 11-3.334 0 1.667 1.667 0 013.334 0zM12.5 14.167c0 .5-.333.833-.833.833H8.333c-.5 0-.833-.333-.833-.833 0-.5.333-.834.833-.834h3.334c.5 0 .833.334.833.834zM8.333 11.667h3.334c.5 0 .833-.334.833-.834 0-.5-.333-.833-.833-.833H8.333c-.5 0-.833.333-.833.833 0 .5.333.834.833.834z"></path>
+                            <path fill="#273144" fill-rule="evenodd" d="M5.833 1.667h8.334c.916 0 1.666.75 1.666 1.666v13.334c0 .916-.75 1.666-1.666 1.666H5.833c-.916 0-1.666-.75-1.666-1.666V3.333c0-.916.75-1.666 1.666-1.666zm0 1.666v13.334h8.334V3.333H5.833z" clip-rule="evenodd"></path>
+                        </svg>
+                    </span>
+                    <h1 class="mt-3 ms-5"><%= allBioLink.length%></h1>
+                </div>
+            </div>
+            <div>
+                <h6>Date Anchor</h6>
+                <input type="date" name="dateAnchor" id="dateAnchor" onchange="dateChange(this)" class="form-control" style="width: 15em;">
+                <label for="dateAnchor">This date anchor is used as an anchor for the next 7 days after that day</label>
+            </div>
+            
+            <h4>Overview</h4>
+            <canvas id="lineChart"></canvas>
+        </div>
+
+        <script>
+            document.getElementById('dateAnchor').valueAsDate = new Date()
+            loadData(getData(), {})
+        </script>
+    </div>
+</body>
+</html>

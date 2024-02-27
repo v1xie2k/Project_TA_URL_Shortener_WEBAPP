@@ -38,6 +38,34 @@ export async function getAllUrl() {
     return data
 }
 
+export async function getAllShortUrl() {
+    var rawData
+    var data = []
+    try {
+        rawData = await db.collection(dbName).get();
+        rawData.forEach((doc) => {
+            if(doc.data().type != 'qr' || !doc.data().type) data.push(doc.data())
+        });
+    } catch (err) {
+        console.log(err.stack);
+    }
+    return data
+}
+
+export async function getAllQr() {
+    var rawData
+    var data = []
+    try {
+        rawData = await db.collection(dbName).get();
+        rawData.forEach((doc) => {
+            if(doc.data().type == 'qr') data.push(doc.data())
+        });
+    } catch (err) {
+        console.log(err.stack);
+    }
+    return data
+}
+
 export async function getAllBioLink() {  
     var rawData
     var data = []

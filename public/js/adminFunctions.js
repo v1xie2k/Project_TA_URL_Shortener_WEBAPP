@@ -171,3 +171,161 @@ function fetchAPI(apiUrl, method, data, text, destination){
         console.log(error);
     });
 }
+
+function getData() {  
+    const reportUrl = JSON.parse(document.getElementById('reportUrl').textContent)
+    const reportQr = JSON.parse(document.getElementById('reportQr').textContent)
+    const reportBio = JSON.parse(document.getElementById('reportBio').textContent)
+    const data = {url: [], bio: [], qr: []}
+    var groupedData = {}
+    reportUrl.forEach(item => {
+        const date = moment(item.createdAt).format('l')
+        if (!groupedData[date]) {
+            groupedData[date] = {
+                date: date,
+                totalCreated: 1,
+            };
+        } else {
+            groupedData[date].totalCreated += 1;
+        }
+    })
+    data.url = Object.values(groupedData)
+    groupedData = {}
+
+    reportQr.forEach(item => {
+        const date = moment(item.createdAt).format('l')
+        if (!groupedData[date]) {
+            groupedData[date] = {
+                date: date,
+                totalCreated: 1,
+            };
+        } else {
+            groupedData[date].totalCreated += 1;
+        }
+    })
+    data.qr = Object.values(groupedData)
+    groupedData = {}
+    reportBio.forEach(item => {
+        const date = moment(item.createdAt).format('l')
+        if (!groupedData[date]) {
+            groupedData[date] = {
+                date: date,
+                totalCreated: 1,
+            };
+        } else {
+            groupedData[date].totalCreated += 1;
+        }
+    })
+    data.bio = Object.values(groupedData)
+
+    return data
+}
+
+function loadData(rawReport, filter) {  
+    var lineChartUrl = new Array(7).fill(0)
+    var lineChartBio = new Array(7).fill(0)
+    var lineChartQr = new Array(7).fill(0)
+    let totalCreateds = 0
+    var labelDate = filter.dateFrom ? generateNext7Days(filter.dateFrom) : generateLast7Days(new Date())
+    for (let index = 0; index < labelDate.length; index++) {
+        for (const item of rawReport.url) {
+            if(labelDate[index] == item.date){
+                lineChartUrl[index] = item.totalCreated
+                totalCreateds += item.totalCreated
+            }
+        }
+        for (const item of rawReport.bio) {
+            if(labelDate[index] == item.date){
+                lineChartBio[index] = item.totalCreated
+                totalCreateds += item.totalCreated
+            }
+        }
+        for (const item of rawReport.qr) {
+            if(labelDate[index] == item.date){
+                lineChartQr[index] = item.totalCreated
+                totalCreateds += item.totalCreated
+            }
+        }
+    }
+    console.log(lineChartUrl);
+
+    const dataLineChart = {
+        labels: labelDate,
+        datasets: [{
+            label: 'Short Link',
+            data: lineChartUrl,
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }, {
+            label: 'QR Code',
+            data: lineChartQr,
+            backgroundColor: 'rgba(113, 172, 105, 0.2)',
+            borderColor: 'rgba(113, 172, 105, 1)',
+            borderWidth: 1
+        }, {
+            label: 'Bio Link',
+            data: lineChartBio,
+            backgroundColor: 'rgba(194, 62, 235, 0.2)',
+            borderColor: 'rgba(194, 62, 235, 1)',
+            borderWidth: 1
+        }]
+    }
+    const canvasLineChart = document.getElementById('lineChart').getContext('2d')
+    if(Chart.getChart('lineChart') != undefined) Chart.getChart('lineChart').destroy()
+    const lineChart = new Chart(canvasLineChart, {
+        type: 'line',
+        data: dataLineChart
+    })
+}
+
+function generateLast7Days(dateFilter) {
+    const labels = []
+    for (let i = 6; i >= 0; i--) {
+    const date = new Date(dateFilter)
+    date.setDate(dateFilter.getDate() - i)
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+    const year = date.getFullYear()
+    labels.push(`${month}/${day}/${year}`)
+    }
+    return labels;
+}
+
+function generateNext7Days(dateFilter) {
+    const labels = []
+    for (let i = 0; i <= 6; i++) {
+        const date = new Date(dateFilter)
+        date.setDate(dateFilter.getDate() + i)
+        const month = date.getMonth() + 1
+        const day = date.getDate()
+        const year = date.getFullYear()
+        labels.push(`${month}/${day}/${year}`)
+    }
+    return labels;
+}
+
+
+async function dateChange(e){
+    const dateAnchor =  $(e).val();
+    const filter = {}
+    filter.dateFrom = new Date(dateAnchor)
+    loadData(getData(), filter)
+}
+
+function btnSearchDate(e) {  
+    const dateFrom = $('#dateFrom').val()
+    const dateTo = $('#dateTo').val()
+    const planType = $('#planType').val()
+    var location = '?df=' + dateFrom +'&dt=' + dateTo +'&type='+planType
+    if(dateFrom > dateTo){
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Start date mustn't greater than end date!",
+        });
+        return
+    }
+    window.location.href = location
+
+}

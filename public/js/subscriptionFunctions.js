@@ -107,6 +107,7 @@ function searchInvoice(invoiceId) {
 async function btnBuySubscriptionPlan(e) {  
     var config = {method: "POST", headers: {"Content-Type": "application/json"}}
     const planId = $(e).val()
+    const name = $(e).attr('planName')
     const grandTotal = parseInt($(e).attr('price'))
     const urlQty = parseInt($(e).attr('url'))
     const qrQty = parseInt($(e).attr('qr'))
@@ -138,7 +139,7 @@ async function btnBuySubscriptionPlan(e) {
             'order_id': invoiceId,
             'gross_amount': grandTotal,
         },
-        "item_details": items
+        "item_details": {name, price: grandTotal, quantity: 1 ,type: 'plan' }
     }
     //step 2 generate token
     config.body = JSON.stringify(parameter)
@@ -182,4 +183,10 @@ async function btnBuySubscriptionPlan(e) {
         }
     })
     console.log('grandTotal',grandTotal);
+}
+
+function sortSubscriptionPlan(e) {  
+    const sort = $(e).val()
+    console.log(sort);
+    window.location.href = '?'+sort
 }
