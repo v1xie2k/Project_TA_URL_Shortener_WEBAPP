@@ -72,7 +72,10 @@ export async function getAllBioLink() {
     try {
         rawData = await db.collection('biolinks').get();
         rawData.forEach((doc) => {
-            data.push(doc.data())
+            const obj = doc.data()
+            obj.updateDate = moment(doc.data().updatedAt).format('ll')
+            obj.createdDate = moment(doc.data().createdAt).format('ll')
+            data.push(obj)
         });
     } catch (err) {
         console.log(err.stack);

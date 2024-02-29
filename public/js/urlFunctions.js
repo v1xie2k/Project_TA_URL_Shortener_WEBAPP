@@ -31,63 +31,80 @@ function promptClick(e) {
 }
 
 function promptRecommendation(e){
+    var config = {method: 'POST', headers: {"Content-Type": "application/json"}}
     var fullUrl = $('#fullUrl').val()
+    const data = {type: 'prompt'}
+    config.body = JSON.stringify(data)
     if(!fullUrl){
         Swal.fire("Destination must be filled first!");
     }else{
-        Swal.fire({
-            icon: "warning",
-            title: "Prompting will cost you 1 credit! Are you sure about it?",
-            showCancelButton: true,
-            confirmButtonText: "Go",
-        }).then(async (result) => {
-            if(result.isConfirmed){
-                $('#promptBtn').html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Loading...')
-                $('#promptBtn').prop('disabled', true)
-                const data = {
-                    full: fullUrl
-                }
-                fetch('/api/prompt', {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(data),
-                }).then(async (response) => {
-                    if (response.ok) {
-                        $('#promptResult').html('')
-                        const prompt = await response.json()
-                        const list = prompt.promptResult.split("\n")
-                        const newList = []
-                        for (const iterator of list) {
-                            var val = iterator.substr(2, iterator.length)
-                            val = val.trim()
-                            $('#promptResult').append('<button onclick="promptClick(this)" class="btn btn-secondary prompt-res" value="'+ val + '">'+ val +' </button>')
+        fetch('/credential/checkCredit', config).then(async (response) => {
+            if (response.ok) {
+                Swal.fire({icon: "warning", title: "Prompting will cost you 1 credit! Are you sure about it?", showCancelButton: true, confirmButtonText: "Go"}).then(async (result) => {
+                    if(result.isConfirmed){
+                        $('#promptBtn').html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Loading...')
+                        $('#promptBtn').prop('disabled', true)
+                        const data = {
+                            full: fullUrl
                         }
+                        fetch('/api/prompt', {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(data),
+                        }).then(async (response) => {
+                            if (response.ok) {
+                                $('#promptResult').html('')
+                                const prompt = await response.json()
+                                const list = prompt.promptResult.split("\n")
+                                const newList = []
+                                for (const iterator of list) {
+                                    var val = iterator.substr(2, iterator.length)
+                                    val = val.trim()
+                                    $('#promptResult').append('<button onclick="promptClick(this)" class="btn btn-secondary prompt-res" value="'+ val + '">'+ val +' </button>')
+                                }
+                                fetch('/credential/reduceCredit', config).then(async (response) => {
+                                    if (response.ok) {
+                                        console.log('succcess');
+                                    }
+                                    else if(response.status){
+                                        Swal.fire({icon: "error", title: "Ooops....", text: 'something wrong'});
+                                    }
+                                }).catch((error) => {
+                                    alert('WARNING!')
+                                    console.log(error);
+                                });
+                            }
+                            else if(response.status){
+                                Swal.fire({icon: "error", title: "Ooops....", text: "Something wrong"});
+                            }
+                            $('#promptBtn').html('Prompt')
+                            $('#promptBtn').prop('disabled', false)
+                        }).catch((error) => {
+                            alert('WARNING!')
+                            console.log(error);
+                            $('#promptBtn').html('Prompt')
+                            $('#promptBtn').prop('disabled', false)
+                        })
                     }
-                    else if(response.status){
-                        Swal.fire({
-                        icon: "error",
-                        title: "Ooops....",
-                        text: "Something wrong",
-                        });
-                    }
-                    $('#promptBtn').html('Prompt')
-                    $('#promptBtn').prop('disabled', false)
-                }).catch((error) => {
-                    alert('WARNING!')
-                    console.log(error);
-                    $('#promptBtn').html('Prompt')
-                    $('#promptBtn').prop('disabled', false)
-                });
-                
+                })
             }
-        })
+            else if(response.status){
+                Swal.fire({icon: "error", title: "Ooops....", text: 'Insufficient Credit!'});
+            }
+        }).catch((error) => {
+            alert('WARNING!')
+            console.log(error);
+        });
+    
+        
     }
 }
 
 async function btnAddUrl(e) {
-    // try {
+    var config = {method: 'POST', headers: {"Content-Type": "application/json"}}
+    
     const full = $('#fullUrl').val()
     const title = $('#titleUrl').val()
     const short = $('#shortUrl').val()
@@ -110,13 +127,44 @@ async function btnAddUrl(e) {
         clicks: 0,
         createdAt: new Date()
     }
-    console.log(data);
     if(destination == '/url') $('#switch').prop('checked') ? data.type = 'qr' : null
     if(destination == '/qr') data.type = 'qr'
-    fetchAPI('/api/url', 'POST', data, 'This Short URL is Already Taken!')
+    config.body = JSON.stringify(data)
+    fetch('/credential/checkCredit', config).then(async (response) => {
+        if (response.ok) {
+            fetch('/api/url', config).then(async (response) => {
+                if (response.ok) {
+                    fetch('/credential/reduceCredit', config).then(async (response) => {
+                        if (response.ok) {
+                            window.location.href = destination;
+                        }
+                        else if(response.status){
+                            Swal.fire({icon: "error", title: "Ooops....", text: 'something wrong'});
+                        }
+                    }).catch((error) => {
+                        alert('WARNING!')
+                        console.log(error);
+                    });
+                }
+                else if(response.status){
+                    Swal.fire({icon: "error", title: "Ooops....", text: 'This Short URL is Already Taken!'});
+                }
+            }).catch((error) => {
+                alert('WARNING!')
+                console.log(error);
+            });
+        }
+        else if(response.status){
+            Swal.fire({icon: "error", title: "Ooops....", text: 'Insufficient Credit!'});
+        }
+    }).catch((error) => {
+        alert('WARNING!')
+        console.log(error);
+    });
 }
 
-async function btnEditUrl(e) {  
+async function btnEditUrl(e) {
+    var config = {method: 'POST', headers: {"Content-Type": "application/json"}}
     const full = $('#fullUrl').val()
     const title = $('#titleUrl').val()
     const short = $('#shortUrl').val()
@@ -145,6 +193,9 @@ async function btnEditUrl(e) {
     const checkShort = (oldShort != short)? true : false
     const checkFull = (oldDestination != full)? true : false
     const switchBtn = $('#switch').prop('checked')
+    if(switchBtn) data.type = 'qr'
+    if($(location).attr("href").split('/')[3] == 'qr') data.type = 'qr'
+    config.body = JSON.stringify(data)
     if(checkShort || checkFull || switchBtn){
         Swal.fire({
             icon: "warning",
@@ -153,8 +204,37 @@ async function btnEditUrl(e) {
             confirmButtonText: "Go",
         }).then(async (result) => {
             if(result.isConfirmed){
-                if(switchBtn) data.type = 'qr'
-                fetchAPI('/api/url/edit', 'POST', data, 'This Short URL is Already Taken!')
+                fetch('/credential/checkCredit', config).then(async (response) => {
+                    if (response.ok) {
+                        fetch('/api/url/edit', config).then(async (response) => {
+                            if (response.ok) {
+                                fetch('/credential/reduceCredit', config).then(async (response) => {
+                                    if (response.ok) {
+                                        window.location.href = destination;
+                                    }
+                                    else if(response.status){
+                                        Swal.fire({icon: "error", title: "Ooops....", text: 'something wrong'});
+                                    }
+                                }).catch((error) => {
+                                    alert('WARNING!')
+                                    console.log(error);
+                                });
+                            }
+                            else if(response.status){
+                                Swal.fire({icon: "error", title: "Ooops....", text: 'This Short URL is Already Taken!'});
+                            }
+                        }).catch((error) => {
+                            alert('WARNING!')
+                            console.log(error);
+                        });
+                    }
+                    else if(response.status){
+                        Swal.fire({icon: "error", title: "Ooops....", text: 'Insufficient Credit!'});
+                    }
+                }).catch((error) => {
+                    alert('WARNING!')
+                    console.log(error);
+                });
             }
         })
     }else{
@@ -186,13 +266,7 @@ function fetchAPI(apiUrl, method, data, text){
             window.location.href = destination;
         }
         else if(response.status){
-            Swal.fire({
-            icon: "error",
-            title: "Ooops....",
-            text,
-            });
-        }
-        else{
+            Swal.fire({icon: "error", title: "Ooops....", text});
         }
     }).catch((error) => {
         alert('WARNING!')

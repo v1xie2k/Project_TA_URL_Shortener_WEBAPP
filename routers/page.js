@@ -128,7 +128,7 @@ router.get('/url/edit/:shortUrl', isLoggedIn, async (req, res) =>{
     }
 })
 
-router.get('/view/:shortUrl', isLoggedIn, async (req, res)=>{
+router.get('/url/view/:shortUrl', isLoggedIn, async (req, res)=>{
     res.locals.user = req.session.user
     const shortUrl = await searchData('shorturls', req.params.shortUrl)
     if(!shortUrl){
@@ -166,8 +166,9 @@ router.get('/qr/edit/:shortUrl', isLoggedIn, async (req, res) =>{
 router.get('/biolink', isLoggedIn, async (req, res)=>{
     res.locals.user = req.session.user
     const title = req.url.includes('?') ? req.url.split('?')[1] : ''
-    //jangan lupa nanti add filter untuk user 
-    res.render('user/biolink/bioView', {allUrl: await filterData({user: req.session.user.email, title}, await getAllBioLink())})
+    const allBio = await filterData({user: req.session.user.email, title}, await getAllBioLink())
+    const allUrl = await filterData({user: req.session.user.email}, await getAllUrl()) 
+    res.render('user/biolink/bioView', {allBio, allUrl})
 })
 
 router.get('/biolink/edit/:bioLink', isLoggedIn, async (req, res) =>{

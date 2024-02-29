@@ -40,6 +40,37 @@ export async function fetchAPI(apiUrl, method, data, text){
     });
 }
 
+export async function checkCredit(data) {  
+    const {type, email} = data
+    var status = false
+    var rawData =  await(await db.collection('users').doc(email).get()).data()
+    if(type == 'qr'){
+        if(rawData.creditQr - 1 >= 0) status = true
+    }else if(type == 'bio'){
+        if(rawData.creditBioLink - 1 >= 0) status = true
+    }else if(type == 'prompt'){
+        if(rawData.creditPrompt - 1 >= 0) status = true
+    }else {
+        if(rawData.creditShortUrl - 1 >= 0) status = true 
+    }
+    return status 
+}
+export async function creditReduction(data) {  
+    const {type, email} = data
+    var status = false
+    var oldData =  await(await db.collection('users').doc(email).get()).data()
+    if(type == 'qr'){
+        if(oldData.creditQr - 1 >= 0) oldData.creditQr -= 1
+    }else if(type == 'bio'){
+        if(oldData.creditBioLink - 1 >= 0) oldData.creditBioLink -= 1
+    }else if(type == 'prompt'){
+        if(oldData.creditPrompt - 1 >= 0) oldData.creditPrompt -= 1
+    }else {
+        if(oldData.creditShortUrl - 1 >= 0) oldData.creditShortUrl -= 1
+    }
+    await db.collection('users').doc(email).set(oldData)
+}
+
 export function formatDate(dateString) {
     const options = { 
         year: 'numeric', 

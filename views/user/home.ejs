@@ -1,11 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%- include('./parts/head/headUrl.ejs');%>
     <title>Homepage</title>
 </head>
 <body>
-    Homepage
+    <%- include('./parts/header/headerNoSearch.ejs');%>
+    <%- include('./parts/sideNav.ejs');%>
+    <div class="container">
+        <h1>Your Connections Platform</h1>
+        <div class="card card-body card-home mb-3">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h3>Make it Short</h3>
+                    <p>So people can remember it easily</p>
+                </div>
+                <div class="mt-4">
+                    <a class="a-home btn-home form-control" href="/url">
+                        Go To Short URL
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card card-body card-home mb-3">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h3>Make it Scannable</h3>
+                    <p>So people can access it faster</p>
+                </div>
+                <div class="mt-4">
+                    <a class="a-home btn-home form-control"  href="/qr" style="text-decoration: none;">
+                        Go To QR Code
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card card-body card-home mb-3">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h3>Make a Page</h3>
+                    <p>So people can access all of our link in one page</p>
+                </div>
+                <div class="mt-4">
+                    <a class="a-home btn-home form-control"  href="/biolink" style="text-decoration: none;">
+                        Go To Bio Link
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card card-body card-home mb-3">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h3>Our Plans</h3>
+                    <p>Choose our reserved plans or create your own desired plan</p>
+                </div>
+                <div class="mt-4">
+                    <a class="a-home btn-home form-control"  href="/plan" style="text-decoration: none;">
+                        View Our Plans
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

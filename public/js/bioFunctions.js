@@ -1,4 +1,5 @@
 async function btnAddBioLink(e){
+    var config = {method: 'POST', headers: {"Content-Type": "application/json"}}
     const short = $('#shortUrl').val()
     if(!short){
         Swal.fire("Short URL must be filled!");
@@ -12,13 +13,45 @@ async function btnAddBioLink(e){
         short,
         title: short,
         clicks: 0,
-        createdAt: new Date()
+        createdAt: new Date(),
+        type: 'bio'
     }
-    fetchAPI('/api/biolink', 'POST', data, 'This Short URL is Already Taken!', '/biolink')
-
+    config.body = JSON.stringify(data)
+    fetch('/credential/checkCredit', config).then(async (response) => {
+        if (response.ok) {
+            fetch('/api/biolink', config).then(async (response) => {
+                if (response.ok) {
+                    fetch('/credential/reduceCredit', config).then(async (response) => {
+                        if (response.ok) {
+                            window.location.href = '/biolink';
+                        }
+                        else if(response.status){
+                            Swal.fire({icon: "error", title: "Ooops....", text: 'something wrong'});
+                        }
+                    }).catch((error) => {
+                        alert('WARNING!')
+                        console.log(error);
+                    });
+                }
+                else if(response.status){
+                    Swal.fire({icon: "error", title: "Ooops....", text: 'This Bio Link is Already Taken!'});
+                }
+            }).catch((error) => {
+                alert('WARNING!')
+                console.log(error);
+            });
+        }
+        else if(response.status){
+            Swal.fire({icon: "error", title: "Ooops....", text: 'Insufficient Credit!'});
+        }
+    }).catch((error) => {
+        alert('WARNING!')
+        console.log(error);
+    })
 }
 
-function btnDeleteBioLink(e) {  
+function btnDeleteBioLink(e) {
+    var config = {method: 'POST', headers: {"Content-Type": "application/json"}}
     const shortUrl = $(e).val()
     Swal.fire({
     icon: "warning",
@@ -34,6 +67,7 @@ function btnDeleteBioLink(e) {
 }
 
 async function btnEditBioLink(e) {  
+    var config = {method: 'POST', headers: {"Content-Type": "application/json"}}
     const newBio = $('#editShortBio').val()
     const oldBio = $('#bioLink').val()
     const title = newBio
@@ -49,19 +83,50 @@ async function btnEditBioLink(e) {
         short: newBio,
         title,
         oldShort: oldBio,
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        type: 'bio'
     }
-    console.log(data);
+    config.body = JSON.stringify(data)
     const checkShort = (newBio != oldBio)? true : false
     if(checkShort){
         Swal.fire({
             icon: "warning",
-            title: "Changing Short URL will cost you 1 credit! Are you sure about it?",
+            title: "Changing Back Half will cost you 1 credit! Are you sure about it?",
             showCancelButton: true,
             confirmButtonText: "Go",
         }).then(async (result) => {
             if(result.isConfirmed){
-                fetchAPI('/api/biolink/edit', 'POST', data, 'This Short Bio Link is Already Taken!', '/biolink/edit/'+newBio)
+                fetch('/credential/checkCredit', config).then(async (response) => {
+                    if (response.ok) {
+                        fetch('/api/biolink/edit', config).then(async (response) => {
+                            if (response.ok) {
+                                fetch('/credential/reduceCredit', config).then(async (response) => {
+                                    if (response.ok) {
+                                        window.location.href = '/biolink/edit/' + newBio
+                                    }
+                                    else if(response.status){
+                                        Swal.fire({icon: "error", title: "Ooops....", text: 'something wrong'});
+                                    }
+                                }).catch((error) => {
+                                    alert('WARNING!')
+                                    console.log(error);
+                                });
+                            }
+                            else if(response.status){
+                                Swal.fire({icon: "error", title: "Ooops....", text: 'This Bio Link is Already Taken!'});
+                            }
+                        }).catch((error) => {
+                            alert('WARNING!')
+                            console.log(error);
+                        });
+                    }
+                    else if(response.status){
+                        Swal.fire({icon: "error", title: "Ooops....", text: 'Insufficient Credit!'});
+                    }
+                }).catch((error) => {
+                    alert('WARNING!')
+                    console.log(error);
+                })
             }
         })
     }else{
@@ -94,7 +159,7 @@ async function btnCancel(e) {
 }
 
 async function btnAddUrl(e) {
-    // try {
+    var config = {method: 'POST', headers: {"Content-Type": "application/json"}}
     var isYoutube = $(e).val()
     var full = isYoutube ? $('#youtubeUrl').val() : $('#fullUrl').val()
     var youtubeId = await validateYouTubeUrl(full)
@@ -125,7 +190,38 @@ async function btnAddUrl(e) {
         data.type = 'youtube'
         data.youtubeId = youtubeId
     }
-    fetchAPI('/api/url', 'POST', data, 'This Short URL is Already Taken!', '?build')
+    config.body = JSON.stringify(data)
+    fetch('/credential/checkCredit', config).then(async (response) => {
+        if (response.ok) {
+            fetch('/api/url', config).then(async (response) => {
+                if (response.ok) {
+                    fetch('/credential/reduceCredit', config).then(async (response) => {
+                        if (response.ok) {
+                            window.location.href = '?build'
+                        }
+                        else if(response.status){
+                            Swal.fire({icon: "error", title: "Ooops....", text: 'something wrong'});
+                        }
+                    }).catch((error) => {
+                        alert('WARNING!')
+                        console.log(error);
+                    });
+                }
+                else if(response.status){
+                    Swal.fire({icon: "error", title: "Ooops....", text: 'This Short URL is Already Taken!'});
+                }
+            }).catch((error) => {
+                alert('WARNING!')
+                console.log(error);
+            });
+        }
+        else if(response.status){
+            Swal.fire({icon: "error", title: "Ooops....", text: 'Insufficient Credit!'});
+        }
+    }).catch((error) => {
+        alert('WARNING!')
+        console.log(error);
+    })
     $('.form-youtube').hide()
     $('.form-bio-link').hide()
 }
@@ -153,7 +249,8 @@ async function btnClickEditUrl(e) {
     }
 }
 
-async function btnEditUrl(e) {  
+async function btnEditUrl(e) {
+    var config = {method: 'POST', headers: {"Content-Type": "application/json"}}
     const isYoutube = $(e).val()
     const full = isYoutube ? $('#youtubeUrl').val() : $('#fullUrl').val()
     const youtubeId = await validateYouTubeUrl(full)
@@ -185,6 +282,7 @@ async function btnEditUrl(e) {
     if(isYoutube){
         data.youtubeId = youtubeId
     }
+    config.body = JSON.stringify(data)
     const checkFull = (oldDestination != full)? true : false
     if(checkFull){
         Swal.fire({
@@ -194,7 +292,38 @@ async function btnEditUrl(e) {
             confirmButtonText: "Go",
         }).then(async (result) => {
             if(result.isConfirmed){
-                fetchAPI('/api/url/edit', 'POST', data, 'This Short URL is Already Taken!', '?build')
+                fetch('/credential/checkCredit', config).then(async (response) => {
+                    if (response.ok) {
+                        fetch('/api/url/edit', config).then(async (response) => {
+                            if (response.ok) {
+                                fetch('/credential/reduceCredit', config).then(async (response) => {
+                                    if (response.ok) {
+                                        window.location.href = '?build'
+                                    }
+                                    else if(response.status){
+                                        Swal.fire({icon: "error", title: "Ooops....", text: 'something wrong'});
+                                    }
+                                }).catch((error) => {
+                                    alert('WARNING!')
+                                    console.log(error);
+                                });
+                            }
+                            else if(response.status){
+                                Swal.fire({icon: "error", title: "Ooops....", text: 'This Short URL is Already Taken!'});
+                            }
+                        }).catch((error) => {
+                            alert('WARNING!')
+                            console.log(error);
+                        });
+                    }
+                    else if(response.status){
+                        Swal.fire({icon: "error", title: "Ooops....", text: 'Insufficient Credit!'});
+                    }
+                }).catch((error) => {
+                    alert('WARNING!')
+                    console.log(error);
+                });
+
             }
         })
     }else{

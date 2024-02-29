@@ -19,19 +19,15 @@
             </div>
         </div>
 
-        <% for (const key in allUrl) { %>
-            <% const data = allUrl[key] %>
+        <% for (const key in allBio) { %>
+            <% const data = allBio[key] %>
+            <% const path = 'supersmall' %>
         <div class="card mt-4">
             <div class="card-body" >
                 <div class="mb-3">
                     <div class="row g-0">
                       <div class="col-md-2">
-                        <canvas id="qr_<%= key%>" class="ps-1 mt-3" short="<%= data.short%>"></canvas>
-                        <script>
-                            if("<%= data.type %>" == 'qr'){
-                                generateQr("qr_<%= key%>", "<%= data.short%>")
-                            }
-                        </script>
+                        <%- include('../parts/bioLinkContentSmall.ejs', { data: data, path: path, allUrl: allUrl }); %>
                       </div>
                       <div class="col col-md-10">
                         <div class="d-flex flex-row-reverse">
@@ -40,12 +36,14 @@
                                 <button type="button" class="btn btn-success mx-2" value="<%= data.short%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
                             </a>
                         </div>
-                        <div class="text-left">
+                        <div class="text-left ms-3">
                             <a href="/biolink/edit/<%= data.short%>" style="text-decoration: none; color: black;">
                                 <h4 class="card-title"><%= data.short%></h4>
                             </a>
                             <a href="<%= data.full%>" style="text-decoration: none;"><%= data.full%></a>
-                            <p class="card-text"><small class="text-body-secondary"><%= data.createdAt%></small></p>
+                            <p class="card-text"><small class="text-body-secondary"><i class="fa-regular fa-eye me-2"></i><b><%= data.clicks%></b> views</small></p>
+                            <p class="card-text"><small class="text-body-secondary"><i class="fa-solid fa-calendar me-2"></i><%= data.createdDate%></small></p>
+                            <p class="card-text"><small class="text-body-secondary"><i class="fa-solid fa-pen me-2"></i>Last Update: <%= data.updateDate%></small></p>
                         </div>
                       </div>
                     </div>

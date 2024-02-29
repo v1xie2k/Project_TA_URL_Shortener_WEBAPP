@@ -1,7 +1,7 @@
 import express from 'express'
 import session from 'express-session'
 import { addNewUser, comparePassword, edituser } from '../functions/userController.js'
-import { searchData } from '../functions/universal.js'
+import { checkCredit, creditReduction, searchData } from '../functions/universal.js'
 const router = express.Router()
 import 'dotenv/config'
 
@@ -53,5 +53,33 @@ router.post('/updateUser', async(req, res)=>{
     return res.redirect('/login')
     
 })
+
+router.post('/checkCredit', async(req, res)=>{
+    const data = req.body
+    data.email = req.session.user.email
+    try{
+        const result = await checkCredit(data)
+        if(result){
+            return res.status(200).send('success')
+        }
+        return res.status(400).send('error')
+    }catch(err){
+        console.log(err);
+        return res.status(400).send(err)
+    }
+})
+
+router.post('/reduceCredit', async(req, res)=>{
+    const data = req.body
+    data.email = req.session.user.email
+    try{
+        const result = await creditReduction(data)
+        return res.status(200).send('success')
+    }catch(err){
+        console.log(err);
+        return res.status(400).send(err)
+    }
+})
+
 
 export default router
