@@ -138,6 +138,7 @@ export async function editURL(data) {
         if(data.img) oldData.img = data.img
         if(data.type) oldData.type = data.type
         if(data.bioLink) oldData.bioLink = data.bioLink
+        if(data.youtubeId) oldData.youtubeId = data.youtubeId
         if(editShortStatus){
             const del = await db.collection(dbName).doc(data.oldShort).delete()
         }

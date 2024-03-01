@@ -230,39 +230,52 @@ async function btnClickEditUrl(e) {
     $('.form-youtube').hide()
     $('.form-bio-link').hide()
     const short = $(e).val()
+    const key = $(e).attr('key')
     const title = $(e).attr('urlTitle')
     const youtubeId = $(e).attr('youtubeId')
     const destination = $(e).attr('destination')
     const description = $(e).attr('description')
     $('#shortUrlEdit').val(short)
     $('#oldDestination').val(destination)
-    $('#fullUrl').val(destination)
-    $('#btnSubmitUrl').hide()
-    $('#btnSaveUrl').show()
+    $('#fullUrl'+ key).val(destination)
     if(youtubeId){
         $('.form-youtube').show()
+        $('#youtubeUrl').val(destination)
+        $('#btnSaveUrlYoutube').show()
+        $('#btnSubmitYoutube').hide()
+        $('#modalYoutubeLabel2').html('Edit youtube video')
         await loadThumbnail(youtubeId)
     }else{
         $('.form-bio-link').show()
-        $('#titleUrl').val(title)
-        $('#description').val(description)
+        $('#titleUrl'+key).val(title)
+        $('#description'+key).val(description)
     }
+}
+
+function btnModalYoutubeClose(e) {  
+    $('#youtubeUrl').val('')
+    $('#btnSaveUrlYoutube').hide()
+    $('#btnSubmitYoutube').show()
+    $('#modalYoutubeLabel2').html('Add a youtube video')
+    clearInput('youtube')
 }
 
 async function btnEditUrl(e) {
     var config = {method: 'POST', headers: {"Content-Type": "application/json"}}
+    const key = $(e).attr('key')
     const isYoutube = $(e).val()
-    const full = isYoutube ? $('#youtubeUrl').val() : $('#fullUrl').val()
+    const full = isYoutube == 'youtube' ? $('#youtubeUrl').val() : $('#fullUrl'+key).val()
+    console.log( full);
     const youtubeId = await validateYouTubeUrl(full)
+    
+    const title = isYoutube == 'youtube' ? $('#titleYtube').val() : $('#titleUrl'+key).val()
+    const short = $('#shortUrlEdit').val()
+    const oldShort = short
+    const description = $('#description'+key).val()
+    const oldDestination = $('#oldDestination').val()
     if(isYoutube){
         await loadThumbnail(youtubeId)
     }
-    const title = $('#titleUrl').val()
-    const short = $('#shortUrlEdit').val()
-    const oldShort = short
-    const description = $('#description').val()
-    const oldDestination = $('#oldDestination').val()
-    
     if (!full || !title) {
         Swal.fire("Destination & Title must be filled");
         return
@@ -279,6 +292,7 @@ async function btnEditUrl(e) {
         description,
         updatedAt: new Date()
     }
+    console.log(data);
     if(isYoutube){
         data.youtubeId = youtubeId
     }
@@ -377,13 +391,17 @@ async function loadThumbnail(youtubeId) {
             console.log(error);
         });
         $('#titleUrl').val(title)
-        $("#youtubePlaceHolder").html("<img src='"+thumbnail+"' style='width: 100%; heigth: 100%; border-radius: 5px;'>");
+        $("#youtubePlaceHolder").html("<img src='"+thumbnail+"' style='width: 100%; heigth: 300px; border-radius: 5px;'>");
+        $("#youtubePlaceHolder").css('background-color','white')
         $('#alertYoutube').hide()
         $("#youtubeTitle").html('<h4>Video Title</h4><p>' + title + '</p>')
+        $('#titleYtube').val(title)
     }else{
         $("#youtubeTitle").html('<p style="padding-top: 35px;">Add a YouTube URL above to preview the video</p>')
         $("#youtubePlaceHolder").html('<div style="padding-top: 22px;"><span class="video-placeholder"><svg width="3rem" height="3rem" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" ><path d="M47.044 12.3709C46.7726 11.3498 46.2378 10.4178 45.493 9.66825C44.7483 8.91872 43.8197 8.37794 42.8003 8.10003C39.0476 7.09094 24.0476 7.09094 24.0476 7.09094C24.0476 7.09094 9.04761 7.09094 5.29488 8.10003C4.27547 8.37794 3.34693 8.91872 2.60218 9.66825C1.85744 10.4178 1.32262 11.3498 1.05124 12.3709C0.0476075 16.14 0.0476074 24 0.0476074 24C0.0476074 24 0.0476075 31.86 1.05124 35.6291C1.32262 36.6503 1.85744 37.5823 2.60218 38.3318C3.34693 39.0813 4.27547 39.6221 5.29488 39.9C9.04761 40.9091 24.0476 40.9091 24.0476 40.9091C24.0476 40.9091 39.0476 40.9091 42.8003 39.9C43.8197 39.6221 44.7483 39.0813 45.493 38.3318C46.2378 37.5823 46.7726 36.6503 47.044 35.6291C48.0476 31.86 48.0476 24 48.0476 24C48.0476 24 48.0476 16.14 47.044 12.3709Z" fill="#FF0302"></path><path d="M19.1385 31.1373V16.8628L31.684 24.0001L19.1385 31.1373Z" fill="#FEFEFE"></path></svg></span></div>  ');
+        $("#youtubePlaceHolder").css('background-color','lightgrey')
         $('#alertYoutube').show()
+        $('#titleYtube').val('')
         return
     }
 }

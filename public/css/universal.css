@@ -300,3 +300,27 @@ select {
   flex: 1;
   padding: 0.5rem 0.8rem;
 }
+
+.fa-stack-small{
+  font-size: 0.65rem;
+  vertical-align: middle;
+}
+
+.fa-stack{
+  display: inline-block;
+  height: 2em;
+  position: relative;
+  width: 2.5em;
+  margin-top: -7px;
+}
+
+.svg-inline--fa.fa-stack-1x {
+  height: 1.5em;
+  width: 2.5em;
+  margin-top:0.35em;
+}
+.btn-menu-modal{
+  width: 90%;
+  text-align: left;
+  padding-left: 1em;
+}

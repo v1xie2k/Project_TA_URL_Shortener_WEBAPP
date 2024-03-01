@@ -6,11 +6,11 @@
     </div>    
 </div>
 
-<button class="btn btn-primary mt-2" onclick="btnToogleLink(this)">Add Link</button>
-<button class="btn btn-primary mt-2" onclick="btnToogleYoutube(this)">Add Youtube</button>
+<!-- <button class="btn btn-primary mt-2" onclick="btnToogleLink(this)">Add Link</button>
+<button class="btn btn-primary mt-2" onclick="btnToogleYoutube(this)">Add Youtube</button> -->
 <!-- think about cara dynamickan form ini (kalau di addlink maka muncul form dibawah, tapi kalau juga edit link form ini juga muncul + include data didalamnya) -->
-<%- include('../parts/formLink.ejs');%>
-<%- include('../parts/formYoutube.ejs');%>
+<%- include('../parts/modal/modalMenu.ejs');%>
+
 <div>
     <% for (const key in allUrl) { %>
         <% const data = allUrl[key] %>
@@ -78,10 +78,43 @@
                     <div class="col col-md-10">
                         <div class="d-flex flex-row-reverse">
                             <button type="button" onclick="btnDeleteUrl(this)" class="btn btn-danger" short="<%= data.short%>" value="<%= key%>"><i class="fa-solid fa-trash-can pe-2"></i>Delete</button>
-                            <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" value="<%= data.short%>" urlTitle="<%= data.title%>" destination="<%= data.full%>" description="<%= data.title%>" youtubeId="<%= data.youtubeId%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                            <% if(data.youtubeId){%>
+                                <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" key="<%= key%>" value="<%= data.short%>" urlTitle="<%= data.title%>" destination="<%= data.full%>" description="<%= data.title%>" youtubeId="<%= data.youtubeId%>" data-bs-toggle="modal" data-bs-target="#modalYoutube"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                            <%}else{%>
+                                <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" key="<%= key%>" value="<%= data.short%>" urlTitle="<%= data.title%>" destination="<%= data.full%>" description="<%= data.title%>" youtubeId="<%= data.youtubeId%>" data-bs-toggle="modal" data-bs-target="#modalLink<%= key%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                            <%}%>
+
                             <%if(data.img){%>
                                 <button class="btnRemovePicture bioEdit btn" onclick="btnDeleteImg(this)" btnCategory="img" short="<%= data.short%>" imgUrl="<%= data.img%>"><i class="fa-solid fa-xmark pe-2"></i>Remove Pict</button>
                             <%}%>
+                        </div>
+                        <!-- modal link -->
+                        <div class="modal fade" id="modalLink<%= key%>" aria-hidden="true" aria-labelledby="modalLink<%= key%>" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalLink<%= key%>">Edit Short Link</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Title</h4>
+                                        <div class="mb-3">
+                                            <input required type="text" name="title" id="titleUrl<%= key%>"  placeholder="title" class="form-control">
+                                        </div>
+                                        <h4>Description</h4>
+                                        <div class="mb-3">
+                                            <input required type="text" name="Description" id="description<%= key%>"  placeholder="(Optional)" class="form-control">
+                                        </div>
+                                        <h4>Destination</h4>
+                                        <div class="mb-3">
+                                            <input required type="url" name="destination" id="fullUrl<%= key%>"  placeholder="https://example.com" class="form-control">
+                                        </div>
+                                        <div class="d-flex flex-row-reverse">
+                                            <button id="btnSaveUrl" type="button" onclick="btnEditUrl(this)" class="btn btn-primary ms-3" key="<%= key%>">Save</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="text-left">
                             <h4 class="card-title"><%= data.title%></h4>
