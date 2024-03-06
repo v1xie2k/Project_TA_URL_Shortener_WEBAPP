@@ -1,3 +1,4 @@
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 <%if(data.background){ %>
 <div class="hero-bg fullWidth" style=" background-position: center; background-image: url('<%= data.background%>'); background-color: rgb(255, 255, 255); background-repeat: no-repeat; background-size: cover;">
 <%}else{%>
@@ -45,8 +46,8 @@
             
         </header>
         <section style="margin-top: 15px;">
-            <% for (const key in allUrl) { %>
-                <% const data = allUrl[key] %>
+            <% for (const key in blocks) { %>
+                <% const data = blocks[key] %>
                 <div class="contentList">
                     <% if (data.type =='youtube') { %>
                         <!-- content web -->
@@ -57,6 +58,17 @@
                             <iframe width="100%" height="200rem" src="https://www.youtube.com/embed/<%= data.youtubeId%>" style="border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.75) 0.3rem 0.4rem 0px;">
                             </iframe>
                         <%}%>
+                    <%}else if(data.type =='spotify'){%>
+                        <iframe scrolling="no" frameborder="no" width="100%" height="80" src="https://open.spotify.com/embed/track/<%= data.spotifyTrack%>" style="border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.75) 0.3rem 0.4rem 0px;">
+                        </iframe>
+                    <%}else if(data.type =='soundcloud'){%>
+                        <iframe scrolling="no" frameborder="no" width="100%" src="https://w.soundcloud.com/player/?url=<%= data.full%>&color=%23ff5500&auto_play=false&hide_related=false&show_user=true&show_reposts=false&show_teaser=true&visual=true" style="border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.75) 0.3rem 0.4rem 0px; ">
+                        </iframe>
+                    <%}else if(data.type =='pdf'){%>
+                        <a href="#" class="link__content__title link__content link" style="text-decoration: none;" data-bs-target="#modalPdfView<%= key%>" data-bs-toggle="modal">
+                            <%= data.title%>
+                        </a>
+                        <%- include('./modal/modalPdfView.ejs', {key: key, data: data})%>
                     <%}else{%>
                         <a href="http://localhost:8080/<%= data.short%>" style="text-decoration: none;" class="link">
                         <%if(data.img != null){%>

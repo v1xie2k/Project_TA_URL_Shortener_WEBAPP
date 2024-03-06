@@ -163,13 +163,18 @@ async function btnAddUrl(e) {
     var isYoutube = $(e).val()
     var full = isYoutube ? $('#youtubeUrl').val() : $('#fullUrl').val()
     var youtubeId = await validateYouTubeUrl(full)
+    const reportDataElement = document.getElementById('blocks')
+    const reportDataString = reportDataElement.textContent
+    const blocks = reportDataString != '' ? await JSON.parse(reportDataString) : []
+    var order = blocks.length == 0 ? 1 : blocks[blocks.length - 1].order + 1
     if(isYoutube){
         await loadThumbnail(youtubeId)
     }
     var title = $('#titleUrl').val()
     var bioLink = $('#bioLink').val()
     var description = $('#description').val()
-    
+    console.log(full);
+    console.log(title);
     if (!full || !title) {
         Swal.fire("Destination & Title must be filled");
         return
@@ -186,7 +191,10 @@ async function btnAddUrl(e) {
         clicks: 0,
         createdAt: new Date()
     }
+    const urlData = {title, full, description, order, type: 'link', createdAt: new Date()}
     if(isYoutube){
+        urlData.type = 'youtube'
+        urlData.youtubeId = youtubeId
         data.type = 'youtube'
         data.youtubeId = youtubeId
     }
@@ -195,15 +203,19 @@ async function btnAddUrl(e) {
         if (response.ok) {
             fetch('/api/url', config).then(async (response) => {
                 if (response.ok) {
+                    const resultUrl = await response.json()
+                    urlData.short = resultUrl.short
                     fetch('/credential/reduceCredit', config).then(async (response) => {
                         if (response.ok) {
-                            window.location.href = '?build'
+                            blocks.push(urlData)
+                            const data = {oldShort : bioLink, short: bioLink, blocks }
+                            await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while adding link!', '?build')
                         }
                         else if(response.status){
                             Swal.fire({icon: "error", title: "Ooops....", text: 'something wrong'});
                         }
                     }).catch((error) => {
-                        alert('WARNING!')
+                        alert('WARNING!12556')
                         console.log(error);
                     });
                 }
@@ -211,7 +223,7 @@ async function btnAddUrl(e) {
                     Swal.fire({icon: "error", title: "Ooops....", text: 'This Short URL is Already Taken!'});
                 }
             }).catch((error) => {
-                alert('WARNING!')
+                alert('WARNING!1245')
                 console.log(error);
             });
         }
@@ -219,7 +231,7 @@ async function btnAddUrl(e) {
             Swal.fire({icon: "error", title: "Ooops....", text: 'Insufficient Credit!'});
         }
     }).catch((error) => {
-        alert('WARNING!')
+        alert('WARNING!123')
         console.log(error);
     })
     $('.form-youtube').hide()
@@ -235,6 +247,7 @@ async function btnClickEditUrl(e) {
     const youtubeId = $(e).attr('youtubeId')
     const destination = $(e).attr('destination')
     const description = $(e).attr('description')
+    const cat = $(e).attr('cat')
     $('#shortUrlEdit').val(short)
     $('#oldDestination').val(destination)
     $('#fullUrl'+ key).val(destination)
@@ -246,9 +259,30 @@ async function btnClickEditUrl(e) {
         $('#modalYoutubeLabel2').html('Edit youtube video')
         await loadThumbnail(youtubeId)
     }else{
-        $('.form-bio-link').show()
-        $('#titleUrl'+key).val(title)
-        $('#description'+key).val(description)
+        if(cat == 'spotify'){
+            $('#spotifyUrl').val(destination)
+            $('#modalSpotifyLabel2').html('Edit Spotify media')
+            $('#btnSaveSpotify').show()
+            $('#btnSubmitSpotify').hide()
+        }else if(cat == 'soundCloud'){
+            $('#soundCloudUrl').val(destination)
+            $('#modalSoundCloudLabel2').html('Edit Soundcloud media')
+            $('#btnSaveSoundCloud').show()
+            $('#btnSubmitSoundCloud').hide()
+        }else if(cat == 'pdf'){
+            const pdfTitle = $(e).attr('pdfTitle')
+            const pdf = $(e).attr('pdf')
+            $('#pdfTitle').val(pdfTitle)
+            $('#pdfUrl').val(pdf)
+            $('#modalPdfLabel').html('Edit Pdf')
+            $('#btnSavePdf').show()
+            $('#btnSubmitPdf').hide()
+        }else{
+            $('.form-bio-link').show()
+            $('#titleUrl'+key).val(title)
+            $('#description'+key).val(description)
+        }
+        
     }
 }
 
@@ -260,9 +294,27 @@ function btnModalYoutubeClose(e) {
     clearInput('youtube')
 }
 
+function btnModalSpotifyClose(e) {  
+    $('#spotifyUrl').val('')
+    $('#btnSaveSpotify').hide()
+    $('#btnSubmitSpotify').show()
+    $('#modalSpotifyLabel2').html('Add Spotify media')
+}
+
+function btnModalSoundCloudClose(e) {  
+    $('#soundCloudUrl').val('')
+    $('#btnSaveSoundCloud').hide()
+    $('#btnSubmitSoundCloud').show()
+    $('#modalSoundCloudLabel2').html('Add Soundcloud media')
+}
+
 async function btnEditUrl(e) {
     var config = {method: 'POST', headers: {"Content-Type": "application/json"}}
+    const reportDataElement = document.getElementById('blocks')
+    const reportDataString = reportDataElement.textContent
+    const blocks = await JSON.parse(reportDataString)
     const key = $(e).attr('key')
+    const bioLink = $('#bioLink').val()
     const isYoutube = $(e).val()
     const full = isYoutube == 'youtube' ? $('#youtubeUrl').val() : $('#fullUrl'+key).val()
     console.log( full);
@@ -298,6 +350,17 @@ async function btnEditUrl(e) {
     }
     config.body = JSON.stringify(data)
     const checkFull = (oldDestination != full)? true : false
+    for (const data of blocks) {
+        if(data.full == oldDestination){
+            data.full = full
+            data.title = title 
+            data.description = description
+            if(isYoutube){
+                data.youtubeId = youtubeId
+            }
+        }
+    }
+    const newBioData = {oldShort : bioLink, short: bioLink, blocks }
     if(checkFull){
         Swal.fire({
             icon: "warning",
@@ -312,13 +375,13 @@ async function btnEditUrl(e) {
                             if (response.ok) {
                                 fetch('/credential/reduceCredit', config).then(async (response) => {
                                     if (response.ok) {
-                                        window.location.href = '?build'
+                                        await fetchAPI('/api/biolink/edit', 'POST', newBioData, 'Something wrong while adding link!', '?build')
                                     }
                                     else if(response.status){
                                         Swal.fire({icon: "error", title: "Ooops....", text: 'something wrong'});
                                     }
                                 }).catch((error) => {
-                                    alert('WARNING!')
+                                    alert('WARNING!3')
                                     console.log(error);
                                 });
                             }
@@ -326,7 +389,7 @@ async function btnEditUrl(e) {
                                 Swal.fire({icon: "error", title: "Ooops....", text: 'This Short URL is Already Taken!'});
                             }
                         }).catch((error) => {
-                            alert('WARNING!')
+                            alert('WARNING!2')
                             console.log(error);
                         });
                     }
@@ -334,42 +397,286 @@ async function btnEditUrl(e) {
                         Swal.fire({icon: "error", title: "Ooops....", text: 'Insufficient Credit!'});
                     }
                 }).catch((error) => {
-                    alert('WARNING!')
+                    alert('WARNING!1')
                     console.log(error);
                 });
 
             }
         })
     }else{
-        fetchAPI('/api/url/edit', 'POST', data, 'This Short URL is Already Taken!', '?build')
+        fetchAPI('/api/url/edit', 'POST', data, 'This Short URL is Already Taken!', '?')
+        await fetchAPI('/api/biolink/edit', 'POST', newBioData, 'Something wrong while adding link!', '?build')
     }
 }
 
-function btnDeleteUrl(e) {  
+async function btnDeleteUrl(e) {  
     const key = $(e).val()
     const shortUrl = $(e).attr('short')
     const imgUrl = $('#imgUrl'+key).val()
+    const cat = $(e).attr('cat')
+    const short = $('#bioLink').val()
+    const reportDataElement = document.getElementById('blocks')
+    const reportDataString = reportDataElement.textContent
+    const blocks = await JSON.parse(reportDataString)
     Swal.fire({
     icon: "warning",
     title: "Do you want to Delete this Data?",
     showCancelButton: true,
     confirmButtonText: "Yes",
-    }).then((result) => {
+    }).then(async (result) => {
         if (result.isConfirmed) {
-            if(imgUrl){
-                const imgName = imgUrl.split('/')[4]
-                fetch("/api/deleteImg/"+imgName, {method: "DELETE", body: JSON.stringify(imgName)}).then(async (response) =>{
-                    if(response.ok) console.log('Success Delete');
-                }).catch((error) => {
-                    alert('WARNINGHUH!')
-                    console.log(error);
-                });
+            if(cat == 'spotify' || cat == 'soundcloud'){
+                const full = $(e).attr('full')
+                const filteredBlocks = blocks.filter(x => x.full != full)
+                const data = {oldShort : short, short, blocks: filteredBlocks }
+                await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while deleting ' + cat , '?build')
+            }else if(cat == 'pdf'){
+                const pdf = $(e).attr('pdf')
+                const filteredBlocks = blocks.filter(x => x.pdf != pdf)
+                const data = {oldShort : short, short, blocks: filteredBlocks }
+                const pdfName = pdf.split('/')[4]
+                if(pdfName){
+                    fetch("/api/deleteImg/"+pdfName, {method: "DELETE", body: JSON.stringify(pdfName)}).then(async (response) =>{
+                        if(response.ok) console.log('Success Delete');
+                    }).catch((error) => {
+                        alert('WARNINGHUH!')
+                        console.log(error);
+                    })
+                }
+                await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while deleting ' + cat , '?build')
+            }else{
+                if(imgUrl){
+                    const imgName = imgUrl.split('/')[4]
+                    fetch("/api/deleteImg/"+imgName, {method: "DELETE", body: JSON.stringify(imgName)}).then(async (response) =>{
+                        if(response.ok) console.log('Success Delete');
+                    }).catch((error) => {
+                        alert('WARNINGHUH!')
+                        console.log(error);
+                    });
+                }
+                const filteredBlocks = blocks.filter(x => x.short != shortUrl)
+                const data = {oldShort : short, short, blocks: filteredBlocks }
+                fetchAPI('/api/delete_url/'+shortUrl, 'DELETE', null, 'Something went wrong while deleting the data!', '?')
+                await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while deleting spotify!', '?build')
             }
-            fetchAPI('/api/delete_url/'+shortUrl, 'DELETE', null, 'Something went wrong while deleting the data!', '?')
         }
     });
 }
 
+async function btnAddSpotify(e) {  
+    const spotifyLink = $('#spotifyUrl').val()
+    const short = $(e).attr('short')
+    const reportDataElement = document.getElementById('blocks')
+    const reportDataString = reportDataElement.textContent
+    const blocks = reportDataString != '' ? await JSON.parse(reportDataString) : []
+    var order = blocks.length == 0 ? 1 : blocks[blocks.length - 1].order + 1
+    if(!spotifyLink){
+        Swal.fire("Please enter a spotify track!");
+        return
+    }else{
+        if(!checkSocialMedia('spotify', spotifyLink)){
+            Swal.fire("Please enter a valid spotify track!");
+            return
+        }
+    }
+    const spotifyTrack = spotifyLink.split('/')[4]
+    const spotifyData = {title: 'Spotify',full: spotifyLink, order, type:'spotify', createdAt: new Date(), spotifyTrack}
+    blocks.push(spotifyData)
+    const data = {oldShort : short, short, blocks }
+    await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while adding spotify!', '?build')
+}
+
+async function btnEditSpotify(e) {  
+    const spotifyLink = $('#spotifyUrl').val()
+    const short = $(e).attr('short')
+    const reportDataElement = document.getElementById('blocks')
+    const reportDataString = reportDataElement.textContent
+    const blocks = await JSON.parse(reportDataString) 
+    const oldDestination = $('#oldDestination').val()
+    if(!spotifyLink){
+        Swal.fire("Please enter a spotify track!");
+        return
+    }else{
+        if(!checkSocialMedia('spotify', spotifyLink)){
+            Swal.fire("Please enter a valid spotify track!");
+            return
+        }
+    }
+    const spotifyTrack = spotifyLink.split('/')[4]
+    for (const data of blocks) {
+        if(data.full == oldDestination){
+            data.full = spotifyLink
+            data.spotifyTrack = spotifyTrack
+        }
+    }
+    const data = {oldShort : short, short, blocks }
+    await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while editing spotify!', '?build')
+}
+
+async function btnAddSoundCloud(e) {  
+    const soundCloudLink = $('#soundCloudUrl').val()
+    const short = $(e).attr('short')
+    const reportDataElement = document.getElementById('blocks')
+    const reportDataString = reportDataElement.textContent
+    const blocks = reportDataString != '' ? await JSON.parse(reportDataString) : []
+    var order = blocks.length == 0 ? 1 : blocks[blocks.length - 1].order + 1
+    if(!soundCloudLink){
+        Swal.fire("Please enter a Soundcloud track!");
+        return
+    }else{
+        if(!checkSocialMedia('soundcloud', soundCloudLink)){
+            Swal.fire("Please enter a valid Soundcloud link!");
+            return
+        }
+    }
+    const soundCloudData = {title: 'Soundcloud',full: soundCloudLink, order, type:'soundcloud', createdAt: new Date()}
+    blocks.push(soundCloudData)
+    const data = {oldShort : short, short, blocks }
+    await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while adding soundcloud!', '?build')
+}
+
+async function btnEditSoundCloud(e) {  
+    const soundCloudLink = $('#soundCloudUrl').val()
+    const short = $(e).attr('short')
+    const reportDataElement = document.getElementById('blocks')
+    const reportDataString = reportDataElement.textContent
+    const blocks = reportDataString != '' ? await JSON.parse(reportDataString) : []
+    const oldDestination = $('#oldDestination').val()
+    if(!soundCloudLink){
+        Swal.fire("Please enter a spotify track!");
+        return
+    }else{
+        if(!checkSocialMedia('soundcloud', soundCloudLink)){
+            Swal.fire("Please enter a valid spotify track!");
+            return
+        }
+    }
+    for (const data of blocks) {
+        if(data.full == oldDestination){
+            data.full = soundCloudLink
+        }
+    }
+    const data = {oldShort : short, short, blocks }
+    await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while editing soundcloud!', '?build')
+}
+
+function loadPdf(e, t){
+    $('.btnPdf').prop('disabled', false)
+}
+
+function removePdf(e) {  
+    $('.btnPdf').prop('disabled', true)
+}
+
+async function btnAddPdf(e) {
+    const reportDataElement = document.getElementById('blocks')
+    const reportDataString = reportDataElement.textContent
+    const blocks = reportDataString != '' ? await JSON.parse(reportDataString) : []
+    const biolink = $('#bioLink').val()
+    const pdfTitle = $('#pdfTitle').val()
+    var order = blocks.length == 0 ? 1 : blocks[blocks.length - 1].order + 1
+    let postid = uuidv4()
+    let inputElem = document.getElementById("filePdf")
+    let file = inputElem.files[0]
+    let blob = file.slice(0, file.size, "application/pdf")
+    newFile = new File([blob], `${postid}_post.pdf`, { type: "application/pdf" })
+    let formData = new FormData();
+    formData.append("file", newFile)
+    if(!pdfTitle){
+        Swal.fire("Please enter pdf's name !");
+        return
+    }
+    fetch('/api/addPdf', {
+        method: "POST",
+        body: formData,
+    }).then(async (response) => {
+        if (response.ok) {
+            const result = await response.text()
+            const pdfData = {title: pdfTitle, pdf: result, order, type:'pdf', createdAt: new Date(), click: 0}
+            blocks.push(pdfData)
+            const data = {oldShort : biolink, short: biolink, blocks }
+            await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while adding spotify!', '?build')
+        }
+        else if(response.status){
+            Swal.fire({
+            icon: "error",
+            title: "Ooops....",
+            text: 'file must be lesser than 3.5MB',
+            });
+        }
+    }).catch((error) => {
+        alert('WARNING!!?@#?!@')
+        console.log(error);
+    });
+}
+
+async function btnEditPdf(e) {
+    const reportDataElement = document.getElementById('blocks')
+    const reportDataString = reportDataElement.textContent
+    const blocks = JSON.parse(reportDataString)
+    const biolink = $('#bioLink').val()
+    const pdfTitle = $('#pdfTitle').val()
+    const oldPdf = $('#pdfUrl').val()
+    var order = blocks[blocks.length - 1].order + 1
+    let postid = uuidv4()
+    let inputElem = document.getElementById("filePdf")
+    let file = inputElem.files[0]
+    if(!pdfTitle){
+        Swal.fire("Please enter pdf's name !");
+        return
+    }
+    if(file){
+        let blob = file.slice(0, file.size, "application/pdf")
+        newFile = new File([blob], `${postid}_post.pdf`, { type: "application/pdf" })
+        let formData = new FormData();
+        formData.append("file", newFile)
+        fetch('/api/addPdf', {
+            method: "POST",
+            body: formData,
+        }).then(async (response) => {
+            if (response.ok) {
+                const result = await response.text()
+                if(result != oldPdf && result != undefined){
+                    const pdfName = oldPdf.split('/')[4]
+                    fetch("/api/deleteImg/"+pdfName, {method: "DELETE", body: JSON.stringify(pdfName)}).then(async (response) =>{
+                        if(response.ok) console.log('Success Delete');
+                    }).catch((error) => {
+                        alert('WARNINGHUH!')
+                        console.log(error);
+                    })
+                }
+                for (const data of blocks) {
+                    if(data.pdf == oldPdf){
+                        data.pdf = result 
+                        data.title = pdfTitle
+                    }
+                }
+                console.log('result', result);
+                const data = {oldShort : biolink, short: biolink, blocks }
+                await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while adding spotify!', '?build')
+            }
+            else if(response.status){
+                Swal.fire({
+                icon: "error",
+                title: "Ooops....",
+                text: 'file must be lesser than 3.5MB',
+                });
+            }
+        }).catch((error) => {
+            alert('WARNING!!?@#?!@')
+            console.log(error);
+        });
+    }else{
+        for (const data of blocks) {
+            if(data.pdf == oldPdf){
+                data.title = pdfTitle
+            }
+        }
+        const data = {oldShort : biolink, short: biolink, blocks }
+        await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while adding spotify!', '?build')
+    }
+    
+}
 
 async function getYoutube(e) {  
     const val = $(e).val()
@@ -440,10 +747,7 @@ function fetchAPI(apiUrl, method, data, text, destination){
         }
         else{
         }
-    }).catch((error) => {
-        alert('WARNING!')
-        console.log(error);
-    });
+    })
 }
 
 function btnCopyClick(e){
@@ -508,10 +812,25 @@ async function submitImg(e) {
             const url = `url('${img}')`.toString()
             $('#imgUrl'+key).val('img')
             const btnImg = document.getElementById('btnImg'+key)
-            setTimeout(() => {
-                btnImg.style.backgroundImage = url;
-                window.location.href = location;
-                location.load()
+            btnImg.style.backgroundImage = url
+            setTimeout(async () => {
+                if(key != 'Avatar' && key != 'Background'){
+                    const reportDataElement = document.getElementById('blocks')
+                    const reportDataString = reportDataElement.textContent
+                    const blocks = await JSON.parse(reportDataString)
+                    const bioLink = $('#bioLink').val()
+                    for (const data of blocks) {
+                        if(data.short == short){
+                            data.img = img
+                        }
+                    }
+                    const data = {oldShort : bioLink, short: bioLink, blocks }
+                    await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while editing image!', '?build')
+                }else{
+                    window.location.href = location;
+                    location.load()
+                }
+                
             }, 4700);
         }
         else if(response.status){
@@ -532,7 +851,7 @@ async function submitImg(e) {
     });
 }
 
-function btnDeleteImg(e) {  
+async function btnDeleteImg(e) {  
     const type = $(e).attr('btnCategory')
     const short = $(e).attr('short')
     const imgUrl = $(e).attr('imgUrl')
@@ -552,7 +871,21 @@ function btnDeleteImg(e) {
         data.collection= 'shorturls'
         destination = '?build'
     }
+        
     fetchAPI('/api/deleteField', 'POST', data, 'Something wrong while deleting the data!', destination)
+    if(type == 'img'){
+        const reportDataElement = document.getElementById('blocks')
+        const reportDataString = reportDataElement.textContent
+        const blocks = await JSON.parse(reportDataString)
+        const bioLink = $('#bioLink').val()
+        for (const data of blocks) {
+            if(data.short == short){
+                data.img = ''
+            }
+        }
+        const bioData = {oldShort : bioLink, short: bioLink, blocks }
+        fetchAPI('/api/biolink/edit', 'POST', bioData, 'Something wrong while deleting image!', '?build')
+    }
 }
 
 async function btnEditProfile(e) {  
@@ -624,6 +957,8 @@ function checkSocialMedia(url, type) {
     if(type == 'instagram') pattern = new RegExp(/^https:\/\/www\.instagram\.com\/[a-zA-Z0-9_.-]+\/?$/)
     if(type == 'facebook') pattern = new RegExp(/^https:\/\/www\.facebook\.com\/[a-zA-Z0-9_.-]+\/?$/)
     if(type == 'youtube') pattern = new RegExp(/^https:\/\/www\.youtube\.com\/(?:c\/|channel\/|user\/|@)?[a-zA-Z0-9_-]+$/)
+    if(type == 'spotify') pattern = new RegExp(/^https:\/\/open\.spotify\.com\/track\/[a-zA-Z0-9]{22}$/)
+    if(type == 'soundcloud') pattern = new RegExp(/^https:\/\/soundcloud\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+$/)
     if(url.match(pattern)) return true
     return false
 }

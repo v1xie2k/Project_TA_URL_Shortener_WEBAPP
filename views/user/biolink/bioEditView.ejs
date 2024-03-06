@@ -4,6 +4,8 @@
     <%- include('../parts/head/headUrl.ejs');%>
     <link rel="stylesheet" href="../../../public/css/bioLink-nav.css">
     <title>Bio Link</title>
+    <script src='https://cdn.jsdelivr.net/gh/bevacqua/dragula@3.7.3/dist/dragula.min.js'></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bevacqua/dragula@3.7.3/dist/dragula.min.css">
 </head>
 <body>
     <%- include('../parts/header/headerNoSearch.ejs');%>
@@ -12,6 +14,7 @@
     <input type="hidden" name="bioLink" id="bioLink" value="<%= data.short%>">
     <input type="hidden" name="shortUrl" id="shortUrlEdit">
     <input type="hidden" name="shortUrl" id="oldDestination">
+    <div id="blocks" style="display: none;"><%= JSON.stringify(data.blocks) %></div>
     <div class="container">
         <div class="d-flex justify-content-between">
             <div class="d-flex flex-row">

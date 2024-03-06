@@ -24,7 +24,7 @@ router.post('/url', async(req, res)=>{
         data.createdBy = req.session.user.email
         const result = await addNewURL(data).catch(console.dir);
         if(result){
-            return res.status(200).send('success')
+            return res.status(200).send(result)
         }
         else{
             return res.status(400).send('error')
@@ -218,5 +218,19 @@ router.delete('/deleteImg/:fileName', async(req, res)=>{
     }
 })
 
+router.post('/addPdf', multer.single("file"), async(req, res)=>{
+    try {
+        if (req.file) {
+            const template = 'https://storage.googleapis.com/url-shortener-storage/'
+            const img = template + req.file.originalname
+            
+            await uploadImage(req.file)
+            res.status(200).send(img)
+
+        } else throw "error with img";
+    } catch (error) {
+        res.status(500).send(error);
+    }
+})
 
 export default router

@@ -1,5 +1,5 @@
 import express from 'express'
-import { filterData, getAllBioLink, getAllQr, getAllShortUrl, getAllUrl, getReports, sortDataBioLink, updateClickShortUrl } from '../functions/urlController.js';
+import { editBioLink, filterData, getAllBioLink, getAllQr, getAllShortUrl, getAllUrl, getReports, sortBlocksBioLink, sortDataBioLink, updateClickShortUrl } from '../functions/urlController.js';
 import { searchData } from '../functions/universal.js';
 import { isAdmin, isLoggedIn } from '../middleware/middleware.js';
 import { getAllInvoice, getAllPlans, getAllPriceList, getIncome, getInvoices, sortPlans } from '../functions/planController.js';
@@ -167,6 +167,11 @@ router.get('/biolink', isLoggedIn, async (req, res)=>{
     res.locals.user = req.session.user
     const title = req.url.includes('?') ? req.url.split('?')[1] : ''
     const allBio = await filterData({user: req.session.user.email, title}, await getAllBioLink())
+    for (const object of allBio) {
+        if(object.blocks){
+            object.blocks = await sortBlocksBioLink(object)
+        }
+    }
     const allUrl = await filterData({user: req.session.user.email}, await getAllUrl()) 
     res.render('user/biolink/bioView', {allBio, allUrl})
 })
@@ -176,15 +181,14 @@ router.get('/biolink/edit/:bioLink', isLoggedIn, async (req, res) =>{
     const param = req.params.bioLink
     const bioLink = await searchData('biolinks', req.params.bioLink)
     const paramType = req.url.includes('?') ? req.url.split('?')[1] : 'build'
-    var allUrl = await filterData({user: req.session.user.email, bioLink: param}, await getAllUrl()) 
-    var sortedUrl = await sortDataBioLink(allUrl)
+    var sortedBlocks = bioLink.blocks ? await sortBlocksBioLink(bioLink) : []
     if(!bioLink){
         res.render('error/error404')
     }else{
         if(bioLink.createdBy != req.session.user.email){
             res.render('error/error403')
         }else{
-            res.render('user/biolink/bioEditView', {data: bioLink, paramType, allUrl: sortedUrl, path: 'edit'})
+            res.render('user/biolink/bioEditView', {data: bioLink, paramType, blocks: sortedBlocks, path: 'edit'})
         }
     }
 })
@@ -192,8 +196,7 @@ router.get('/biolink/edit/:bioLink', isLoggedIn, async (req, res) =>{
 router.get('/m/:bioLink', async (req, res)=>{
     const param = req.params.bioLink
     const bioLink = await searchData('biolinks', req.params.bioLink)
-    var allUrl = await filterData({bioLink: param, public: true}, await getAllUrl()) 
-    var sortedUrl = await sortDataBioLink(allUrl)
+    var sortedBlocks = await sortBlocksBioLink(bioLink)
     if(!bioLink){
         res.render('error/error404')
     }else{
@@ -201,7 +204,7 @@ router.get('/m/:bioLink', async (req, res)=>{
         var fetchCountry = await fetch(`https://ipapi.co/${req.ips}/json/`);
         var getCountry = await fetchCountry.json()
         updateClickShortUrl('biolinks', param, req.headers['user-agent'], getCountry.country_name)
-        res.render('user/biolink/bioPreview', {data: bioLink, allUrl: sortedUrl, paramType: 'web', path: 'webview'})
+        res.render('user/biolink/bioPreview', {data: bioLink, blocks: sortedBlocks, paramType: 'web', path: 'webview'})
     }
 })
 
@@ -220,5 +223,40 @@ router.get('/:shortUrl', async (req,res)=>{
     }
 })
 
+router.get('/view/pdf/:pdf', async (req,res)=>{
+    var status = false
+    var update = false
+    const pdf = req.params.pdf 
+    const bioLink = await getAllBioLink()
+    var pdfLink 
+    for (const bio of bioLink) {
+        const blocks = bio.blocks
+        if(blocks.length > 1){
+            for (const block of blocks) {
+                if(block.pdf ){
+                    const pdfName = block.pdf.split('/')[4]
+                    console.log(pdfName);
+                    //bug ini kepangil 2x (jadinya clicknya ++2)
+                    if(pdfName == pdf){
+                        pdfLink = block.pdf
+                        status = true
+                        update = true
+                        block.click++
+                    }
+                }
+            }
+            if(update){
+                update =false
+                const data = {oldShort: bio.short, short: bio.short, blocks}
+                const result = await editBioLink(data).catch(console.dir)
+            }
+        }
+    }
+    if(!status){
+        res.render('error/error404')
+    }else{
+        res.render('user/pdf/pdfView', {pdf: pdfLink})
+    }
+})
 
 export default router

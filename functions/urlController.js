@@ -107,16 +107,10 @@ export async function addNewURL(data) {
                     data.short = shortQrNew
                 }while(await searchData(dbName, shortQrNew))
             }
-            data.device = {
-                desktop: 0,
-                mobile: 0,
-                tablet: 0,
-                smarttv: 0
-            }
             // console.log('data', data);
             const res = await db.collection(dbName).doc(data.short).set(data)
             // console.log(res);
-            return true
+            return data
         }
     } catch (err) {
         console.log(err.stack);
@@ -156,12 +150,6 @@ export async function addNewBioLink(data) {
         if(await searchData('biolinks', data.short)){
             return false
         }else{
-            data.device = {
-                desktop: 0,
-                mobile: 0,
-                tablet: 0,
-                smarttv: 0
-            }
             data.type = 'biolink'
             const res = await db.collection('biolinks').doc(data.short).set(data)
             return true
@@ -189,6 +177,7 @@ export async function editBioLink(data) {
         if(data.instagram) oldData.instagram = data.instagram
         if(data.facebook) oldData.facebook = data.facebook
         if(data.youtube) oldData.youtube = data.youtube
+        if(data.blocks) oldData.blocks = data.blocks
         if(editShortStatus){
             const del = await db.collection('biolinks').doc(data.oldShort).delete()
         }
@@ -287,6 +276,22 @@ export async function sortDataBioLink(data) {
         }
     }
     return linkList.concat(youtubeList)
+}
+
+export async function sortBlocksBioLink(data) {  
+    var list =[]
+    list = data.blocks.sort((a, b)=> {
+        const orderA = a.order
+        const orderB = b.order;
+        if (orderA < orderB) {
+            return -1;
+        }
+        if (orderA > orderB) {
+            return 1;
+        }
+        return 0;
+    })
+    return list
 }
 
 export async function uploadImage(file) {  

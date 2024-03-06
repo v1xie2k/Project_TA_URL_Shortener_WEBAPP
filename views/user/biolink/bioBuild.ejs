@@ -10,16 +10,19 @@
 <button class="btn btn-primary mt-2" onclick="btnToogleYoutube(this)">Add Youtube</button> -->
 <!-- think about cara dynamickan form ini (kalau di addlink maka muncul form dibawah, tapi kalau juga edit link form ini juga muncul + include data didalamnya) -->
 <%- include('../parts/modal/modalMenu.ejs');%>
-
-<div>
-    <% for (const key in allUrl) { %>
-        <% const data = allUrl[key] %>
-        <div class="card mt-4">
+<div id="dragParent">
+    <% for (const key in data.blocks) { %>
+        <% const block = data.blocks[key] %>
+        <% var ctr = +key + 1 %>
+        <div class="card mt-4 dragBody" order="<%= ctr%>" createdAt="<%= block.createdAt%>" >
             <div class="card-body" >
                 <div class="mb-3">
                     <div class="row g-0">
+                    <div class="" style="width: 2em;" >
+                        <i class="fa-solid fa-grip-vertical fa-2x dragHandle" style="cursor: grab;"></i>
+                    </div>
                     <div class="col-md-2" style="align-items: center; text-align: center;">
-                        <%if(data.type == 'youtube'){%>
+                        <%if(block.type == 'youtube'){%>
                             <div style="padding-top: 30px;">
                                 <span class="video-placeholder">
                                     <svg width="6rem" height="6rem" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" >
@@ -28,13 +31,25 @@
                                     </svg>
                                 </span>
                             </div>
+                        <%}else if(block.type == 'spotify'){%>
+                            <div style="padding-top: 30px;">
+                                <i class="fa fa-spotify" style="font-size:80px;color:rgb(42, 235, 42)"></i>
+                            </div>
+                        <%}else if(block.type == 'soundcloud'){%>
+                            <div style="padding-top: 30px;">
+                                <i class="fa-brands fa-soundcloud" style="font-size:80px;color:rgb(253, 145, 4)"></i>
+                            </div>
+                        <%}else if(block.type == 'pdf'){%>
+                            <div style="padding-top: 30px;">
+                                <i class="fa-solid fa-file-pdf" style="font-size:80px; color: red;"></i>
+                            </div>
                         <%}else{%>
                             <!-- Button trigger modal -->
                             
-                            <%if(data.img){%>
-                                <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style=" margin-top: 25px; padding: 0; background-image: url('<%=data.img%>');">
+                            <%if(block.img){%>
+                                <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style=" margin-top: 25px; padding: 0; background-image: url('<%=block.img%>');">
                                 </button>
-                                <input id="imgUrl<%=key%>" type="hidden" name="imgUrl" value="<%= data.img%>">
+                                <input id="imgUrl<%=key%>" type="hidden" name="imgUrl" value="<%= block.img%>">
                             <%}else{%>
                                 <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style=" margin-top: 25px; border-radius: 5px; padding: 0;">
                                     <i class="fa-regular fa-image" style="font-size: 75px;"></i>
@@ -45,7 +60,7 @@
                                 <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel<%= key%>"><%if(data.img){%>Edit<%}else{%>Add<%}%> Image</h5>
+                                        <h5 class="modal-title" id="exampleModalLabel<%= key%>"><%if(block.img){%>Edit<%}else{%>Add<%}%> Image</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body" style="margin:15px; width: 465px; height: auto; border: 2px dashed gray;">
@@ -65,7 +80,7 @@
                                             </div>
                                             <div>
                                                 <button id="btnCancel<%= key%>" type="button" class="btn btn-danger" data-bs-dismiss="modal"  onclick="removeImg(this)"  key="<%= key%>">Close</button>
-                                                <button id="btnSave<%= key%>" type="button" class="btn btn-primary" onclick="submitImg(this)" value="<%= key%>" short="<%= data.short%>" disabled>Save</button>
+                                                <button id="btnSave<%= key%>" type="button" class="btn btn-primary" onclick="submitImg(this)" value="<%= key%>" short="<%= block.short%>" disabled>Save</button>
                                             </div>
                                         </div>
                                         
@@ -75,17 +90,23 @@
                             </div>
                         <%}%>
                     </div>
-                    <div class="col col-md-10">
+                    <div class="col col-md-9 " style="width: 79%">
                         <div class="d-flex flex-row-reverse">
-                            <button type="button" onclick="btnDeleteUrl(this)" class="btn btn-danger" short="<%= data.short%>" value="<%= key%>"><i class="fa-solid fa-trash-can pe-2"></i>Delete</button>
-                            <% if(data.youtubeId){%>
-                                <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" key="<%= key%>" value="<%= data.short%>" urlTitle="<%= data.title%>" destination="<%= data.full%>" description="<%= data.title%>" youtubeId="<%= data.youtubeId%>" data-bs-toggle="modal" data-bs-target="#modalYoutube"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                            <button type="button" onclick="btnDeleteUrl(this)" class="btn btn-danger" short="<%= block.short%>" value="<%= key%>" cat="<%= block.type%>" full="<%= block.full%>" pdf="<%= block.pdf%>"><i class="fa-solid fa-trash-can pe-2"></i>Delete</button>
+                            <% if(block.youtubeId){%>
+                                <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" key="<%= key%>" value="<%= block.short%>" urlTitle="<%= block.title%>" destination="<%= block.full%>"  youtubeId="<%= block.youtubeId%>" data-bs-toggle="modal" data-bs-target="#modalYoutube"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                            <%}else if(block.type == 'spotify'){%>
+                                <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" cat="spotify" destination="<%= block.full%>" data-bs-toggle="modal" data-bs-target="#modalSpotify"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                            <%}else if(block.type == 'soundcloud'){%>
+                                <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" cat="soundCloud" destination="<%= block.full%>" data-bs-toggle="modal" data-bs-target="#modalSoundCloud"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                            <%}else if(block.type == 'pdf'){%>
+                                <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" pdftitle="<%= block.title%>" cat="pdf" pdf="<%= block.pdf%>" data-bs-toggle="modal" data-bs-target="#modalPdf"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
                             <%}else{%>
-                                <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" key="<%= key%>" value="<%= data.short%>" urlTitle="<%= data.title%>" destination="<%= data.full%>" description="<%= data.title%>" youtubeId="<%= data.youtubeId%>" data-bs-toggle="modal" data-bs-target="#modalLink<%= key%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                                <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" key="<%= key%>" value="<%= block.short%>" urlTitle="<%= block.title%>" destination="<%= block.full%>" description="<%= block.description%>" data-bs-toggle="modal" data-bs-target="#modalLink<%= key%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
                             <%}%>
 
-                            <%if(data.img){%>
-                                <button class="btnRemovePicture bioEdit btn" onclick="btnDeleteImg(this)" btnCategory="img" short="<%= data.short%>" imgUrl="<%= data.img%>"><i class="fa-solid fa-xmark pe-2"></i>Remove Pict</button>
+                            <%if(block.img){%>
+                                <button class="btnRemovePicture bioEdit btn" onclick="btnDeleteImg(this)" btnCategory="img" short="<%= block.short%>" imgUrl="<%= block.img%>"><i class="fa-solid fa-xmark pe-2"></i>Remove Pict</button>
                             <%}%>
                         </div>
                         <!-- modal link -->
@@ -117,12 +138,9 @@
                             </div>
                         </div>
                         <div class="text-left">
-                            <h4 class="card-title"><%= data.title%></h4>
-                            <a href="<%= data.full%>" style="text-decoration: none;"><%= data.full%></a>
-                            <%if(data.type == 'youtube'){%>
-                                <p class="card-text"><small class="text-body-secondary"><%= data.short%></small></p>
-                            <%}%>
-                            <p class="card-text"><small class="text-body-secondary"><%= data.createdAt%></small></p>
+                            <h4 class="card-title"><%= block.title%></h4>
+                            <a href="<%= block.full%>" style="text-decoration: none;"><%= block.full%></a>
+                            <p class="card-text"><small class="text-body-secondary"><%= block.createdAt%></small></p>
                         </div>
                     </div>
                     </div>
@@ -132,3 +150,50 @@
     <% } %>
 
 </div>
+<script>
+    dragula([document.querySelector('#dragTest') , document.querySelector('#dragParent')],{
+        moves: function (el, container, handle) {
+            return handle.classList.contains('dragHandle');
+        }
+    }).on('drop',async function(el) {
+        const reportDataElement = document.getElementById('blocks')
+        const reportDataString = reportDataElement.textContent
+        const blocks = JSON.parse(reportDataString)
+        const short = $('#bioLink').val()
+        const order = $(el).attr('order')
+        var idx =  $(el).index() + 1
+        if(idx < order){
+            //function untuk dari perubahan drag n drop bawah ke atas
+            //done (tingal update fetch)
+            var ctr = 0
+            var iteration = order-idx
+            var index = $(el).index()
+            while(ctr != iteration){
+                blocks[index].order = blocks[index].order + 1
+                index++
+                ctr++
+            }
+            blocks[index].order = idx
+        }else{
+            var ctr = 0
+            var iteration = idx - order
+            var index = $(el).index()
+            while(ctr != iteration){
+                blocks[index].order = blocks[index].order - 1
+                index--
+                ctr++
+            }
+            blocks[index].order = idx
+        }
+        const data = {oldShort : short, short, blocks }
+        var config = {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)}
+        console.log(data);
+        fetch('/api/biolink/edit', config).then(async (response) => {
+            if (response.ok) {
+                window.location.href = '?build'
+            }
+        })
+    })
+
+    
+</script>
