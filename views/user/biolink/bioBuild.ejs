@@ -18,131 +18,147 @@
             <div class="card-body" >
                 <div class="mb-3">
                     <div class="row g-0">
-                    <div class="" style="width: 2em;" >
-                        <i class="fa-solid fa-grip-vertical fa-2x dragHandle" style="cursor: grab;"></i>
-                    </div>
-                    <div class="col-md-2" style="align-items: center; text-align: center;">
-                        <%if(block.type == 'youtube'){%>
-                            <div style="padding-top: 30px;">
-                                <span class="video-placeholder">
-                                    <svg width="6rem" height="6rem" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" >
-                                        <path d="M47.044 12.3709C46.7726 11.3498 46.2378 10.4178 45.493 9.66825C44.7483 8.91872 43.8197 8.37794 42.8003 8.10003C39.0476 7.09094 24.0476 7.09094 24.0476 7.09094C24.0476 7.09094 9.04761 7.09094 5.29488 8.10003C4.27547 8.37794 3.34693 8.91872 2.60218 9.66825C1.85744 10.4178 1.32262 11.3498 1.05124 12.3709C0.0476075 16.14 0.0476074 24 0.0476074 24C0.0476074 24 0.0476075 31.86 1.05124 35.6291C1.32262 36.6503 1.85744 37.5823 2.60218 38.3318C3.34693 39.0813 4.27547 39.6221 5.29488 39.9C9.04761 40.9091 24.0476 40.9091 24.0476 40.9091C24.0476 40.9091 39.0476 40.9091 42.8003 39.9C43.8197 39.6221 44.7483 39.0813 45.493 38.3318C46.2378 37.5823 46.7726 36.6503 47.044 35.6291C48.0476 31.86 48.0476 24 48.0476 24C48.0476 24 48.0476 16.14 47.044 12.3709Z" fill="#FF0302"></path>
-                                        <path d="M19.1385 31.1373V16.8628L31.684 24.0001L19.1385 31.1373Z" fill="#FEFEFE"></path>
-                                    </svg>
-                                </span>
-                            </div>
-                        <%}else if(block.type == 'spotify'){%>
-                            <div style="padding-top: 30px;">
-                                <i class="fa fa-spotify" style="font-size:80px;color:rgb(42, 235, 42)"></i>
-                            </div>
-                        <%}else if(block.type == 'soundcloud'){%>
-                            <div style="padding-top: 30px;">
-                                <i class="fa-brands fa-soundcloud" style="font-size:80px;color:rgb(253, 145, 4)"></i>
-                            </div>
-                        <%}else if(block.type == 'pdf'){%>
-                            <div style="padding-top: 30px;">
-                                <i class="fa-solid fa-file-pdf" style="font-size:80px; color: red;"></i>
-                            </div>
-                        <%}else{%>
-                            <!-- Button trigger modal -->
-                            
-                            <%if(block.img){%>
-                                <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style=" margin-top: 25px; padding: 0; background-image: url('<%=block.img%>');">
-                                </button>
-                                <input id="imgUrl<%=key%>" type="hidden" name="imgUrl" value="<%= block.img%>">
+                        <div class="" style="width: 2em;" >
+                            <i class="fa-solid fa-grip-vertical fa-2x dragHandle" style="cursor: grab;"></i>
+                        </div>
+                        <div class="col-md-2" style="align-items: center; text-align: center;">
+                            <%if(block.type == 'youtube'){%>
+                                <div style="padding-top: 30px;">
+                                    <span class="video-placeholder">
+                                        <svg width="6rem" height="6rem" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" >
+                                            <path d="M47.044 12.3709C46.7726 11.3498 46.2378 10.4178 45.493 9.66825C44.7483 8.91872 43.8197 8.37794 42.8003 8.10003C39.0476 7.09094 24.0476 7.09094 24.0476 7.09094C24.0476 7.09094 9.04761 7.09094 5.29488 8.10003C4.27547 8.37794 3.34693 8.91872 2.60218 9.66825C1.85744 10.4178 1.32262 11.3498 1.05124 12.3709C0.0476075 16.14 0.0476074 24 0.0476074 24C0.0476074 24 0.0476075 31.86 1.05124 35.6291C1.32262 36.6503 1.85744 37.5823 2.60218 38.3318C3.34693 39.0813 4.27547 39.6221 5.29488 39.9C9.04761 40.9091 24.0476 40.9091 24.0476 40.9091C24.0476 40.9091 39.0476 40.9091 42.8003 39.9C43.8197 39.6221 44.7483 39.0813 45.493 38.3318C46.2378 37.5823 46.7726 36.6503 47.044 35.6291C48.0476 31.86 48.0476 24 48.0476 24C48.0476 24 48.0476 16.14 47.044 12.3709Z" fill="#FF0302"></path>
+                                            <path d="M19.1385 31.1373V16.8628L31.684 24.0001L19.1385 31.1373Z" fill="#FEFEFE"></path>
+                                        </svg>
+                                    </span>
+                                </div>
+                            <%}else if(block.type == 'spotify'){%>
+                                <div style="padding-top: 30px;">
+                                    <i class="fa fa-spotify" style="font-size:80px;color:rgb(42, 235, 42)"></i>
+                                </div>
+                            <%}else if(block.type == 'soundcloud'){%>
+                                <div style="padding-top: 30px;">
+                                    <i class="fa-brands fa-soundcloud" style="font-size:80px;color:rgb(253, 145, 4)"></i>
+                                </div>
+                            <%}else if(block.type == 'pdf'){%>
+                                <div style="padding-top: 30px;">
+                                    <i class="fa-solid fa-file-pdf" style="font-size:80px; color: red;"></i>
+                                </div>
                             <%}else{%>
+                                <!-- Button trigger modal -->
+                                
+                                <%if(block.img){%>
+                                    <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style=" margin-top: 25px; padding: 0; background-image: url('<%=block.img%>');">
+                                    </button>
+                                    <input id="imgUrl<%=key%>" type="hidden" name="imgUrl" value="<%= block.img%>">
+                                <%}else{%>
+                                    <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style=" margin-top: 25px; border-radius: 5px; padding: 0;">
+                                        <i class="fa-regular fa-image" style="font-size: 75px;"></i>
+                                    </button>
+                                <%}%>
+                                <!-- Modal -->
+                                <div class="modal fade" id="exampleModal<%= key%>" tabindex="-1" aria-labelledby="exampleModalLabel<%= key%>" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel<%= key%>"><%if(block.img){%>Edit<%}else{%>Add<%}%> Image</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body" style="margin:15px; width: 465px; height: auto; border: 2px dashed gray;">
+                                            <img id="outputImg<%= key%>" width="100%"/>
+                                            <div id="containerUpload<%= key%>" style="margin:auto; text-align: center; align-items: center; width: 150px; height: 50px; margin-bottom: 25px;" >
+                                                <input type="file" accept=".png,.jpg,.jpeg" name="image" id="file<%= key%>" onchange="loadImage(event, this)" style="display: none;" key="<%= key%>">
+                                                <label for="file<%= key%>" style="cursor: pointer;border: 1px solid black; border-radius: 5px; width: 150px; height: 50px; padding-top: 10px;">Upload Image</label>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <div>
+                                                <p >Use JPG, JPEG or PNG. (max 3.5MB) </p>
+                                            </div>
+                                            <div class="d-flex justify-content-between w-100">
+                                                <div>
+                                                    <button id="btnRemoveImg<%= key%>" key="<%= key%>" onclick="removeImg(this)" type="button" class="btn btn-warning" style="color:white; display: none;">Remove</button>
+                                                </div>
+                                                <div>
+                                                    <button id="btnCancel<%= key%>" type="button" class="btn btn-danger" data-bs-dismiss="modal"  onclick="removeImg(this)"  key="<%= key%>">Close</button>
+                                                    <button id="btnSave<%= key%>" type="button" class="btn btn-primary" onclick="submitImg(this)" value="<%= key%>" short="<%= block.short%>" disabled>Save</button>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                            <%}%>
+                        </div>
+                        <div class="col col-md-9 " style="width: 79%">
+                            <div class="d-flex flex-row-reverse">
+                                <button type="button" onclick="btnDeleteUrl(this)" class="btn btn-danger" short="<%= block.short%>" value="<%= key%>" cat="<%= block.type%>" full="<%= block.full%>" pdf="<%= block.pdf%>" createdAt="<%= block.createdAt%>"><i class="fa-solid fa-trash-can pe-2"></i>Delete</button>
+                                <% if(block.youtubeId){%>
+                                    <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" key="<%= key%>" value="<%= block.short%>" urlTitle="<%= block.title%>" destination="<%= block.full%>"  youtubeId="<%= block.youtubeId%>" data-bs-toggle="modal" data-bs-target="#modalYoutube"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                                <%}else if(block.type == 'spotify'){%>
+                                    <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" cat="spotify" destination="<%= block.full%>" data-bs-toggle="modal" data-bs-target="#modalSpotify"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                                <%}else if(block.type == 'soundcloud'){%>
+                                    <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" cat="soundCloud" destination="<%= block.full%>" data-bs-toggle="modal" data-bs-target="#modalSoundCloud"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                                <%}else if(block.type == 'pdf'){%>
+                                    <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" pdftitle="<%= block.title%>" cat="pdf" pdf="<%= block.pdf%>" data-bs-toggle="modal" data-bs-target="#modalPdf"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                                <%}else if(block.type == 'slider'){%>
+                                    <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" createdAt="<%= block.createdAt%>" cat="slider" key="<%= key%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                                <%}else{%>
+                                    <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" key="<%= key%>" value="<%= block.short%>" urlTitle="<%= block.title%>" destination="<%= block.full%>" description="<%= block.description%>" data-bs-toggle="modal" data-bs-target="#modalLink<%= key%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                                <%}%>
+
+                                <%if(block.img){%>
+                                    <button class="btnRemovePicture bioEdit btn" onclick="btnDeleteImg(this)" btnCategory="img" short="<%= block.short%>" imgUrl="<%= block.img%>"><i class="fa-solid fa-xmark pe-2"></i>Remove Pict</button>
+                                <%}%>
+                            </div>
+                            <!-- modal link -->
+                            <div class="modal fade" id="modalLink<%= key%>" aria-hidden="true" aria-labelledby="modalLink<%= key%>" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modalLink<%= key%>">Edit Short Link</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <h4>Title</h4>
+                                            <div class="mb-3">
+                                                <input required type="text" name="title" id="titleUrl<%= key%>"  placeholder="title" class="form-control">
+                                            </div>
+                                            <h4>Description</h4>
+                                            <div class="mb-3">
+                                                <input required type="text" name="Description" id="description<%= key%>"  placeholder="(Optional)" class="form-control">
+                                            </div>
+                                            <h4>Destination</h4>
+                                            <div class="mb-3">
+                                                <input required type="url" name="destination" id="fullUrl<%= key%>"  placeholder="https://example.com" class="form-control">
+                                            </div>
+                                            <div class="d-flex flex-row-reverse">
+                                                <button id="btnSaveUrl" type="button" onclick="btnEditUrl(this)" class="btn btn-primary ms-3" key="<%= key%>">Save</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-left">
+                                <h4 class="card-title"><%= block.title%></h4>
+                                <a href="<%= block.full%>" style="text-decoration: none;"><%= block.full%></a>
+                                <p class="card-text"><small class="text-body-secondary"><%= block.createdAt%></small></p>
+                            </div>
+                        </div>
+                        <!-- <div class="form-body" id="slider<%=key%>">
+                            <div class="col-md-2" style="align-items: center; text-align: center; margin-left: 30px;">
                                 <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style=" margin-top: 25px; border-radius: 5px; padding: 0;">
                                     <i class="fa-regular fa-image" style="font-size: 75px;"></i>
                                 </button>
-                            <%}%>
-                            <!-- Modal -->
-                            <div class="modal fade" id="exampleModal<%= key%>" tabindex="-1" aria-labelledby="exampleModalLabel<%= key%>" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel<%= key%>"><%if(block.img){%>Edit<%}else{%>Add<%}%> Image</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body" style="margin:15px; width: 465px; height: auto; border: 2px dashed gray;">
-                                        <img id="outputImg<%= key%>" width="100%"/>
-                                        <div id="containerUpload<%= key%>" style="margin:auto; text-align: center; align-items: center; width: 150px; height: 50px; margin-bottom: 25px;" >
-                                            <input type="file" accept=".png,.jpg,.jpeg" name="image" id="file<%= key%>" onchange="loadImage(event, this)" style="display: none;" key="<%= key%>">
-                                            <label for="file<%= key%>" style="cursor: pointer;border: 1px solid black; border-radius: 5px; width: 150px; height: 50px; padding-top: 10px;">Upload Image</label>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <div>
-                                            <p >Use JPG, JPEG or PNG. (max 3.5MB) </p>
-                                        </div>
-                                        <div class="d-flex justify-content-between w-100">
-                                            <div>
-                                                <button id="btnRemoveImg<%= key%>" key="<%= key%>" onclick="removeImg(this)" type="button" class="btn btn-warning" style="color:white; display: none;">Remove</button>
-                                            </div>
-                                            <div>
-                                                <button id="btnCancel<%= key%>" type="button" class="btn btn-danger" data-bs-dismiss="modal"  onclick="removeImg(this)"  key="<%= key%>">Close</button>
-                                                <button id="btnSave<%= key%>" type="button" class="btn btn-primary" onclick="submitImg(this)" value="<%= key%>" short="<%= block.short%>" disabled>Save</button>
-                                            </div>
-                                        </div>
-                                        
-                                    </div>
-                                </div>
-                                </div>
+                                <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style=" margin-top: 25px; border-radius: 5px; padding: 0;">
+                                    <i class="fa-regular fa-image" style="font-size: 75px;"></i>
+                                </button>
+                                <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style=" margin-top: 25px; border-radius: 5px; padding: 0;">
+                                    <i class="fa-regular fa-image" style="font-size: 75px;"></i>
+                                </button>
                             </div>
-                        <%}%>
-                    </div>
-                    <div class="col col-md-9 " style="width: 79%">
-                        <div class="d-flex flex-row-reverse">
-                            <button type="button" onclick="btnDeleteUrl(this)" class="btn btn-danger" short="<%= block.short%>" value="<%= key%>" cat="<%= block.type%>" full="<%= block.full%>" pdf="<%= block.pdf%>"><i class="fa-solid fa-trash-can pe-2"></i>Delete</button>
-                            <% if(block.youtubeId){%>
-                                <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" key="<%= key%>" value="<%= block.short%>" urlTitle="<%= block.title%>" destination="<%= block.full%>"  youtubeId="<%= block.youtubeId%>" data-bs-toggle="modal" data-bs-target="#modalYoutube"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
-                            <%}else if(block.type == 'spotify'){%>
-                                <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" cat="spotify" destination="<%= block.full%>" data-bs-toggle="modal" data-bs-target="#modalSpotify"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
-                            <%}else if(block.type == 'soundcloud'){%>
-                                <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" cat="soundCloud" destination="<%= block.full%>" data-bs-toggle="modal" data-bs-target="#modalSoundCloud"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
-                            <%}else if(block.type == 'pdf'){%>
-                                <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" pdftitle="<%= block.title%>" cat="pdf" pdf="<%= block.pdf%>" data-bs-toggle="modal" data-bs-target="#modalPdf"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
-                            <%}else{%>
-                                <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" key="<%= key%>" value="<%= block.short%>" urlTitle="<%= block.title%>" destination="<%= block.full%>" description="<%= block.description%>" data-bs-toggle="modal" data-bs-target="#modalLink<%= key%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
-                            <%}%>
-
-                            <%if(block.img){%>
-                                <button class="btnRemovePicture bioEdit btn" onclick="btnDeleteImg(this)" btnCategory="img" short="<%= block.short%>" imgUrl="<%= block.img%>"><i class="fa-solid fa-xmark pe-2"></i>Remove Pict</button>
-                            <%}%>
-                        </div>
-                        <!-- modal link -->
-                        <div class="modal fade" id="modalLink<%= key%>" aria-hidden="true" aria-labelledby="modalLink<%= key%>" tabindex="-1">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="modalLink<%= key%>">Edit Short Link</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <h4>Title</h4>
-                                        <div class="mb-3">
-                                            <input required type="text" name="title" id="titleUrl<%= key%>"  placeholder="title" class="form-control">
-                                        </div>
-                                        <h4>Description</h4>
-                                        <div class="mb-3">
-                                            <input required type="text" name="Description" id="description<%= key%>"  placeholder="(Optional)" class="form-control">
-                                        </div>
-                                        <h4>Destination</h4>
-                                        <div class="mb-3">
-                                            <input required type="url" name="destination" id="fullUrl<%= key%>"  placeholder="https://example.com" class="form-control">
-                                        </div>
-                                        <div class="d-flex flex-row-reverse">
-                                            <button id="btnSaveUrl" type="button" onclick="btnEditUrl(this)" class="btn btn-primary ms-3" key="<%= key%>">Save</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-left">
-                            <h4 class="card-title"><%= block.title%></h4>
-                            <a href="<%= block.full%>" style="text-decoration: none;"><%= block.full%></a>
-                            <p class="card-text"><small class="text-body-secondary"><%= block.createdAt%></small></p>
-                        </div>
-                    </div>
+                            
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -195,5 +211,16 @@
         })
     })
 
-    
+    async function btnAddCarousel(e) {  
+        const spotifyLink = $('#spotifyUrl').val()
+        const short = $(e).attr('short')
+        const reportDataElement = document.getElementById('blocks')
+        const reportDataString = reportDataElement.textContent
+        const blocks = reportDataString != '' ? await JSON.parse(reportDataString) : []
+        var order = blocks.length == 0 ? 1 : blocks[blocks.length - 1].order + 1
+        const sliderData = {title: 'Image Slider',data: [], order, type:'slider', createdAt: new Date()}
+        blocks.push(sliderData)
+        const data = {oldShort : short, short, blocks }
+        await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while adding spotify!', '?build')
+    }
 </script>

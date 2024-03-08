@@ -193,6 +193,44 @@ router.get('/biolink/edit/:bioLink', isLoggedIn, async (req, res) =>{
     }
 })
 
+router.get('/view/pdf/:pdf', async (req,res)=>{
+    var status = false
+    var update = false
+    var location = 'error/error404'
+    var pdfLink 
+    const pdf = req.params.pdf 
+    const bioLink = await getAllBioLink()
+    console.log('testing');
+    for (const bio of bioLink) {
+        const blocks = bio.blocks
+        if(blocks.length > 1){
+            console.log(bio.short);
+            for (const block of blocks) {
+                if(block.pdf ){
+                    const pdfName = block.pdf.split('/')[4]
+                    console.log(pdfName);
+                    
+                    if(pdfName == pdf){
+                        pdfLink = block.pdf
+                        status = true
+                        update = true
+                        block.click++
+                        break
+                    }
+                }
+            }
+            if(update){
+                update =false
+                const data = {oldShort: bio.short, short: bio.short, blocks}
+                const result = await editBioLink(data).catch(console.dir)
+            }
+        }
+    }
+    //bug ini kepangil 2x (jadinya clicknya ++2)
+    if(status) location = 'user/pdf/pdfView' 
+    res.render(location, {pdf: pdfLink})
+})
+
 router.get('/m/:bioLink', async (req, res)=>{
     const param = req.params.bioLink
     const bioLink = await searchData('biolinks', req.params.bioLink)
@@ -211,6 +249,7 @@ router.get('/m/:bioLink', async (req, res)=>{
 
 router.get('/:shortUrl', async (req,res)=>{
     const shortUrl = await searchData('shorturls', req.params.shortUrl)
+    console.log('tessss');
     if(!shortUrl){
         res.render('error/error404')
     }else{
@@ -223,40 +262,7 @@ router.get('/:shortUrl', async (req,res)=>{
     }
 })
 
-router.get('/view/pdf/:pdf', async (req,res)=>{
-    var status = false
-    var update = false
-    const pdf = req.params.pdf 
-    const bioLink = await getAllBioLink()
-    var pdfLink 
-    for (const bio of bioLink) {
-        const blocks = bio.blocks
-        if(blocks.length > 1){
-            for (const block of blocks) {
-                if(block.pdf ){
-                    const pdfName = block.pdf.split('/')[4]
-                    console.log(pdfName);
-                    //bug ini kepangil 2x (jadinya clicknya ++2)
-                    if(pdfName == pdf){
-                        pdfLink = block.pdf
-                        status = true
-                        update = true
-                        block.click++
-                    }
-                }
-            }
-            if(update){
-                update =false
-                const data = {oldShort: bio.short, short: bio.short, blocks}
-                const result = await editBioLink(data).catch(console.dir)
-            }
-        }
-    }
-    if(!status){
-        res.render('error/error404')
-    }else{
-        res.render('user/pdf/pdfView', {pdf: pdfLink})
-    }
-})
+
+
 
 export default router

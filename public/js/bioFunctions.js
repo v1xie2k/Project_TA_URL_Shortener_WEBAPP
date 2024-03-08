@@ -272,11 +272,18 @@ async function btnClickEditUrl(e) {
         }else if(cat == 'pdf'){
             const pdfTitle = $(e).attr('pdfTitle')
             const pdf = $(e).attr('pdf')
+            const pdfName = pdf.split('/')[4]
             $('#pdfTitle').val(pdfTitle)
             $('#pdfUrl').val(pdf)
+            $('#pdfName').val(pdfName)
             $('#modalPdfLabel').html('Edit Pdf')
             $('#btnSavePdf').show()
             $('#btnSubmitPdf').hide()
+        }else if(cat == 'slider'){
+            const key = $(e).attr('key')
+            const createdAt = $(e).attr('createdAt')
+            $('#slider'+key).show()
+            console.log(key);
         }else{
             $('.form-bio-link').show()
             $('#titleUrl'+key).val(title)
@@ -443,6 +450,11 @@ async function btnDeleteUrl(e) {
                         console.log(error);
                     })
                 }
+                await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while deleting ' + cat , '?build')
+            }else if(cat == 'slider'){
+                const createdAt = $(e).attr('createdAt')
+                const filteredBlocks = blocks.filter(x => x.createdAt != createdAt)
+                const data = {oldShort : short, short, blocks: filteredBlocks }
                 await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while deleting ' + cat , '?build')
             }else{
                 if(imgUrl){
