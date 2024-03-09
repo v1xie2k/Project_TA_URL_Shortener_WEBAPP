@@ -324,3 +324,32 @@ select {
   text-align: left;
   padding-left: 1em;
 }
+
+.img-fluid{
+  border-radius: 0.25em !important;
+  max-width: 5em;
+  height: auto;
+  vertical-align: middle;
+  border-style: none;
+  box-sizing: border-box;
+  overflow-clip-margin: content-box;
+  overflow: clip;
+  margin-top: 0.2em;
+  margin-bottom: 0.5em;
+  
+}
+.img-splide{
+  border-radius: 0.25em !important;
+  object-fit: cover;
+  vertical-align: bottom;
+  border-style: none;
+  box-sizing: border-box;
+}
+.noDataContent{
+  width: 100%;
+  height: 20em;
+  text-align: center;
+  align-items: center;
+  border: 2px dashed grey;
+  border-radius: 0.25em !important;
+}

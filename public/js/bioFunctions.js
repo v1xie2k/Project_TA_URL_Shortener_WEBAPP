@@ -281,15 +281,25 @@ async function btnClickEditUrl(e) {
             $('#btnSubmitPdf').hide()
         }else if(cat == 'slider'){
             const key = $(e).attr('key')
-            const createdAt = $(e).attr('createdAt')
-            $('#slider'+key).show()
-            console.log(key);
+            const hide = $(e).attr('hide')
+            if(hide == 'true'){
+                $(e).addClass('btn-secondary')
+                $(e).removeClass('btn-success')
+                $(e).html(`<i class="fa-solid fa-arrow-up-from-bracket"></i>Hide`)
+                $('#slider'+key).show()
+                $(e).attr('hide', 'false')
+            }else{
+                $(e).removeClass('btn-secondary')
+                $(e).addClass('btn-success')
+                $(e).html(`<i class="fa-solid fa-pen-to-square pe-2"></i>Edit`)
+                $('#slider'+key).hide()
+                $(e).attr('hide', 'true')
+            }
         }else{
             $('.form-bio-link').show()
             $('#titleUrl'+key).val(title)
             $('#description'+key).val(description)
         }
-        
     }
 }
 
@@ -453,6 +463,18 @@ async function btnDeleteUrl(e) {
                 await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while deleting ' + cat , '?build')
             }else if(cat == 'slider'){
                 const createdAt = $(e).attr('createdAt')
+                const deletedBlocks = blocks.filter(x => x.createdAt == createdAt)[0]
+                if(deletedBlocks.data){
+                    for (const blockData of deletedBlocks.data) {
+                        const imgName = blockData.img.split('/')[4]
+                        fetch("/api/deleteImg/"+imgName, {method: "DELETE", body: JSON.stringify(imgName)}).then(async (response) =>{
+                            if(response.ok) console.log('Success Delete');
+                        }).catch((error) => {
+                            alert('WARNINGHUH!')
+                            console.log(error);
+                        });
+                    }
+                }
                 const filteredBlocks = blocks.filter(x => x.createdAt != createdAt)
                 const data = {oldShort : short, short, blocks: filteredBlocks }
                 await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while deleting ' + cat , '?build')
@@ -688,6 +710,131 @@ async function btnEditPdf(e) {
         await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while adding spotify!', '?build')
     }
     
+}
+
+
+async function btnAddCarousel(e) {  
+    const spotifyLink = $('#spotifyUrl').val()
+    const short = $(e).attr('short')
+    const reportDataElement = document.getElementById('blocks')
+    const reportDataString = reportDataElement.textContent
+    const blocks = reportDataString != '' ? await JSON.parse(reportDataString) : []
+    var order = blocks.length == 0 ? 1 : blocks[blocks.length - 1].order + 1
+    const sliderData = {title: 'Image Slider',data: [], order, type:'slider', createdAt: new Date()}
+    blocks.push(sliderData)
+    const data = {oldShort : short, short, blocks }
+    await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while adding spotify!', '?build')
+}
+
+async function btnDeleteImageSlider(e) {
+    const idBlock = $(e).attr('createdAt')
+    const key = $(e).attr('key')
+    var ctr = +$(e).attr('ctr') 
+    const isImage = $(`#imgSlider${key}Index${ctr}`).val()
+    if(isImage){
+        const bioLink = $('#bioLink').val()
+        const reportDataElement = document.getElementById('blocks')
+        const reportDataString = reportDataElement.textContent
+        const blocks = await JSON.parse(reportDataString) 
+        const imgUrl = $(`#imgSlider${key}Index${ctr}`).attr('imgName')
+        const imgName = imgUrl.split('/')[4]
+        Swal.fire({title: "Do you want to delete this image?", showCancelButton: true, confirmButtonText: "Yes"}).then(async (result) => {
+            if (result.isConfirmed) {
+                fetch("/api/deleteImg/"+imgName, {method: "DELETE", body: JSON.stringify(imgName)}).then(async (response) =>{
+                    if(response.ok) console.log('Success Delete');
+                }).catch((error) => {
+                    alert('WARNINGHUH!')
+                    console.log(error);
+                })
+                for (const block of blocks) {
+                    if(block.createdAt == idBlock){
+                        block.data = block.data.filter((x) => {return x.createdAt != isImage})
+                    } 
+                }
+                const data = {oldShort : bioLink, short: bioLink, blocks }
+                await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while editing soundcloud!', '?build')
+            } 
+        })
+    }else{
+        $('#contentSlider'+key+'Index'+ctr).remove()
+    }
+}
+
+async function btnAddImageSlider(e) {  
+    const key = $(e).attr('key')
+    const createdAt = $(e).attr('createdAt')
+    var ctr = +$(e).attr('ctr') + 1
+    $(e).attr('ctr', ctr)
+    
+    var content = 
+    `<div class="mb-4 d-flex flex-row justify-content-between" id="contentSlider${key}Index${ctr}">
+        <div class="d-flex flex-column justify-content-start align-items-start">
+            <label for=""><svg class="svg-inline--fa fa-image fa-w-16 fa-fw fa-sm text-muted mr-1" aria-hidden="true" focusable="false" data-prefix="fa" data-icon="image" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M464 448H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h416c26.51 0 48 21.49 48 48v288c0 26.51-21.49 48-48 48zM112 120c-30.928 0-56 25.072-56 56s25.072 56 56 56 56-25.072 56-56-25.072-56-56-56zM64 384h384V272l-87.515-87.515c-4.686-4.686-12.284-4.686-16.971 0L208 320l-55.515-55.515c-4.686-4.686-12.284-4.686-16.971 0L64 336v48z"></path></svg><!-- <i class="fa fa-fw fa-image fa-sm text-muted mr-1"></i> Font Awesome fontawesome.com --> Image</label>
+            <input id="item_name_${ctr}_slider_${key}" key=${key} ctr=${ctr} onchange="changeImageSlider(this)" type="file" name="" accept=".jpg, .jpeg, .png, .svg, .gif, .webp" class="form-control" required="required">
+            <small class="form-text text-muted">.jpg, .jpeg, .png allowed. 3.5 MB maximum.</small>
+        </div>
+        <div>
+            <div class="d-flex flex-row">
+                <button type="button" class="btn btn-block btn-outline-danger me-3" onclick="btnDeleteImageSlider(this)" key=${key} ctr=${ctr}><svg class="svg-inline--fa fa-times fa-w-11 fa-fw" aria-hidden="true" focusable="false" data-prefix="fa" data-icon="times" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512" data-fa-i2svg=""><path fill="currentColor" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"></path></svg><!-- <i class="fa fa-fw fa-times"></i> Font Awesome fontawesome.com --> Delete</button>
+                <button id="btnSaveSlider${key}Index${ctr}" type="button" onclick="btnSaveImageSlider(this)" class="form-control btn  btn-success" createdAt="${createdAt}" key=${key} ctr=${ctr} style="display: none; width: 5em; height: 3em;">Save</button>
+            </div>
+        </div>
+    </div>`
+    $('#containerSlider'+key).append(content)
+}
+
+async function btnSaveImageSlider(e) {
+    const reportDataElement = document.getElementById('blocks')
+    const reportDataString = reportDataElement.textContent
+    var blocks = await JSON.parse(reportDataString)
+    const bioLink = $('#bioLink').val()
+    const key = $(e).attr('key')
+    const ctr = $(e).attr('ctr')
+    const idBlock = $(e).attr('createdAt')
+    const idImage = $(e).attr('imgUrl') ? $(e).attr('imgUrl').split('/')[4] : undefined
+    let postid = uuidv4();
+    let inputElem = document.getElementById(`item_name_${ctr}_slider_${key}`);
+    let file = inputElem.files[0]
+    let blob = file.slice(0, file.size, "image/png")
+    newFile = new File([blob], `${postid}_post.png`, { type: "image/jpeg" })
+    let formData = new FormData()
+    formData.append("imgfile", newFile)
+    var apiCall = '/api/addImgSlider/add/' + bioLink + '/' + idBlock + '/-'
+    if(idImage) apiCall = '/api/addImgSlider/update/' + bioLink + '/' + idBlock + '/' + idImage
+    fetch(apiCall, {
+        method: "POST",
+        body: formData,
+    }).then(async (response) => {
+        if (response.ok) {
+            setTimeout(async () => {
+                window.location.href = '?build'
+            }, 1000);
+            
+        }
+        else if(response.status){
+            Swal.fire({
+            icon: "error",
+            title: "Ooops....",
+            text: 'file must be lesser than 3.5MB',
+            });
+            return
+        }
+    }).catch((error) => {
+        alert('WARNING WHILE UPLOADING SLIDER IMAGE')
+        console.log(error);
+    });
+
+}
+
+async function changeImageSlider(e) {  
+    const key = $(e).attr('key')
+    const ctr = $(e).attr('ctr')
+    const val = $(e).val()
+    if(val != null && val != ''){
+        $(`#btnSaveSlider${key}Index${ctr}`).show()
+    }else{
+        $(`#btnSaveSlider${key}Index${ctr}`).hide()
+    }
 }
 
 async function getYoutube(e) {  

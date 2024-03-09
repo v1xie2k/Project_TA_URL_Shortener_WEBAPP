@@ -199,7 +199,63 @@ router.post('/addImg/:type/:shortId', multer.single("imgfile"), async(req, res)=
                 req.session.user.profile = img
                 await edituser(data).catch(console.dir)
             }
+
             await uploadImage(req.file)
+            res.status(200).send(img)
+
+        } else throw "error with img";
+    } catch (error) {
+        res.status(500).send(error);
+    }
+})
+
+router.post('/addImgSlider/:type/:biolinkId/:idBlock/:idImage', multer.single("imgfile"), async(req, res)=>{
+    try {
+        if (req.file) {
+            const template = 'https://storage.googleapis.com/url-shortener-storage/'
+            const type = req.params.type
+            const idBlock = req.params.idBlock
+            const idImage = req.params.idImage
+            const biolinkId = req.params.biolinkId
+            const img = template + req.file.originalname
+            const data = {
+                oldShort: biolinkId,
+                short: biolinkId,
+                updatedAt: new Date()
+            }
+            const biolink = await searchData('biolinks', biolinkId)
+            
+            if(type == 'add'){
+                const date = new Date().toString()
+                const sliderData = {img, createdAt: date}
+                var blockData = []
+                for (const block of biolink.blocks) {
+                    if(block.createdAt == idBlock){
+                        blockData = block.data 
+                        blockData.push(sliderData)
+                        block.data = blockData
+                    } 
+                }
+                const bioData = {oldShort : biolinkId, short: biolinkId, blocks: biolink.blocks }
+                await editBioLink(bioData).catch(console.dir)
+            }else if(type == 'update'){
+                await deleteImage(idImage)
+                for (const block of biolink.blocks) {
+                    if(block.createdAt == idBlock){
+                        block.data = block.data.filter((x) => {
+                            if(x.img.includes(idImage)){
+                                x.img = img
+                            }
+                            return x
+                        })
+                    } 
+                }
+                const bioData = {oldShort : biolinkId, short: biolinkId, blocks: biolink.blocks }
+                console.log(bioData);
+                await editBioLink(bioData).catch(console.dir)
+            }
+            await uploadImage(req.file)
+            console.log('success Add');
             res.status(200).send(img)
 
         } else throw "error with img";

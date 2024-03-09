@@ -5,10 +5,7 @@
         <button class="btn btn-primary ms-3" onclick="btnEditBioLink(this)">Edit</button>
     </div>    
 </div>
-
-<!-- <button class="btn btn-primary mt-2" onclick="btnToogleLink(this)">Add Link</button>
-<button class="btn btn-primary mt-2" onclick="btnToogleYoutube(this)">Add Youtube</button> -->
-<!-- think about cara dynamickan form ini (kalau di addlink maka muncul form dibawah, tapi kalau juga edit link form ini juga muncul + include data didalamnya) -->
+BIOLINK KALAU DIDELETE SEMUA ASSET DIDALAMNYA JUGA IKUT DIDELETE
 <%- include('../parts/modal/modalMenu.ejs');%>
 <div id="dragParent">
     <% for (const key in data.blocks) { %>
@@ -42,6 +39,10 @@
                             <%}else if(block.type == 'pdf'){%>
                                 <div style="padding-top: 30px;">
                                     <i class="fa-solid fa-file-pdf" style="font-size:80px; color: red;"></i>
+                                </div>
+                            <%}else if(block.type == 'slider'){%>
+                                <div style="padding-top: 30px;">
+                                    <i class="fa-solid fa-images" style="font-size:80px; color: purple;"></i>
                                 </div>
                             <%}else{%>
                                 <!-- Button trigger modal -->
@@ -102,7 +103,7 @@
                                 <%}else if(block.type == 'pdf'){%>
                                     <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" pdftitle="<%= block.title%>" cat="pdf" pdf="<%= block.pdf%>" data-bs-toggle="modal" data-bs-target="#modalPdf"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
                                 <%}else if(block.type == 'slider'){%>
-                                    <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" createdAt="<%= block.createdAt%>" cat="slider" key="<%= key%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                                    <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" createdAt="<%= block.createdAt%>" cat="slider" key="<%= key%>" hide="true"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
                                 <%}else{%>
                                     <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" key="<%= key%>" value="<%= block.short%>" urlTitle="<%= block.title%>" destination="<%= block.full%>" description="<%= block.description%>" data-bs-toggle="modal" data-bs-target="#modalLink<%= key%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
                                 <%}%>
@@ -145,20 +146,55 @@
                                 <p class="card-text"><small class="text-body-secondary"><%= block.createdAt%></small></p>
                             </div>
                         </div>
-                        <!-- <div class="form-body" id="slider<%=key%>">
-                            <div class="col-md-2" style="align-items: center; text-align: center; margin-left: 30px;">
-                                <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style=" margin-top: 25px; border-radius: 5px; padding: 0;">
-                                    <i class="fa-regular fa-image" style="font-size: 75px;"></i>
-                                </button>
-                                <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style=" margin-top: 25px; border-radius: 5px; padding: 0;">
-                                    <i class="fa-regular fa-image" style="font-size: 75px;"></i>
-                                </button>
-                                <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style=" margin-top: 25px; border-radius: 5px; padding: 0;">
-                                    <i class="fa-regular fa-image" style="font-size: 75px;"></i>
-                                </button>
+                        <%if(block.type == 'slider'){%>
+                            <div class="form-body" id="slider<%=key%>" style="display: none">
+                                <hr class="my-3">
+                                <div class="col-md-11" style="align-items: center; text-align: center; margin-left: 60px;">
+                                    <div id="containerSlider<%=key%>">
+                                        <% var ctr = 1%>
+                                        <% if(block.data){%>
+                                            <% for(const blockIndex in block.data){%>
+                                                <% const imgData = block.data[blockIndex]%>
+                                                <div class="mb-4 d-flex flex-row justify-content-between" id="contentSlider<%= key%>Index<%= ctr%>">
+                                                    <div class="d-flex flex-column justify-content-start align-items-start">
+                                                        <label for=""><svg class="svg-inline--fa fa-image fa-w-16 fa-fw fa-sm text-muted mr-1" aria-hidden="true" focusable="false" data-prefix="fa" data-icon="image" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M464 448H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h416c26.51 0 48 21.49 48 48v288c0 26.51-21.49 48-48 48zM112 120c-30.928 0-56 25.072-56 56s25.072 56 56 56 56-25.072 56-56-25.072-56-56-56zM64 384h384V272l-87.515-87.515c-4.686-4.686-12.284-4.686-16.971 0L208 320l-55.515-55.515c-4.686-4.686-12.284-4.686-16.971 0L64 336v48z"></path></svg><!-- <i class="fa fa-fw fa-image fa-sm text-muted mr-1"></i> Font Awesome fontawesome.com --> Image</label>
+                                                        <img src="<%= imgData.img%>" class="img-fluid">
+                                                        <input type="hidden" name="" id="imgSlider<%= key%>Index<%= ctr%>" value="<%= imgData.createdAt%>" imgName="<%= imgData.img%>">
+                                                        <input id="item_name_<%= ctr%>_slider_<%= key%>" type="file" onchange="changeImageSlider(this)" key="<%=key%>" ctr="1" accept=".jpg, .jpeg, .png, .svg, .gif, .webp" class="form-control" required="required">
+                                                        <small class="form-text text-muted">.jpg, .jpeg, .png allowed. 3.5 MB maximum.</small>
+                                                    </div>
+                                                    <div>
+                                                        <div class="d-flex flex-row">
+                                                            <button type="button" class="btn  btn-outline-danger me-3" onclick="btnDeleteImageSlider(this)" ctr="<%= ctr%>" key="<%= key%>" createdAt="<%= block.createdAt%>"><svg class="svg-inline--fa fa-times fa-w-11 fa-fw" aria-hidden="true" focusable="false" data-prefix="fa" data-icon="times" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512" data-fa-i2svg=""><path fill="currentColor" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"></path></svg><!-- <i class="fa fa-fw fa-times"></i> Font Awesome fontawesome.com --> Delete</button>
+                                                            <button id="btnSaveSlider<%= key%>Index<%= ctr%>" type="button" onclick="btnSaveImageSlider(this)" class="form-control btn  btn-success" createdAt="<%= block.createdAt%>" ctr="<%= ctr%>" key="<%= key%>" imgUrl="<%= imgData.img%>" style="display: none; width: 5em; height: 3em;">Save</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <% ctr++%>
+                                            <%}%>
+                                            
+                                        <% } else{%>
+                                            <div class="mb-4 d-flex flex-row justify-content-between" id="contentSlider<%= key%>Index1">
+                                                <div class="d-flex flex-column justify-content-start align-items-start">
+                                                    <label for=""><svg class="svg-inline--fa fa-image fa-w-16 fa-fw fa-sm text-muted mr-1" aria-hidden="true" focusable="false" data-prefix="fa" data-icon="image" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M464 448H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h416c26.51 0 48 21.49 48 48v288c0 26.51-21.49 48-48 48zM112 120c-30.928 0-56 25.072-56 56s25.072 56 56 56 56-25.072 56-56-25.072-56-56-56zM64 384h384V272l-87.515-87.515c-4.686-4.686-12.284-4.686-16.971 0L208 320l-55.515-55.515c-4.686-4.686-12.284-4.686-16.971 0L64 336v48z"></path></svg><!-- <i class="fa fa-fw fa-image fa-sm text-muted mr-1"></i> Font Awesome fontawesome.com --> Image</label>
+                                                    <input id="item_name_1_slider_<%= key%>" type="file" onchange="changeImageSlider(this)" key="<%=key%>" ctr="1" accept=".jpg, .jpeg, .png, .svg, .gif, .webp" class="form-control" required="required">
+                                                    <small class="form-text text-muted">.jpg, .jpeg, .png allowed. 3.5 MB maximum.</small>
+                                                </div>
+                                                <div>
+                                                    <div class="d-flex flex-row">
+                                                        <button type="button" class="btn  btn-outline-danger me-3" onclick="btnDeleteImageSlider(this)" ctr="1" key="<%= key%>"><svg class="svg-inline--fa fa-times fa-w-11 fa-fw" aria-hidden="true" focusable="false" data-prefix="fa" data-icon="times" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512" data-fa-i2svg=""><path fill="currentColor" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"></path></svg><!-- <i class="fa fa-fw fa-times"></i> Font Awesome fontawesome.com --> Delete</button>
+                                                        <button id="btnSaveSlider<%= key%>Index1" type="button" onclick="btnSaveImageSlider(this)" class="form-control btn  btn-success" createdAt="<%= block.createdAt%>" ctr="1" key="<%= key%>" style="display: none; width: 5em; height: 3em;">Save</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% }%>
+                                        
+                                    </div>
+                                    <button type="button" onclick="btnAddImageSlider(this)" class="form-control btn btn-block btn-outline-success mb-3" key="<%= key%>" ctr="<%= ctr%>" createdAt="<%= block.createdAt%>">+ Add</button>
+                                    
+                                </div>
                             </div>
-                            
-                        </div> -->
+                        <%}%>
                     </div>
                 </div>
             </div>
@@ -179,8 +215,6 @@
         const order = $(el).attr('order')
         var idx =  $(el).index() + 1
         if(idx < order){
-            //function untuk dari perubahan drag n drop bawah ke atas
-            //done (tingal update fetch)
             var ctr = 0
             var iteration = order-idx
             var index = $(el).index()
@@ -203,24 +237,10 @@
         }
         const data = {oldShort : short, short, blocks }
         var config = {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)}
-        console.log(data);
         fetch('/api/biolink/edit', config).then(async (response) => {
             if (response.ok) {
                 window.location.href = '?build'
             }
         })
     })
-
-    async function btnAddCarousel(e) {  
-        const spotifyLink = $('#spotifyUrl').val()
-        const short = $(e).attr('short')
-        const reportDataElement = document.getElementById('blocks')
-        const reportDataString = reportDataElement.textContent
-        const blocks = reportDataString != '' ? await JSON.parse(reportDataString) : []
-        var order = blocks.length == 0 ? 1 : blocks[blocks.length - 1].order + 1
-        const sliderData = {title: 'Image Slider',data: [], order, type:'slider', createdAt: new Date()}
-        blocks.push(sliderData)
-        const data = {oldShort : short, short, blocks }
-        await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while adding spotify!', '?build')
-    }
 </script>

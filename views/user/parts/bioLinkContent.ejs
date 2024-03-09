@@ -1,4 +1,3 @@
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 <%if(data.background){ %>
 <div class="hero-bg fullWidth" style=" background-position: center; background-image: url('<%= data.background%>'); background-color: rgb(255, 255, 255); background-repeat: no-repeat; background-size: cover;">
 <%}else{%>
@@ -69,9 +68,27 @@
                             <%= data.title%>
                         </a>
                         <%- include('./modal/modalPdfView.ejs', {key: key, data: data})%>
+                    <%}else if(data.type =='slider'){%>
+                        <div class="splide splide--loop splide--ltr splide--draggable is-active is-overflow is-initialized" role="group" aria-label="Splide Basic HTML Example">
+                            <div class="splide__track">
+                                  <ul class="splide__list" id="splide_<%= key%>">
+                                        <% for(const dataKey in data.data){%>
+                                            <% const imgSlider = data.data[dataKey]%>
+                                            <li class="splide__slide">
+                                                <% if (paramType =='web') { %>
+                                                    <img src="<%= imgSlider.img%>" style="width: 20em;height: 20em;" class="img-splide">
+                                                <%}else{%>  
+                                                    <img src="<%= imgSlider.img%>" style="width: 7em;height: 7em;" class="img-splide">
+                                                <%}%>  
+                                                
+                                            </li>
+                                        <%}%>
+                                  </ul>
+                            </div>
+                          </div>
                     <%}else{%>
                         <a href="http://localhost:8080/<%= data.short%>" style="text-decoration: none;" class="link">
-                        <%if(data.img != null){%>
+                        <%if(data.img != null && data.img != ''){%>
                             <img src="<%= data.img%>" alt="" class="link-image">
                             <div class="link__content has-image">
                         <%}else{%>
@@ -87,7 +104,15 @@
         </section>
     </div>
 </div>
+<script> 
+    var elms = document.getElementsByClassName( 'splide' );
 
-
-
-
+    for ( var i = 0; i < elms.length; i++ ) {
+        new Splide( elms[ i ], {
+            type   : 'loop',
+            perPage: 3,
+            perMove: 1,
+            autoplay: true
+        } ).mount();
+    }
+</script>

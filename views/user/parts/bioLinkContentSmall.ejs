@@ -51,9 +51,27 @@
                         <%}else if(url.type =='soundcloud'){%>
                             <iframe scrolling="no" frameborder="no" width="100%" src="https://w.soundcloud.com/player/?url=<%= url.full%>&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true" style="border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.75) 0.3rem 0.4rem 0px;">
                             </iframe>
+                        <%}else if(url.type =='pdf'){%>
+                            <a href="#" class="link" style="text-decoration: none;" data-bs-target="#modalPdfView<%= key%>" data-bs-toggle="modal">
+                                <%= url.title%>
+                            </a>
+                            <%- include('./modal/modalPdfView.ejs', {key: key, data: url})%>
+                        <%}else if(url.type =='slider'){%>
+                            <div class="splide splide--loop splide--ltr splide--draggable is-active is-overflow is-initialized" role="group" aria-label="Splide Basic HTML Example">
+                                <div class="splide__track">
+                                    <ul class="splide__list" id="splide_<%= key%>">
+                                            <% for(const dataKey in url.data){%>
+                                                <% const imgSlider = url.data[dataKey]%>
+                                                <li class="splide__slide">
+                                                    <img src="<%= imgSlider.img%>" style="width: 3em;height: 3em;" class="img-splide">
+                                                </li>
+                                            <%}%>
+                                    </ul>
+                                </div>
+                            </div>
                         <%}else{%>
                             <a href="http://localhost:8080/<%= url.short%>" style="text-decoration: none;" class="link">
-                            <%if(url.img != null){%>
+                            <%if(url.img != null && url.img != ''){%>
                                 <img src="<%= url.img%>" alt="" class="link-image-small">
                                 <div class="link__content-small has-image">
                             <%}else{%>
@@ -70,7 +88,15 @@
         </div>
     </div>
     
-    
-    
-    
-    
+    <script> 
+         var elms = document.getElementsByClassName( 'splide' );
+
+        for ( var i = 0; i < elms.length; i++ ) {
+            new Splide( elms[ i ], {
+                type   : 'loop',
+                perPage: 3,
+                perMove: 1,
+                autoplay: true
+            }).mount();
+        }
+    </script>
