@@ -296,6 +296,7 @@ function generateNext7Days(dateFilter) {
     const labels = []
     for (let i = 0; i <= 6; i++) {
         const date = new Date(dateFilter)
+        console.log(dateFilter.getDate());
         date.setDate(dateFilter.getDate() + i)
         const month = date.getMonth() + 1
         const day = date.getDate()
@@ -311,6 +312,81 @@ async function dateChange(e){
     const filter = {}
     filter.dateFrom = new Date(dateAnchor)
     loadData(getData(), filter)
+}
+
+function loadIncomeData() {
+    const rawReport = JSON.parse(document.getElementById('reportIncome').textContent)
+    var dateFrom = $('#dateFrom').val()
+    var dateTo = $('#dateTo').val()
+    var planType = $('#planType').val()
+    var labelDate = generateIncomeDate(dateFrom, dateTo)
+    var lineChartNormal= new Array(labelDate.length).fill(0)
+    var lineChartCustom = new Array(labelDate.length).fill(0)
+
+    console.log(rawReport);
+    for (let index = 0; index < labelDate.length; index++) {
+        const dateNow = labelDate[index]
+        for (const item of rawReport.incomeData) {
+            
+            const createdAt = moment(item.createdAt).format('l')
+            console.log('dateNow', dateNow);
+            console.log('createdAt', createdAt);
+            if(createdAt == dateNow){
+                console.log('tes');
+                if(item.type == 'plan'){
+                    lineChartNormal[index] = item.grandTotal
+                }else{
+                    lineChartCustom[index] = item.grandTotal
+                }
+            }
+        }
+    }
+    const datasets = [{
+            label: 'Normal Plan',
+            data: lineChartNormal,
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }, {
+            label: 'Custom Plan',
+            data: lineChartCustom,
+            backgroundColor: 'rgba(113, 172, 105, 0.2)',
+            borderColor: 'rgba(113, 172, 105, 1)',
+            borderWidth: 1
+        }]
+    console.log(datasets)
+    if(planType == 1) datasets.pop()
+    else if(planType == 2) datasets.shift()
+    console.log('newds',datasets);
+    const dataLineChart = {
+        labels: labelDate,
+        datasets
+    }
+    const canvasLineChart = document.getElementById('incomeChart').getContext('2d')
+    if(Chart.getChart('incomeChart') != undefined) Chart.getChart('incomeChart').destroy()
+    const incomeChart = new Chart(canvasLineChart, {
+        type: 'line',
+        data: dataLineChart
+    })
+}
+
+function generateIncomeDate(dateFrom, dateTo) {
+    var dateFrom = new Date(dateFrom)
+    var dateTo = new Date(dateTo)
+    var labels = []
+    var currentDate = new Date(dateFrom)
+    dateFrom.setDate(dateFrom.getDate()-1)
+    while(currentDate.toDateString() != dateTo.toDateString()){
+        const date = dateFrom
+        date.setDate(dateFrom.getDate() + 1)
+        currentDate.setDate(currentDate.getDate() + 1);
+        const month = date.getMonth() + 1
+        const day = date.getDate()
+        const year = date.getFullYear()
+        labels.push(`${month}/${day}/${year}`)
+    }
+    console.log(labels);
+    return labels;
 }
 
 function btnSearchDate(e) {  

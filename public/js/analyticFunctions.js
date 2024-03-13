@@ -2,6 +2,7 @@ function getStarted() {
   const reportDataElement = document.getElementById('reportData');
   const reportDataString = reportDataElement.textContent;
   const reportData = JSON.parse(reportDataString);
+  console.log(reportData);
   const rawReport = combineData({type: 'all'}, reportData)
   
   console.log('rawReport', rawReport);
@@ -155,6 +156,7 @@ function combineData(filter, data) {
       });
     }else if(filter.type =='qr'){
       const qr = reportData.qr
+      console.log(qr);
       qr.forEach(item => {
         const date = item.date;
         groupedByDate[date] = groupedByDate[date] || {

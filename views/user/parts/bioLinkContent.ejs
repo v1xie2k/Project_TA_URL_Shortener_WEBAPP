@@ -86,6 +86,16 @@
                                   </ul>
                             </div>
                           </div>
+                    <%}else if(data.type =='emailCollector'){%>
+                        <a href="#" class="link__content__title link__content link" style="text-decoration: none;" data-bs-target="#modalEmailCollectorView<%= key%>" data-bs-toggle="modal">
+                            <%= data.title%>
+                        </a>
+                        <%- include('./modal/modalEmailCollectorView.ejs', {data: data, bioLink: bioLink, key:key})%>
+                    <%}else if(data.type =='phoneCollector'){%>
+                        <a href="#" class="link__content__title link__content link" style="text-decoration: none;" data-bs-target="#modalPhoneCollectorView<%= key%>" data-bs-toggle="modal">
+                            <%= data.title%>
+                        </a>
+                        <%- include('./modal/modalPhoneCollectorView.ejs', {data: data, bioLink: bioLink, key:key})%>
                     <%}else{%>
                         <a href="http://localhost:8080/<%= data.short%>" style="text-decoration: none;" class="link">
                         <%if(data.img != null && data.img != ''){%>

@@ -148,6 +148,16 @@ router.delete('/delete_bio_link/:bioLinkUrl', async(req, res)=>{
                     } 
                 }
             }
+            if(bioLinkUrl.blocks){
+                for (const block of bioLinkUrl.blocks){
+                    if(block.type =='slider'){
+                        for (const imgData of block.data) {
+                            const imgName = imgData.img.split('/')[4]
+                            await deleteImage(imgName)
+                        }
+                    }
+                }
+            }
             await deleteUrl(param, 'biolinks')
         }catch(err){
             console.log(err);
@@ -257,6 +267,43 @@ router.post('/addImgSlider/:type/:biolinkId/:idBlock/:idImage', multer.single("i
             await uploadImage(req.file)
             console.log('success Add');
             res.status(200).send(img)
+
+        } else throw "error with img";
+    } catch (error) {
+        res.status(500).send(error);
+    }
+})
+
+router.post('/addCollector/', async(req, res)=>{
+    //update data untuk collector phone maupun email (di front tingal fetch saja)
+    try {
+        if (req.body) {
+            const body = req.body
+            const type = body.type
+            const idCollector = body.idCollector
+            const biolinkId = body.biolinkId
+            const biolink = await searchData('biolinks', biolinkId)
+            var blockData 
+            if(type == 'email'){
+                for (const block of biolink.blocks) {
+                    if(block.idCollector == idCollector){
+                        blockData = block.data
+                        blockData.push({name: body.name, email: body.email, createdAt: new Date()})
+                        block.data = blockData
+                    } 
+                }
+            }else if(type == 'phone'){
+                for (const block of biolink.blocks) {
+                    if(block.idCollector == idCollector){
+                        blockData = block.data
+                        blockData.push({name: body.name, phone: body.phone, createdAt: new Date()})
+                        block.data = blockData
+                    } 
+                }
+            }
+            const bioData = {oldShort : biolinkId, short: biolinkId, blocks: biolink.blocks }
+            await editBioLink(bioData).catch(console.dir)
+            res.status(200).send('success')
 
         } else throw "error with img";
     } catch (error) {

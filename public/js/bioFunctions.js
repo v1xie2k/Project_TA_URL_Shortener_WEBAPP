@@ -56,7 +56,7 @@ function btnDeleteBioLink(e) {
     Swal.fire({
     icon: "warning",
     title: "Do you want to Delete this Bio Link?",
-    text: "All Short URL inside this Bio Link will also be deleted",
+    text: "All content inside this Bio Link will also be deleted",
     showCancelButton: true,
     confirmButtonText: "Yes",
     }).then((result) => {
@@ -295,6 +295,22 @@ async function btnClickEditUrl(e) {
                 $('#slider'+key).hide()
                 $(e).attr('hide', 'true')
             }
+        }else if(cat == 'emailCollector'){
+            const emailId = $(e).attr('emailId')
+            const emailTitle = $(e).attr('emailTitle')
+            $('#emailCollectorTitle').val(emailTitle)
+            $('#emailCollectorId').val(emailId)
+            $('#btnSaveEmailCollector').show()
+            $('#btnSubmitEmailCollector').hide()
+            $('#modalEmailCollectorLabel').html('Edit Email Collector')
+        }else if(cat == 'phoneCollector'){
+            const phoneId = $(e).attr('phoneId')
+            const phoneTitle = $(e).attr('phoneTitle')
+            $('#phoneCollectorTitle').val(phoneTitle)
+            $('#phoneCollectorId').val(phoneId)
+            $('#btnSavePhoneCollector').show()
+            $('#btnSubmitPhoneCollector').hide()
+            $('#modalPhoneCollectorLabel').html('Edit Phone Collector')
         }else{
             $('.form-bio-link').show()
             $('#titleUrl'+key).val(title)
@@ -323,6 +339,29 @@ function btnModalSoundCloudClose(e) {
     $('#btnSaveSoundCloud').hide()
     $('#btnSubmitSoundCloud').show()
     $('#modalSoundCloudLabel2').html('Add Soundcloud media')
+}
+
+function btnModalPdfClose(e) {  
+    $('#pdfTitle').val('')
+    $('#btnSavePdf').hide()
+    $('#btnSubmitPdf').show()
+    $('#modalPdfLabel').html('Add PDF')
+}
+
+function btnModalEmailCollectorClose(e) {  
+    $('#emailCollectorTitle').val('')
+    $('#emailCollectorId').val('')
+    $('#btnSaveEmailCollector').hide()
+    $('#btnSubmitEmailCollector').show()
+    $('#modalEmailCollectorLabel').html('Add Email Collector')
+}
+
+function btnModalPhoneCollectorClose(e) {  
+    $('#phoneCollectorTitle').val('')
+    $('#phoneCollectorId').val('')
+    $('#btnSavePhoneCollector').hide()
+    $('#btnSubmitPhoneCollector').show()
+    $('#modalPhoneCollectorLabel').html('Add Phone Collector')
 }
 
 async function btnEditUrl(e) {
@@ -476,6 +515,11 @@ async function btnDeleteUrl(e) {
                     }
                 }
                 const filteredBlocks = blocks.filter(x => x.createdAt != createdAt)
+                const data = {oldShort : short, short, blocks: filteredBlocks }
+                await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while deleting ' + cat , '?build')
+            }else if(cat == 'emailCollector' || cat == 'phoneCollector'){
+                const idCollector = $(e).attr('idCollector')
+                const filteredBlocks = blocks.filter(x => x.idCollector != idCollector)
                 const data = {oldShort : short, short, blocks: filteredBlocks }
                 await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while deleting ' + cat , '?build')
             }else{
@@ -837,6 +881,85 @@ async function changeImageSlider(e) {
     }
 }
 
+async function btnAddEmailCollector(e) {  
+    const title = $('#emailCollectorTitle').val()
+    const short = $(e).attr('short')
+    const reportDataElement = document.getElementById('blocks')
+    const reportDataString = reportDataElement.textContent
+    const blocks = reportDataString != '' ? await JSON.parse(reportDataString) : []
+    var order = blocks.length == 0 ? 1 : blocks[blocks.length - 1].order + 1
+    let idCollector = uuidv4()
+    if(!title){
+        Swal.fire("Please enter a name!");
+        return
+    }
+    const emailData = {title, data: [], order, type:'emailCollector', createdAt: new Date(), idCollector}
+    blocks.push(emailData)
+    const data = {oldShort : short, short, blocks }
+    await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while adding email collector!', '?build')
+}
+
+async function btnEditEmailCollector(e) {  
+    const title = $('#emailCollectorTitle').val()
+    const short = $(e).attr('short')
+    const idCollector = $('#emailCollectorId').val()
+    const reportDataElement = document.getElementById('blocks')
+    const reportDataString = reportDataElement.textContent
+    const blocks = await JSON.parse(reportDataString) 
+    const oldDestination = $('#oldDestination').val()
+    if(!title){
+        Swal.fire("Please enter a name!");
+        return
+    }
+    for (const data of blocks) {
+        if(data.idCollector == idCollector){
+            data.title = title
+        }
+    }
+    const data = {oldShort : short, short, blocks }
+    await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while editing email collector!', '?build')
+}
+
+async function btnAddPhoneCollector(e) {  
+    const title = $('#phoneCollectorTitle').val()
+    const short = $(e).attr('short')
+    const reportDataElement = document.getElementById('blocks')
+    const reportDataString = reportDataElement.textContent
+    const blocks = reportDataString != '' ? await JSON.parse(reportDataString) : []
+    var order = blocks.length == 0 ? 1 : blocks[blocks.length - 1].order + 1
+    let idCollector = uuidv4()
+    if(!title){
+        Swal.fire("Please enter a name!");
+        return
+    }
+    const phoneData = {title, data: [], order, type:'phoneCollector', createdAt: new Date(), idCollector}
+    blocks.push(phoneData)
+    const data = {oldShort : short, short, blocks }
+    await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while adding email collector!', '?build')
+}
+
+async function btnEditPhoneCollector(e) {  
+    const title = $('#phoneCollectorTitle').val()
+    const short = $(e).attr('short')
+    const idCollector = $('#phoneCollectorId').val()
+    console.log('idCollector', idCollector);
+    const reportDataElement = document.getElementById('blocks')
+    const reportDataString = reportDataElement.textContent
+    const blocks = await JSON.parse(reportDataString) 
+    const oldDestination = $('#oldDestination').val()
+    if(!title){
+        Swal.fire("Please enter a name!");
+        return
+    }
+    for (const data of blocks) {
+        if(data.idCollector == idCollector){
+            data.title = title
+        }
+    }
+    const data = {oldShort : short, short, blocks }
+    await fetchAPI('/api/biolink/edit', 'POST', data, 'Something wrong while editing phone collector!', '?build')
+}
+
 async function getYoutube(e) {  
     const val = $(e).val()
     var youtubeId = await validateYouTubeUrl(val)
@@ -1030,8 +1153,11 @@ async function btnDeleteImg(e) {
         data.collection= 'shorturls'
         destination = '?build'
     }
-        
-    fetchAPI('/api/deleteField', 'POST', data, 'Something wrong while deleting the data!', destination)
+    
+    setTimeout(async () => {
+        fetchAPI('/api/deleteField', 'POST', data, 'Something wrong while deleting the data!', destination)
+    }, 1500);
+    
     if(type == 'img'){
         const reportDataElement = document.getElementById('blocks')
         const reportDataString = reportDataElement.textContent

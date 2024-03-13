@@ -1,0 +1,64 @@
+<div class="modal fade" id="modalEmailCollectorView<%= key%>" aria-hidden="true" aria-labelledby="modalEmailCollectorViewLabel2" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEmailCollectorViewLabel"><%= data.title%></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="" id="emailCollectorId<%= key%>" value="<%= data.idCollector%>">
+                <input type="hidden" name="" id="bioLinkId" value="<%= bioLink%>">
+                <h6 class="text-start">email</h6>
+                <div class="mb-3">
+                    <input required type="email" name="emailCollector" id="email<%= key%>"  class="form-control" placeholder="hello@example.com">
+                </div>
+                <h6 class="text-start">Name</h6>
+                <div class="mb-3">
+                    <input required type="text" name="emailCollector" id="name<%= key%>"  class="form-control" placeholder="Your Name">
+                </div>
+                <div class="d-flex flex-row-reverse w-100">
+                    <button type="button" onclick="btnAddEmailCollectorView(this)" class="btn btn-primary" key="<%= key%>">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function btnAddEmailCollectorView(e) {  
+        var config = {method: 'POST', headers: {"Content-Type": "application/json"}}
+        const key = $(e).attr('key')
+        const bioLinkId = $('#bioLinkId').val()
+        const emailCollectorId = $(`#emailCollectorId${key}`).val()
+        const email = $(`#email${key}`).val()
+        const name = $(`#name${key}`).val()
+        if(email && name){
+            const data = {
+                email, name, idCollector: emailCollectorId, biolinkId: bioLinkId, type: 'email'
+            }
+            if(data){
+                config.body = JSON.stringify(data)
+            }
+            fetch('/api/addCollector', config).then(async (response) => {
+                if (response.ok) {
+                    window.location.href = "?";
+                }
+                else if(response.status){
+                    Swal.fire({
+                    icon: "error",
+                    title: "Ooops....",
+                    text:"Something wrong while adding the data",
+                    });
+                }
+                else{
+                }
+            }).catch((error) => {
+                alert('WARNING!')
+                console.log(error);
+            });
+        }else{
+            Swal.fire("Name & Email must be filled!")
+            return
+        }
+    }
+</script>

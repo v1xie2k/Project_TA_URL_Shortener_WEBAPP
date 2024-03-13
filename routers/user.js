@@ -26,12 +26,17 @@ router.post('/login', async(req, res)=>{
     try{
         const result = await searchData('users', data.email)
         if(result){
-            const compareResult = await comparePassword(data.password, result.password)
-            if(compareResult){
-                req.session.user = {email: result.email, name: result.name, profile: result.profile, role: result.role}
-                return res.status(200).send('success')
+            if(result.ban == -1){
+                const compareResult = await comparePassword(data.password, result.password)
+                if(compareResult){
+                    req.session.user = {email: result.email, name: result.name, profile: result.profile, role: result.role}
+                    var text = 'user'
+                    if(result.role == 'admin') text = 'admin'
+                    return res.status(200).send({text})
+                }
+                return res.status(400).send('error')
             }
-            return res.status(400).send('error')
+            return res.status(403).send('error')
         }
         else{
             return res.status(400).send('error')

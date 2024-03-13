@@ -30,13 +30,38 @@ function login(e) {
     const email = $('#email').val()
     const password = $('#password').val()
     if(!email || !password){
-        Swal.fire("All field must be filled peko!");
+        Swal.fire("All field must be filled!");
     }else{
         const data = {
             email,
             password
         }
-        fetchAPI('/credential/login', 'POST', data, 'Email or Password is incorect!', '/')
+        var config = {method: 'POST', headers: {"Content-Type": "application/json"}}
+        if(data){
+            config.body = JSON.stringify(data)
+        }
+        fetch('/credential/login', config).then(async (response) => {
+            if (response.ok) {
+                const resp = await response.json()
+                var loc = '/'
+                if(resp.text == 'admin') loc = '/admin'
+                window.location.href = loc
+            }
+            else if(response.status){
+                var text = 'Email or Password is incorect!'
+                if(response.status == 403) text ='Your account is banned please ask admin to unbanned'
+                Swal.fire({
+                icon: "error",
+                title: "Ooops....",
+                text,
+                });
+            }
+            else{
+            }
+        }).catch((error) => {
+            alert('WARNING!')
+            console.log(error);
+        });
     }
 }
 
@@ -54,6 +79,7 @@ function fetchAPI(apiUrl, method, data, text, destination){
             window.location.href = destination;
         }
         else if(response.status){
+            console.log(response.status);
             Swal.fire({
             icon: "error",
             title: "Ooops....",

@@ -408,7 +408,7 @@ export async function getReports(email) {
         }
     }
 
-    const groupedData = {};
+    const groupedData = {url:[], qr:[], biolink:[]};
   
     // Step 1: Group by type
     data.forEach(item => {

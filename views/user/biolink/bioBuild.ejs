@@ -5,7 +5,6 @@
         <button class="btn btn-primary ms-3" onclick="btnEditBioLink(this)">Edit</button>
     </div>    
 </div>
-BIOLINK KALAU DIDELETE SEMUA ASSET DIDALAMNYA JUGA IKUT DIDELETE
 <%- include('../parts/modal/modalMenu.ejs');%>
 <div id="dragParent">
     <% for (const key in data.blocks) { %>
@@ -43,6 +42,14 @@ BIOLINK KALAU DIDELETE SEMUA ASSET DIDALAMNYA JUGA IKUT DIDELETE
                             <%}else if(block.type == 'slider'){%>
                                 <div style="padding-top: 30px;">
                                     <i class="fa-solid fa-images" style="font-size:80px; color: purple;"></i>
+                                </div>
+                            <%}else if(block.type == 'emailCollector'){%>
+                                <div style="padding-top: 30px;">
+                                    <i class="fa-solid fa-envelope" style="font-size:80px; color: pink;"></i>
+                                </div>
+                            <%}else if(block.type == 'phoneCollector'){%>
+                                <div style="padding-top: 30px;">
+                                    <i class="fa-solid fa-square-phone-flip" style="font-size:80px; color: green;"></i>
                                 </div>
                             <%}else{%>
                                 <!-- Button trigger modal -->
@@ -93,7 +100,7 @@ BIOLINK KALAU DIDELETE SEMUA ASSET DIDALAMNYA JUGA IKUT DIDELETE
                         </div>
                         <div class="col col-md-9 " style="width: 79%">
                             <div class="d-flex flex-row-reverse">
-                                <button type="button" onclick="btnDeleteUrl(this)" class="btn btn-danger" short="<%= block.short%>" value="<%= key%>" cat="<%= block.type%>" full="<%= block.full%>" pdf="<%= block.pdf%>" createdAt="<%= block.createdAt%>"><i class="fa-solid fa-trash-can pe-2"></i>Delete</button>
+                                <button type="button" onclick="btnDeleteUrl(this)" class="btn btn-danger" short="<%= block.short%>" value="<%= key%>" cat="<%= block.type%>" full="<%= block.full%>" pdf="<%= block.pdf%>" createdAt="<%= block.createdAt%>" idCollector="<%= block.idCollector%>"><i class="fa-solid fa-trash-can pe-2"></i>Delete</button>
                                 <% if(block.youtubeId){%>
                                     <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" key="<%= key%>" value="<%= block.short%>" urlTitle="<%= block.title%>" destination="<%= block.full%>"  youtubeId="<%= block.youtubeId%>" data-bs-toggle="modal" data-bs-target="#modalYoutube"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
                                 <%}else if(block.type == 'spotify'){%>
@@ -104,6 +111,10 @@ BIOLINK KALAU DIDELETE SEMUA ASSET DIDALAMNYA JUGA IKUT DIDELETE
                                     <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" pdftitle="<%= block.title%>" cat="pdf" pdf="<%= block.pdf%>" data-bs-toggle="modal" data-bs-target="#modalPdf"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
                                 <%}else if(block.type == 'slider'){%>
                                     <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" createdAt="<%= block.createdAt%>" cat="slider" key="<%= key%>" hide="true"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                                <%}else if(block.type == 'emailCollector'){%>
+                                    <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" createdAt="<%= block.createdAt%>" cat="emailCollector" key="<%= key%>" emailId="<%= block.idCollector%>" emailTitle="<%= block.title%>"  data-bs-toggle="modal" data-bs-target="#modalEmailCollector"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                                <%}else if(block.type == 'phoneCollector'){%>
+                                    <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" createdAt="<%= block.createdAt%>" cat="phoneCollector" key="<%= key%>" phoneId="<%= block.idCollector%>" phoneTitle="<%= block.title%>"  data-bs-toggle="modal" data-bs-target="#modalPhoneCollector"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
                                 <%}else{%>
                                     <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" key="<%= key%>" value="<%= block.short%>" urlTitle="<%= block.title%>" destination="<%= block.full%>" description="<%= block.description%>" data-bs-toggle="modal" data-bs-target="#modalLink<%= key%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
                                 <%}%>
@@ -243,4 +254,6 @@ BIOLINK KALAU DIDELETE SEMUA ASSET DIDALAMNYA JUGA IKUT DIDELETE
             }
         })
     })
+
+    
 </script>

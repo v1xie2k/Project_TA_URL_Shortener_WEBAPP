@@ -14,12 +14,17 @@
     </div>
     <div class="container">
         <h1>Subscription History</h1>
-        <div class="d-flex flex-row">
-            <input class="form-control me-3" type="date" name="dateFrom" id="dateFrom" onchange="dateChange(this)" value="<%= dateFrom%>" style="width:15em;">
-            <input class="form-control me-3" type="date" name="dateTo" id="dateTo" onchange="dateChange(this)" value="<%= dateTo %>" style="width:15em;">
-            <button class="btn btn-secondary form-control" onclick="btnSearchDate(this)" style="width:5em;">Search</button>
+        <div id="dateFilter">
+            <div class="d-flex flex-row">
+                <input class="form-control me-3" type="date" name="dateFrom" id="dateFrom" onchange="dateChange(this)" value="<%= dateFrom%>" style="width:15em;">
+                <input class="form-control me-3" type="date" name="dateTo" id="dateTo" onchange="dateChange(this)" value="<%= dateTo %>" style="width:15em;">
+                <button class="btn btn-secondary form-control" onclick="btnSearchDate(this)" style="width:5em;">Search</button>
+            </div>
+            <hr>
         </div>
-        <hr>
+        <div id="noData" class=" noDataContent">
+            <h4 style="line-height: 12em;">No Data</h4>
+        </div>
         <% for (const key in allInvoice) { %>
             <% const data = allInvoice[key] %>
             <div class="card mt-4">
@@ -56,5 +61,18 @@
             </div>        
         <%}%>
     </div>
+    <script>
+        init()
+        function init() {
+            const reportDataElement = document.getElementById('reportData')
+            const reportDataString = reportDataElement.textContent
+            const blocks = reportDataString != '' ? JSON.parse(reportDataString) : []
+            if(blocks.length > 0){
+                $('#noData').hide()
+            }else{
+                $('#noData').show()
+            }
+        }
+    </script>
 </body>
 </html>

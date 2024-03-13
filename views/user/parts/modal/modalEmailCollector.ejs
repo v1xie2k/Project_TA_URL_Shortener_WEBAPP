@@ -1,0 +1,26 @@
+<div class="modal fade" id="modalEmailCollector" aria-hidden="true" aria-labelledby="modalEmailCollectorLabel2" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button"  data-bs-target="#modalMenu" data-bs-toggle="modal" data-bs-dismiss="modal" class="btn btn-sm btn-link">
+                    <svg class="svg-inline--fa fa-chevron-circle-left fa-w-16 fa-fw text-muted" aria-hidden="true" focusable="false" data-prefix="fa" data-icon="chevron-circle-left" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                        <path fill="currentColor" d="M256 504C119 504 8 393 8 256S119 8 256 8s248 111 248 248-111 248-248 248zM142.1 273l135.5 135.5c9.4 9.4 24.6 9.4 33.9 0l17-17c9.4-9.4 9.4-24.6 0-33.9L226.9 256l101.6-101.6c9.4-9.4 9.4-24.6 0-33.9l-17-17c-9.4-9.4-24.6-9.4-33.9 0L142.1 239c-9.4 9.4-9.4 24.6 0 34z"></path>
+                    </svg>
+                </button>
+                <h5 class="modal-title" id="modalEmailCollectorLabel">Add Email Collector</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="btnModalEmailCollectorClose(this)"></button>
+            </div>
+            <div class="modal-body">
+                <h4>Name</h4>
+                <div class="mb-3">
+                    <input type="hidden" name="" id="emailCollectorId">
+                    <input required type="text" name="emailCollector" id="emailCollectorTitle"  class="form-control">
+                </div>
+                <div class="d-flex flex-row-reverse w-100">
+                    <button id="btnSubmitEmailCollector" type="button" onclick="btnAddEmailCollector(this)" class="btn btn-primary" short="<%= data.short%>">Submit</button>
+                    <button id="btnSaveEmailCollector" type="button" onclick="btnEditEmailCollector(this)" class="btn btn-primary " short="<%= data.short%>" style="display: none;">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

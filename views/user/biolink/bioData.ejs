@@ -1,0 +1,98 @@
+<div>
+    <div>
+        <h4>Data of Email & Phone Collector</h4>
+        <div id="typeFiler">
+            <h6>Filter Type</h6>
+            <select name="filterType" id="filterType" onchange="changeType(this)" class="form-control" style="width: 15em;">
+                <option value="all">All Type</option>
+                <option value="email">Email Collector</option>
+                <option value="phone">Phone Collector</option>
+            </select>
+        </div>
+        <div id="dataContent">
+            <table id="dataTable" class="display" >
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Type</th>
+                        <th>Created On</th>
+                    </tr>
+                </thead>
+                <tbody id="dataBodyTable">
+                </tbody>
+            </table>
+        </div>
+        <div id="noData" class=" noDataContent">
+            <h4 style="line-height: 12em;">No Data</h4>
+        </div>
+    </div>
+</div>
+<script>
+    init()
+    function init() {  
+        var dataFound = false
+        const reportDataElement = document.getElementById('blocks')
+        const reportDataString = reportDataElement.textContent
+        const blocks = reportDataString != '' ? JSON.parse(reportDataString) : []
+        for (const block of blocks) {
+                if((block.type == 'emailCollector' || block.type == 'phoneCollector') && block.data && block.data.length > 0 ){ 
+                    dataFound = true
+                }
+        }
+        if(dataFound){
+            loadDataCollector({})
+            $('#noData').hide()
+            $('#typeFiler').show()
+            $('#dataContent').show()
+        }else{
+            console.log('tes');
+            $('#noData').show()
+            $('#typeFiler').hide()
+            $('#dataContent').hide()
+        }
+    }
+    
+    function loadDataCollector(filter) {  
+        const reportDataElement = document.getElementById('blocks')
+        const reportDataString = reportDataElement.textContent
+        const blocks = reportDataString != '' ? JSON.parse(reportDataString) : []
+        var htmlSyntax = ''
+        var type = ''
+        var ctr = 1
+        var filterType = filter.type
+        var allowEmail = true
+        var allowPhone = true
+        if(filterType == 'email'){
+            allowEmail = true
+            allowPhone = false
+        }else if(filterType == 'phone'){
+            allowEmail = false
+            allowPhone = true
+        }else{
+            allowEmail = true
+            allowPhone = true
+        }
+        for (const block of blocks) {
+            if(block.type == 'emailCollector' || block.type == 'phoneCollector'){
+                type = block.type == 'emailCollector' ? 'Email Collector' : 'Phone Collector'
+                block.data.forEach(item=>{
+                    const createdAt = moment(item.createdAt).format('LL')
+                    if(block.type == 'emailCollector'){
+                        if(allowEmail) htmlSyntax += `<tr><td>Name:${item.name} <br>Email:${item.email}</td><td>${type}</td><td>${createdAt}</td></tr>`
+                    }else{
+                        if(allowPhone) htmlSyntax += `<tr><td>Name:${item.name} <br>Phone:${item.phone}</td><td>${type}</td><td>${createdAt}</td></tr>`
+                    }
+                    ctr++
+                })
+            }
+        }
+        $('#dataBodyTable').html(htmlSyntax)
+        new DataTable('#dataTable')
+    }
+
+    function changeType(e) {  
+        const type = $(e).val()
+        loadDataCollector({type})
+    }
+    
+</script>

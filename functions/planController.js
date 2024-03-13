@@ -178,6 +178,7 @@ export async function getInvoices(filter) {
 
 export async function getIncome(filter) {  
     var rawData
+    var incomeData = []
     var totalIncome = 0 , planIncome = 0 , customIncome = 0
     var data = {}
     try{
@@ -189,6 +190,7 @@ export async function getIncome(filter) {
                     if(filter.dateFrom && filter.dateTo){
                         if(filter.dateFrom <= dateCreated && dateCreated <= filter.dateTo  ){
                             totalIncome += parseInt(doc.data().grandTotal)
+                            incomeData.push(doc.data())
                             if(doc.data().type == 'plan'){
                                 planIncome += parseInt(doc.data().grandTotal)
                             }else{
@@ -198,6 +200,7 @@ export async function getIncome(filter) {
                     }
                 }else{
                     totalIncome += parseInt(doc.data().grandTotal)
+                    incomeData.push(doc.data())
                     if(doc.data().type == 'plan'){
                         planIncome += parseInt(doc.data().grandTotal)
                     }else{
@@ -206,6 +209,7 @@ export async function getIncome(filter) {
                 }
             }
         })
+        data.incomeData = incomeData
         data.totalIncome = totalIncome
         data.customIncome = customIncome
         data.planIncome = planIncome

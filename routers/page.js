@@ -190,7 +190,7 @@ router.get('/biolink/edit/:bioLink', isLoggedIn, async (req, res) =>{
         if(bioLink.createdBy != req.session.user.email){
             res.render('error/error403')
         }else{
-            res.render('user/biolink/bioEditView', {data: bioLink, paramType, blocks: sortedBlocks, path: 'edit', allUrl: sortedUrl})
+            res.render('user/biolink/bioEditView', {data: bioLink, paramType, blocks: sortedBlocks, path: 'edit', allUrl: sortedUrl, bioLink: bioLink.short})
         }
     }
 })
@@ -204,7 +204,7 @@ router.get('/view/pdf/:pdf', async (req,res)=>{
     const bioLink = await getAllBioLink()
     for (const bio of bioLink) {
         const blocks = bio.blocks
-        if(blocks.length > 1){
+        if(blocks && blocks.length > 0){
             for (const block of blocks) {
                 if(block.pdf ){
                     const pdfName = block.pdf.split('/')[4]
@@ -240,7 +240,7 @@ router.get('/m/:bioLink', async (req, res)=>{
         var fetchCountry = await fetch(`https://ipapi.co/${req.ips}/json/`);
         var getCountry = await fetchCountry.json()
         updateClickShortUrl('biolinks', param, req.headers['user-agent'], getCountry.country_name)
-        res.render('user/biolink/bioPreview', {data: bioLink, blocks: sortedBlocks, paramType: 'web', path: 'webview'})
+        res.render('user/biolink/bioPreview', {data: bioLink, blocks: sortedBlocks, paramType: 'web', path: 'webview', bioLink: bioLink.short})
     }
 })
 
