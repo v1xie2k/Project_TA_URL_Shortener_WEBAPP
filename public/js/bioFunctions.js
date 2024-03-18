@@ -1068,6 +1068,7 @@ async function submitImg(e) {
     let formData = new FormData();
     formData.append("imgfile", newFile);
     $('#btnSave'+key).html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Loading...')
+    $('#btnSave'+key).prop('disabled', true)
     $('#btnCancel'+key).prop('disabled', true)
     $('#btnRemoveImg'+key).prop('disabled', true)
     var apiUrl = "/api/addImg/url/" + short
@@ -1140,6 +1141,8 @@ async function btnDeleteImg(e) {
     const imgName = imgUrl.split('/')[4]
     const data = {updatedAt: new Date(), short, oldShort: short, collection:'biolinks', type}
     var destination = '?profile'
+    $(e).html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Loading...')
+    $(e).prop('disabled', true)
     if(imgName){
         fetch("/api/deleteImg/"+imgName, {method: "DELETE", body: JSON.stringify(imgName)}).then(async (response) =>{
             if(response.ok) console.log('Success Delete');
@@ -1181,6 +1184,7 @@ async function btnEditProfile(e) {
     const instagram = $('#socialInstagram').val()
     const facebook = $('#socialFacebook').val()
     const youtube = $('#socialYoutube').val()
+    const styleTemplate = $('input[name="preset-themes"]:checked').val()
     if(instagram){
         if(!await checkSocialMedia(instagram, 'instagram')) {
             Swal.fire("Please enter a valid instagram URL");
@@ -1199,7 +1203,7 @@ async function btnEditProfile(e) {
             return
         }
     }
-    const data = {updatedAt: new Date(), short, oldShort: short, collection:'biolinks', pageTitle: title, pageDescription: description, instagram, facebook, youtube}
+    const data = {updatedAt: new Date(), short, styleTemplate, oldShort: short, collection:'biolinks', pageTitle: title, pageDescription: description, instagram, facebook, youtube}
     if(!title) data.deletePageTitle = true
     if(!description) data.deletePageDescription = true
     if(!instagram) data.deleteInstagram = true
@@ -1209,6 +1213,7 @@ async function btnEditProfile(e) {
         config.body = JSON.stringify(data)
     }
     $('#btnSaveUrl').html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Saving...')
+    $('#btnSaveUrl').prop('disabled',true)
     await fetch('/api/deleteField', config).then(async (response) => {
         if (response.ok) {
          console.log('success');

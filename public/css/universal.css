@@ -147,11 +147,11 @@ h2, h3, h4, h5, h6{
   justify-content: center;
   align-items: center;
   position: relative;
-  color: rgb(0, 0, 0);
-  background-color: rgb(255, 255, 255);
   font-weight: 700;
   box-shadow: rgba(0, 0, 0, 0.75) 0.3rem 0.4rem 0px;
   border-radius: 2.3rem;
+  color: black;
+  background-color: white;
 }
 
 .link__content{
@@ -352,4 +352,90 @@ select {
   align-items: center;
   border: 2px dashed grey;
   border-radius: 0.25em !important;
+}
+
+.template1{
+  color: black;
+  background-color: white;
+}
+
+.template2{
+  background-color: #03DAC6;
+  color: white;
+}
+
+.template3{
+  background-color: #6200EE;
+  color: white;
+}
+
+.template4{
+  background-color: #fc766aff;
+  color: white;
+}
+
+.template5{
+  background-color: #f4df4eff;
+  color: white;
+}
+
+.template6{
+  background-color: #b1b3b3ff;
+  color: white;
+}
+
+.template7{
+  background-color: #D4B996FF;
+  color: white;
+}
+
+.template8{
+  background-color: #FAD0C9FF;
+  color: white;
+}
+
+.template9{
+  background-color: #ADEFD1FF;
+  color: white;
+}
+
+.template10{
+  background-color: #97bc62ff;
+  color: white;
+}
+
+.template2-background{
+  background-image: linear-gradient(#018786, #03DAC6);
+}
+
+.template3-background{
+  background-image: linear-gradient(#3700B3, #9582c0);
+}
+
+.template4-background{
+  background-image: linear-gradient(#5b84b1ff, rgb(132, 188, 248));
+}
+
+.template5-background{
+  background-image: linear-gradient(#272727, #949398ff);
+}
+
+.template6-background{
+  background-image: linear-gradient(#e3cd81ff, rgb(255, 237, 174));
+}
+
+.template7-background{
+  background-image: linear-gradient(#A07855FF, rgb(207, 158, 114));
+}
+
+.template8-background{
+  background-image: linear-gradient(#6E6E6DFF, rgb(151, 151, 151));
+}
+
+.template9-background{
+  background-image: linear-gradient(#00203FFF, rgb(6, 64, 123));
+}
+
+.template10-background{
+  background-image: linear-gradient(#2c5f2d, #428d43);
 }

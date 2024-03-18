@@ -1,11 +1,12 @@
 import { initializeApp, applicationDefault, cert } from 'firebase-admin/app'
 import 'dotenv/config'
+const {privateKey} = JSON.parse(process.env.private_key_firebase) 
 
 const serviceAccount = {
     "type": "service_account",
     "project_id": "tes-firebase-9bd08",
     "private_key_id":  process.env.private_key_id_firebase,
-    "private_key":  process.env.private_key_firebase,
+    privateKey,
     "client_email": "firebase-adminsdk-qn55b@tes-firebase-9bd08.iam.gserviceaccount.com",
     "client_id": "103332832864299854457",
     "auth_uri": "https://accounts.google.com/o/oauth2/auth",

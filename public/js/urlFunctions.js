@@ -6,7 +6,7 @@ if(window.location.href.split('/')[3] == 'qr') destination ='/qr'
 function generateQr(elementId, shortUrl){
     new QRious({
         element: document.getElementById(elementId),
-        value: "http://127.0.0.1/" + shortUrl,
+        value: "https://gamepal.my.id/" + shortUrl,
         padding:25,
         size:200
     })

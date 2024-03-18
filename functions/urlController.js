@@ -178,6 +178,7 @@ export async function editBioLink(data) {
         if(data.facebook) oldData.facebook = data.facebook
         if(data.youtube) oldData.youtube = data.youtube
         if(data.blocks) oldData.blocks = data.blocks
+        if(data.styleTemplate) oldData.styleTemplate = data.styleTemplate
         if(editShortStatus){
             const del = await db.collection('biolinks').doc(data.oldShort).delete()
         }
@@ -312,16 +313,21 @@ export async function uploadImage(file) {
 }
 
 export async function deleteImage(fileName){
-    new Promise((resolve, reject) => {
+    new Promise(async (resolve, reject) => {
         //imageurl=parentfolder/childfolder/filename
         try{
-            bucket.file(fileName).delete()
-            .then((image) => {
-                resolve(image)
-            })
-            .catch((e) => {
-                reject(e)
-            });
+            if(await bucket.file(fileName).exists() == true){
+                console.log('naze?');
+                console.log(await bucket.file(fileName).exists());
+                bucket.file(fileName).delete()
+                .then((image) => {
+                    resolve(image)
+                })
+                .catch((e) => {
+                    reject(e)
+                });
+            }
+            return
         }catch(error){
             console.log(error);
         }

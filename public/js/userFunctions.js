@@ -31,6 +31,7 @@ async function submitImg(e) {
     let formData = new FormData();
     formData.append("imgfile", newFile);
     $('#btnSave'+key).html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Loading...')
+    $('#btnSave'+key).prop('disabled', true)
     $('#btnCancel'+key).prop('disabled', true)
     $('#btnRemoveImg'+key).prop('disabled', true)
     var apiUrl = "/api/addImg/user/" + email
@@ -84,6 +85,8 @@ function btnDeleteImg(e) {
     const imgName = imgUrl.split('/')[4]
     const data = {updatedAt: new Date(), short: email, collection:'users', type: 'profile'}
     var destination = '?'
+    $(e).html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Loading...')
+    $(e).prop('disabled', true)
     if(imgName){
         fetch("/api/deleteImg/"+imgName, {method: "DELETE", body: JSON.stringify(imgName)}).then(async (response) =>{
             if(response.ok) console.log('Success Delete');
