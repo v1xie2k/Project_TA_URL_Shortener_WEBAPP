@@ -26,13 +26,9 @@
                     <button class="btn btn-primary mt-2 ms-3" onClick="btnCopyClick(this)" value="gamepal.my.id/m/<%= data.short%>">Copy</button>
                 </div>
             </div>
-            
-            <!-- <div>
-                <button class="btn btn-success mt-2">Publish Changes</button>
-            </div> -->
         </div>
         <div class="row g-0">
-            <div class="col-md-8">
+            <div class="col-md-7">
                 <div id="navBar" class="navBar">
                     <a href="?build">Build</a>
                     <a href="?profile">Profile</a>
@@ -51,12 +47,10 @@
                 <%}%>
             </div>
             <div class="col-md-4">
-                <div class="container">
-                    <div class="ps-5 ">
-                        <div class="preview mb-3">Preview</div>
-                        <div class="previewContent" style="box-shadow:  5px 10px 20px 5px #888888">
-                            <%- include('../parts/bioLinkContent.ejs') %>
-                        </div>
+                <div class="container ps-5">
+                    <div class="preview mb-3">Preview</div>
+                    <div class="previewContent" style="box-shadow:  5px 10px 20px 5px #888888">
+                        <%- include('../parts/bioLinkContent.ejs') %>
                     </div>
                 </div>
             </div>

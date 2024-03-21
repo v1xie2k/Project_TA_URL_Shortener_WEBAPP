@@ -57,8 +57,8 @@ h2, h3, h4, h5, h6{
   
 .previewContent {
   border-radius: 20px;
-  height: 50rem;
-  width: 30rem;
+  height: 40rem;
+  width: 25rem;
   overflow-y: scroll;
   
 }
@@ -72,7 +72,7 @@ h2, h3, h4, h5, h6{
 
 .fullWidth{
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   overflow-y: scroll;
 }
 
@@ -121,7 +121,7 @@ h2, h3, h4, h5, h6{
   height: 30px;
   border-radius: 10px;
   text-align: center;
-  margin-left: 175px;
+  margin-left: 125px;
   background-color: beige;
   color: burlywood;
   border: 1px solid burlywood;
@@ -438,4 +438,9 @@ select {
 
 .template10-background{
   background-image: linear-gradient(#2c5f2d, #428d43);
+}
+
+.preset-themes{
+  align-items: center;
+  justify-items: center;
 }

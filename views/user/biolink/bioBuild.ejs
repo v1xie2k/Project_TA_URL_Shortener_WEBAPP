@@ -17,7 +17,7 @@
                         <div class="" style="width: 2em;" >
                             <i class="fa-solid fa-grip-vertical fa-2x dragHandle" style="cursor: grab;"></i>
                         </div>
-                        <div class="col-md-2" style="align-items: center; text-align: center;">
+                        <div class="col-md-2" style="align-items: center; text-align: center; margin-right: 1em;">
                             <%if(block.type == 'youtube'){%>
                                 <div style="padding-top: 30px;">
                                     <span class="video-placeholder">
@@ -53,7 +53,6 @@
                                 </div>
                             <%}else{%>
                                 <!-- Button trigger modal -->
-                                
                                 <%if(block.img){%>
                                     <button id="btnImg<%=key%>" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModal<%= key%>" style=" margin-top: 25px; padding: 0; background-image: url('<%=block.img%>');">
                                     </button>
@@ -98,7 +97,7 @@
                                 </div>
                             <%}%>
                         </div>
-                        <div class="col col-md-9 " style="width: 79%">
+                        <div class="col col-md-9 " style="width: 76%">
                             <div class="d-flex flex-row-reverse">
                                 <button type="button" onclick="btnDeleteUrl(this)" class="btn btn-danger" short="<%= block.short%>" value="<%= key%>" cat="<%= block.type%>" full="<%= block.full%>" pdf="<%= block.pdf%>" createdAt="<%= block.createdAt%>" idCollector="<%= block.idCollector%>"><i class="fa-solid fa-trash-can pe-2"></i>Delete</button>
                                 <% if(block.youtubeId){%>
