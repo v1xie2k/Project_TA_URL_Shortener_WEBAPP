@@ -1415,6 +1415,7 @@ function loadData(rawReport, filter) {
     const countryBodyTable = $('#countryBodyTable').html(htmlSyntax)
     new DataTable('#countryTable')
     new DataTable('#linkTable')
+    new DataTable('#referrerTable')
 }
 
 

@@ -239,8 +239,11 @@ router.get('/m/:bioLink', async (req, res)=>{
         // this api is for detecting user's region(location)
         var fetchCountry = await fetch(`https://ipapi.co/${req.ips}/json/`);
         var getCountry = await fetchCountry.json()
-        updateClickShortUrl('biolinks', param, req.headers['user-agent'], getCountry.country_name)
+        var referer = await req.headers.referer
+        console.log(referer);
+        updateClickShortUrl('biolinks', param, req.headers['user-agent'], getCountry.country_name, referer)
         res.render('user/biolink/bioPreview', {data: bioLink, blocks: sortedBlocks, paramType: 'web', path: 'webview', bioLink: bioLink.short})
+        
     }
 })
 
@@ -254,7 +257,7 @@ router.get('/:shortUrl', async (req,res)=>{
         //this api is for detecting user's region(location)
         var fetchCountry = await fetch(`https://ipapi.co/${req.ips}/json/`);
         var getCountry = await fetchCountry.json()
-        updateClickShortUrl('shorturls', param, req.headers['user-agent'], getCountry.country_name)
+        updateClickShortUrl('shorturls', param, req.headers['user-agent'], getCountry.country_name, '')
         res.redirect(shortUrl.full)
     }
 })

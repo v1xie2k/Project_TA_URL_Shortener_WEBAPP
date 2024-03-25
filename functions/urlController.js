@@ -336,7 +336,7 @@ export async function deleteImage(fileName){
     });
 }
 
-export async function updateClickShortUrl(collection, param, userAgent, country) {
+export async function updateClickShortUrl(collection, param, userAgent, country, referer) {
     var data
     try { 
         const parser = new UAParser(userAgent);
@@ -386,6 +386,31 @@ export async function updateClickShortUrl(collection, param, userAgent, country)
             data.logClicks = [bodyData]
         }
         data.clicks += 1
+        const referrerData = data.referrer ? data.referrer : [] 
+        if(referer){
+            var refFound = false
+            for (const ref of referrerData) {
+                if(ref.referrer == referer){
+                    ref.click = ref.click + 1
+                    refFound = true
+                }
+            }
+            if(!refFound){
+                referrerData.push({referrer: referer, click: 1})
+            }
+        }else{
+            var refFound = false
+            for (const ref of referrerData) {
+                if(ref.referrer == 'No Referer'){
+                    ref.click = ref.click + 1
+                    refFound = true
+                }
+            }
+            if(!refFound){
+                referrerData.push({referrer: 'No Referer', click: 1})
+            }
+        }
+        data.referrer = referrerData
         const res = await db.collection(collection).doc(param).set(data)
     } catch (err) {
         console.log(err.stack);

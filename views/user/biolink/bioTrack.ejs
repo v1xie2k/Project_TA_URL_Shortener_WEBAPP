@@ -44,32 +44,69 @@
 </div>
 <div>
     <div class="mt-3">
-        <h4>Link Activity</h4>
-        <table id="linkTable" class="display">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>title</th>
-                    <th>link</th>
-                    <th>short</th>
-                    <th>Click</th>
-                </tr>
-            </thead>
-            <tbody id="linkBodyTable">
-                <% for (const key in allUrl) { %>
-                    <% const data = allUrl[key] %>
+        <h4>Referrer</h4>
+        <%if(data.referrer){%>
+            <table id="referrerTable" class="display">
+                <thead>
                     <tr>
-                        <% const ctr = +key + 1 %>
-                        <td><%= ctr%></td>
-                        <td><%= data.title%></td>
-                        <td><%= data.full%></td>
-                        <td><%= data.short%></td>
-                        <td><%= data.clicks%></td>
+                        <th>#</th>
+                        <th>Referrer</th>
+                        <th>Click</th>
                     </tr>
-                <%}%>
-            </tbody>
-        </table>
+                </thead>
+                <tbody id="referrerBodyTable">
+                    <% for (const key in data.referrer) { %>
+                        <% const dataReferer = data.referrer[key] %>
+                        <tr>
+                            <% const ctr = +key + 1 %>
+                            <td><%= ctr%></td>
+                            <td><%= dataReferer.referrer%></td>
+                            <td><%= dataReferer.click%></td>
+                        </tr>
+                    <%}%>
+                </tbody>
+            </table>
+        <%}else{%>
+            <div class=" noDataContent">
+                <h4 style="line-height: 12em;">No Data</h4>
+            </div>
+        <%}%>
     </div>
+    <div class="mt-3">
+        <h4>Link Activity</h4>
+        <%if(allUrl.length > 0){%>
+            <table id="linkTable" class="display">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>title</th>
+                        <th>link</th>
+                        <th>short</th>
+                        <th>Click</th>
+                    </tr>
+                </thead>
+                <tbody id="linkBodyTable">
+                    <% for (const key in allUrl) { %>
+                        <% const data = allUrl[key] %>
+                        <tr>
+                            <% const ctr = +key + 1 %>
+                            <td><%= ctr%></td>
+                            <td><%= data.title%></td>
+                            <td><%= data.full%></td>
+                            <td><%= data.short%></td>
+                            <td><%= data.clicks%></td>
+                        </tr>
+                    <%}%>
+                </tbody>
+            </table>
+        <%}else{%>
+            <div class=" noDataContent">
+                <h4 style="line-height: 12em;">No Data</h4>
+            </div>
+        <%}%>
+        
+    </div>
+
 </div>
 <script>
     if(getData().length > 0){
