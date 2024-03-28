@@ -10,7 +10,7 @@
     <script type="text/javascript" src="../../../public/js/urlFunctions.js"></script>
     <div class="container">
         <h1>Create New Short Url</h1>
-        <div>
+        <div class="card card-body">
             <h4>Destination</h4>
             <div class="mb-3">
                 <input required type="url" name="fullUrl" id="fullUrl"  placeholder="url" class="form-control">
@@ -41,35 +41,39 @@
 
         <% for (const key in allUrl) { %>
             <% const data = allUrl[key] %>
-        <div class="card mt-4">
-            <div class="card-body" >
-                <div class="mb-3">
-                    <div class="row g-0">
-                      <div class="col-md-2">
-                        <canvas id="qr_<%= key%>" class="ps-1 mt-3" short="<%= data.short%>"></canvas>
-                        <script>
-                            if("<%= data.type %>" == 'qr'){
-                                generateQr("qr_<%= key%>", "<%= data.short%>")
-                            }
-                        </script>
-                      </div>
-                      <div class="col col-md-10">
-                        <div class="d-flex flex-row-reverse">
-                            <button type="button" onclick="btnDeleteUrl(this)" class="btn btn-danger" value="<%= data.short%>"><i class="fa-solid fa-trash-can pe-2"></i>Delete</button>
-                            <a href="<% if(data.type == 'qr'){ %> /qr/edit/<%= data.short%> <% }else{  %> /url/edit/<%= data.short%> <%}%>" >
-                                <button type="button" class="btn btn-success mx-2" value="<%= data.short%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
-                            </a>
+            <div class="card mt-4">
+                <div class="card-body" >
+                    <div class="mb-3">
+                        <div class="row g-0">
+                        <div class="col-md-2">
+                            <%if(data.type == 'qr'){%>
+                                <canvas id="qr_<%= key%>" class="ps-1 mt-3" short="<%= data.short%>"></canvas>
+                            <%}else{%>
+                                <i class="fa-solid fa-link fa-7x ps-4 mt-4"></i>
+                            <%}%>
+                            <script>
+                                if("<%= data.type %>" == 'qr'){
+                                    generateQr("qr_<%= key%>", "<%= data.short%>")
+                                }
+                            </script>
                         </div>
-                        <div class="text-left">
-                          <h4 class="card-title"><%= data.title%></h4>
-                          <a href="<%= data.full%>" style="text-decoration: none;"><%= data.full%></a>
-                          <p class="card-text"><small class="text-body-secondary"><%= data.createdAt%></small></p>
+                        <div class="col col-md-10">
+                            <div class="d-flex flex-row-reverse">
+                                <button type="button" onclick="btnDeleteUrl(this)" class="btn btn-danger" value="<%= data.short%>"><i class="fa-solid fa-trash-can pe-2"></i>Delete</button>
+                                <a href="<% if(data.type == 'qr'){ %> /qr/edit/<%= data.short%> <% }else{  %> /url/edit/<%= data.short%> <%}%>" >
+                                    <button type="button" class="btn btn-success mx-2" value="<%= data.short%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                                </a>
+                            </div>
+                            <div class="text-left">
+                            <a href="/url/view/<%= data.short%>" style="text-decoration: none; color: black;"><h4 class="card-title"><%= data.title%></h4></a>
+                            <a href="<%= data.full%>" style="text-decoration: none;"><%= data.full%></a>
+                            <p class="card-text"><small class="text-body-secondary"><%= data.createdAt%></small></p>
+                            </div>
                         </div>
-                      </div>
+                        </div>
                     </div>
-                  </div>
+                </div>
             </div>
-        </div>
         <% } %>
         
     </div>

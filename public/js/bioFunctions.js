@@ -163,6 +163,7 @@ async function btnAddUrl(e) {
     var isYoutube = $(e).val()
     var full = isYoutube ? $('#youtubeUrl').val() : $('#fullUrl').val()
     var youtubeId = await validateYouTubeUrl(full)
+    var animation = $('#animation').val()
     const reportDataElement = document.getElementById('blocks')
     const reportDataString = reportDataElement.textContent
     const blocks = reportDataString != '' ? await JSON.parse(reportDataString) : []
@@ -189,9 +190,10 @@ async function btnAddUrl(e) {
         title,
         description,
         clicks: 0,
+        animation,
         createdAt: new Date()
     }
-    const urlData = {title, full, description, order, type: 'link', createdAt: new Date()}
+    const urlData = {animation, title, full, description, order, type: 'link', createdAt: new Date()}
     if(isYoutube){
         urlData.type = 'youtube'
         urlData.youtubeId = youtubeId
@@ -312,9 +314,18 @@ async function btnClickEditUrl(e) {
             $('#btnSubmitPhoneCollector').hide()
             $('#modalPhoneCollectorLabel').html('Edit Phone Collector')
         }else{
+            const animate = $(e).attr('animate')
             $('.form-bio-link').show()
             $('#titleUrl'+key).val(title)
             $('#description'+key).val(description)
+            var animation = document.getElementById("animation"+key);
+            const animationList = ['none','bounce','pulse','flash','swing','shakeX','wobble','heartBeat','tada']
+            for (let index = 0; index < animationList.length; index++) {
+                if(animate == animationList[index]){
+                    animation.options[index].selected = true
+                }
+            }
+            
         }
     }
 }
@@ -372,6 +383,7 @@ async function btnEditUrl(e) {
     const key = $(e).attr('key')
     const bioLink = $('#bioLink').val()
     const isYoutube = $(e).val()
+   
     const full = isYoutube == 'youtube' ? $('#youtubeUrl').val() : $('#fullUrl'+key).val()
     console.log( full);
     const youtubeId = await validateYouTubeUrl(full)
@@ -380,6 +392,7 @@ async function btnEditUrl(e) {
     const short = $('#shortUrlEdit').val()
     const oldShort = short
     const description = $('#description'+key).val()
+    const animation = $('#animation'+key).val()
     const oldDestination = $('#oldDestination').val()
     if(isYoutube){
         await loadThumbnail(youtubeId)
@@ -398,9 +411,9 @@ async function btnEditUrl(e) {
         title,
         oldShort,
         description,
+        animation,
         updatedAt: new Date()
     }
-    console.log(data);
     if(isYoutube){
         data.youtubeId = youtubeId
     }
@@ -411,6 +424,7 @@ async function btnEditUrl(e) {
             data.full = full
             data.title = title 
             data.description = description
+            data.animation = animation
             if(isYoutube){
                 data.youtubeId = youtubeId
             }

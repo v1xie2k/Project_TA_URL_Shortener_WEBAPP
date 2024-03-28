@@ -32,21 +32,31 @@
                     <div class="col col-md-6">
                         <h2><%= data.name%></h2>
                         <div class="d-flex flex-row">
+                            <%if(data.url > 0 || data.qr > 0){%>
+                                <ul>
+                                    <% if(data.url > 0){%>
+                                        <li>Short URL: <%= data.url%> Credit</li>
+                                    <% }%>
+                                    <% if(data.qr > 0){%>
+                                        <li>QR Code: <%= data.qr%> Credit</li>
+                                    <% }%>
+                                </ul>
+                            <%}%>
+                            <%if(data.bio > 0 || data.prompt > 0){%>
+                                <ul>
+                                    <% if(data.bio > 0){%>
+                                        <li>Bio Link: <%= data.bio%> Credit</li>
+                                    <% }%>
+                                    <% if(data.prompt > 0){%>
+                                        <li>Prompt: <%= data.prompt%> Credit</li>
+                                    <% }%>
+                                </ul>
+                            <%}%>
+                            
                             <ul>
-                                <% if(data.url > 0){%>
-                                    <li>Short URL: <%= data.url%> Credit</li>
-                                <% }%>
-                                <% if(data.qr > 0){%>
-                                    <li>QR Code: <%= data.qr%> Credit</li>
-                                <% }%>
-                            </ul>
-                            <ul>
-                                <% if(data.bio > 0){%>
-                                    <li>Bio Link: <%= data.bio%> Credit</li>
-                                <% }%>
-                                <% if(data.prompt > 0){%>
-                                    <li>Prompt: <%= data.prompt%> Credit</li>
-                                <% }%>
+                                <%if(data.bioPro > 0){%>
+                                    <li>Bio Link Pro: <%= data.bioPro%> credit</li>
+                                <%}%>
                             </ul>
                         </div>
                         
@@ -58,7 +68,7 @@
                         </div>
                         <div class="d-flex align-items-end flex-column" style="height: 90%;">
                             <div class="mt-auto p-2 bd-highlight">
-                                <button type="button" onclick="btnBuySubscriptionPlan(this)" class="form-control btn btn-primary" value="<%= data.planId%>" planName="<%= data.name%>" price="<%= data.price%>" url="<%= data.url%>" qr="<%= data.qr%>" bio="<%= data.bio%>" prompt="<%= data.prompt%>">Buy</button>
+                                <button type="button" onclick="btnBuySubscriptionPlan(this)" class="form-control btn btn-primary" value="<%= data.planId%>" planName="<%= data.name%>" price="<%= data.price%>" url="<%= data.url%>" qr="<%= data.qr%>" bio="<%= data.bio%>" bioPro="<%= data.bioPro%>" prompt="<%= data.prompt%>">Buy</button>
                             </div>
                         </div>
                     </div>

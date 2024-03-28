@@ -19,11 +19,27 @@
                 <div class="mb-3">
                     <input required type="text" name="Description" id="description"  placeholder="(Optional)" class="form-control">
                 </div>
+                
                 <h4>Destination</h4>
                 <div class="mb-3">
                     <input required type="url" name="destination" id="fullUrl"  placeholder="https://example.com" class="form-control">
                 </div>
-                
+
+                <h4>Animation</h4>
+                <div class="mb-3">
+                    <select name="animation" id="animation" class="form-control" >
+                        <option value="none">None</option>
+                        <option value="bounce">Bounce</option>
+                        <option value="pulse">Pulse</option>
+                        <option value="flash">Flash</option>
+                        <option value="swing">Swing</option>
+                        <option value="shakeX">Shake</option>
+                        <option value="wobble">Wobble</option>
+                        <option value="heartBeat">Heart Beat</option>
+                        <option value="tada">Tada</option>
+                    </select>
+                </div>
+            
                 <div class="d-flex flex-row-reverse w-100">
                     <button id="btnSubmitUrl" type="button" onclick="btnAddUrl(this)" class="btn btn-primary">Submit</button>
                     <button id="btnSaveUrl" type="button" onclick="btnEditUrl(this)" class="btn btn-primary" style="display: none;">Save</button>

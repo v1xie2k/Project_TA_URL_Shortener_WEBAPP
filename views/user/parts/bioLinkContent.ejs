@@ -79,7 +79,7 @@
                                                 <% if (paramType =='web') { %>
                                                     <img src="<%= imgSlider.img%>" style="width: 20em;height: 20em;" class="img-splide">
                                                 <%}else{%>  
-                                                    <img src="<%= imgSlider.img%>" style="width: 7em;height: 7em;" class="img-splide">
+                                                    <img src="<%= imgSlider.img%>" style="width: 5em;height: 5em;" class="img-splide">
                                                 <%}%>  
                                                 
                                             </li>
@@ -98,7 +98,7 @@
                         </a>
                         <%- include('./modal/modalPhoneCollectorView.ejs', {data: data, bioLink: bioLink, key:key})%>
                     <%}else{%>
-                        <a href="http://localhost:8080/<%= data.short%>" class="link " style="text-decoration: none;" >
+                        <a href="http://localhost:8080/<%= data.short%>" class="link animate__animated animate__infinite animate-none animate__<%= data.animation%> " style="text-decoration: none;" >
                         <%if(data.img != null && data.img != ''){%>
                             <img src="<%= data.img%>" alt="" class="link-image">
                             <div class="link__content has-image">

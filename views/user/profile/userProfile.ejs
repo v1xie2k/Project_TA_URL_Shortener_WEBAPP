@@ -11,7 +11,7 @@
     <script type="text/javascript" src="../../../public/js/userFunctions.js"></script>
     <div class="container">
         <h1>User Profile</h1>
-        <div class="row g-0">
+        <div class="row g-0 ">
             <div class="col-md-2">
                 <%if(data.profile){%>
                     <button id="btnImgProfile" type="button" class="btn background-preview" data-bs-toggle="modal" data-bs-target="#exampleModalProfile" style="width: 10rem; height: 10rem; margin-top: 25px; padding: 0; background-image: url('<%=data.profile%>');">
@@ -68,6 +68,7 @@
                     <h5>Short Link: <%= data.creditShortUrl%></h5>
                     <h5>QR Codes: <%= data.creditQr%></h5>
                     <h5>Bio Link: <%= data.creditBioLink%></h5>
+                    <h5>Bio Link Pro: <%= data.creditBioPro%></h5>
                     <h5>Prompt: <%= data.creditPrompt%></h5>
                 </div>
             </div>

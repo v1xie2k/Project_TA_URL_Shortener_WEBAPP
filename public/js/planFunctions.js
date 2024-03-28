@@ -24,20 +24,24 @@ function btnDecreaseQty(e) {
 
 function loadGrandTotal(){
     const bioQty = parseInt($('#ctrbiolink').val())
+    const bioProQty = parseInt($('#ctrbioPro').val())
     const qrQty = parseInt($('#ctrqr').val())
     const urlQty = parseInt($('#ctrurl').val())
     const promptQty = parseInt($('#ctrprompt').val())
     const bioPrice = parseInt($('#ctrbiolink').attr('price'))
+    const bioProPrice = parseInt($('#ctrbioPro').attr('price'))
     const qrPrice = parseInt($('#ctrqr').attr('price'))
     const urlPrice = parseInt($('#ctrurl').attr('price'))
     const promptPrice = parseInt($('#ctrprompt').attr('price'))
     const bioSub = (bioQty * bioPrice)
+    const bioProSub = (bioProQty * bioProPrice)
     const qrSub = (qrQty * qrPrice)
     const urlSub = (urlQty * urlPrice)
     const promptSub = (promptQty * promptPrice)
-    var grandTotal = bioSub + urlSub + qrSub + promptSub
+    var grandTotal = bioSub + urlSub + qrSub + promptSub + bioProSub
     $('#grandTotal').html(grandTotal)
     $('#subtotalbiolink').html(bioSub)
+    $('#subtotalbioPro').html(bioProSub)
     $('#subtotalqr').html(qrSub)
     $('#subtotalurl').html(urlSub)
     $('#subtotalprompt').html(promptSub)
@@ -47,17 +51,20 @@ function loadGrandTotal(){
 async function btnClickBuy(e) {  
     var config = {method: "POST", headers: {"Content-Type": "application/json"}}
     const bioQty = parseInt($('#ctrbiolink').val())
+    const bioProQty = parseInt($('#ctrbioPro').val())
     const qrQty = parseInt($('#ctrqr').val())
     const urlQty = parseInt($('#ctrurl').val())
     const promptQty = parseInt($('#ctrprompt').val())
     const grandTotal = parseInt($('#grandTotal').html())
     const bioPrice = parseInt($('#ctrbiolink').attr('price'))
+    const bioProPrice = parseInt($('#ctrbioPro').attr('price'))
     const qrPrice = parseInt($('#ctrqr').attr('price'))
     const urlPrice = parseInt($('#ctrurl').attr('price'))
     const promptPrice = parseInt($('#ctrprompt').attr('price'))
     var items = []
     //grandtotal sudah jalan tingal connect ke midtrans & tambahkan credit ke user
     if(bioQty > 0) items.push({name: 'Bio Link', price: bioPrice, quantity: bioQty, type:'bio'})
+    if(bioProQty > 0) items.push({name: 'Bio Link Pro', price: bioProPrice, quantity: bioProQty, type:'bioPro'})
     if(qrQty > 0) items.push({name: 'QR Code', price: qrPrice, quantity: qrQty, type: 'qr'})
     if(urlQty > 0) items.push({name: 'Short URL', price: urlPrice, quantity: urlQty, type: 'url'})
     if(promptQty > 0) items.push({name: 'Prompt', price: promptPrice, quantity: promptQty, type: 'prompt'})

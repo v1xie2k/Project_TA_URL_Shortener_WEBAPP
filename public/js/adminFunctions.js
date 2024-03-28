@@ -78,12 +78,13 @@ function btnCreatePlan(e) {
     const qrQty = parseInt($('#qtyQr').val())
     const promptQty = parseInt($('#qtyPrompt').val())
     const bioQty = parseInt($('#qtyBio').val())
-    const data = {name, price, url: urlQty, qr: qrQty, prompt: promptQty, bio: bioQty, createdAt: new Date()}
+    const bioProQty = parseInt($('#qtyBioPro').val())
+    const data = {name, price, url: urlQty, qr: qrQty, prompt: promptQty, bio: bioQty, bioPro: bioProQty, createdAt: new Date()}
     if(!name || !planPrice){
         Swal.fire("Price & Description must be filled");
         return
     }
-    if(urlQty == 0 && qrQty == 0 && promptQty == 0 && bioQty == 0){
+    if(urlQty == 0 && qrQty == 0 && promptQty == 0 && bioQty == 0 && bioProQty == 0){
         Swal.fire("There should be 1 service at minimum");
         return
     }
@@ -104,6 +105,7 @@ function btnEditPlan(e) {
     const url = $(e).attr('url')
     const qr = $(e).attr('qr')
     const bio = $(e).attr('bio')
+    const bioPro = $(e).attr('bioPro')
     const prompt = $(e).attr('prompt')
     $('#btnCancel').show()
     $('#btnCreate').val(planId)
@@ -115,6 +117,7 @@ function btnEditPlan(e) {
     $('#qtyUrl').val(url)
     $('#qtyQr').val(qr)
     $('#qtyBio').val(bio)
+    $('#qtyBioPro').val(bioPro)
     $('#qtyPrompt').val(prompt)
 }
 
@@ -128,6 +131,7 @@ function btnCancelEditPlan(){
     $('#qtyUrl').val(0)
     $('#qtyQr').val(0)
     $('#qtyBio').val(0)
+    $('#qtyBioPro').val(0)
     $('#qtyPrompt').val(0)
 }
 
@@ -332,7 +336,6 @@ function loadIncomeData() {
             console.log('dateNow', dateNow);
             console.log('createdAt', createdAt);
             if(createdAt == dateNow){
-                console.log('tes');
                 if(item.type == 'plan'){
                     lineChartNormal[index] = item.grandTotal
                 }else{

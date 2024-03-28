@@ -112,9 +112,11 @@ async function btnBuySubscriptionPlan(e) {
     const urlQty = parseInt($(e).attr('url'))
     const qrQty = parseInt($(e).attr('qr'))
     const bioQty = parseInt($(e).attr('bio'))
+    const bioProQty = parseInt($(e).attr('bioPro'))
     const promptQty = parseInt($(e).attr('prompt'))
     var items = []
     if(bioQty > 0) items.push({name: 'Bio Link',  price: 0, quantity: bioQty, type:'bio'})
+    if(bioProQty > 0) items.push({name: 'Bio Link Pro',  price: 0, quantity: bioProQty, type:'bioPro'})
     if(qrQty > 0) items.push({name: 'QR Code',  price: 0, quantity: qrQty, type: 'qr'})
     if(urlQty > 0) items.push({name: 'Short URL',  price: 0, quantity: urlQty, type: 'url'})
     if(promptQty > 0) items.push({name: 'Prompt',  price: 0, quantity: promptQty, type: 'prompt'})

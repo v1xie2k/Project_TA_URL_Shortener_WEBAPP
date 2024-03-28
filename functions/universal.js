@@ -50,6 +50,8 @@ export async function checkCredit(data) {
         if(rawData.creditBioLink - 1 >= 0) status = true
     }else if(type == 'prompt'){
         if(rawData.creditPrompt - 1 >= 0) status = true
+    }else if(type == 'bioPro'){
+        if(rawData.creditBioPro - 1 >= 0) status = true
     }else {
         if(rawData.creditShortUrl - 1 >= 0) status = true 
     }
@@ -65,6 +67,8 @@ export async function creditReduction(data) {
         if(oldData.creditBioLink - 1 >= 0) oldData.creditBioLink -= 1
     }else if(type == 'prompt'){
         if(oldData.creditPrompt - 1 >= 0) oldData.creditPrompt -= 1
+    }else if(type == 'bioPro'){
+        if(oldData.creditBioPro - 1 >= 0) oldData.creditBioPro -= 1
     }else {
         if(oldData.creditShortUrl - 1 >= 0) oldData.creditShortUrl -= 1
     }

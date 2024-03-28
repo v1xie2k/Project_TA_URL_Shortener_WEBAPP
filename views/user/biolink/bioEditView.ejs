@@ -25,6 +25,11 @@
                 <div>
                     <button class="btn btn-primary mt-2 ms-3" onClick="btnCopyClick(this)" value="gamepal.my.id/m/<%= data.short%>">Copy</button>
                 </div>
+                <%if(data.pro == false){%>
+                <div>
+                    <button type="button" class="form-control mt-2 ms-3 d-flex flex-row" style="width: fit-content" onclick="btnUpgradeBioLink(this)" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Upgrade to Bio Link Pro to access all the features with 1 Bio Link Pro credit"> <i class="fa-solid fa-lock mt-1 me-1"></i> Upgrade</button>
+                </div>
+                <%}%>
             </div>
         </div>
         <div class="row g-0">
@@ -57,4 +62,58 @@
         </div>
     </div>
 </body>
+<script>
+    function btnUpgradeBioLink(e) {
+        var config = {method: 'POST', headers: {"Content-Type": "application/json"}}
+        const oldBio = $('#bioLink').val()
+        const data = {
+            short: oldBio,
+            oldShort: oldBio,
+            pro: true,
+            updatedAt: new Date(),
+            type: 'bioPro'
+        }
+        config.body = JSON.stringify(data)
+        Swal.fire({
+            icon: "warning",
+            title: "Upgrading this will unlock all the features & cost you 1 Bio Link Pro credit! Are you sure about it?",
+            showCancelButton: true,
+            confirmButtonText: "Go",
+        }).then(async (result) => {
+            if(result.isConfirmed){
+                fetch('/credential/checkCredit', config).then(async (response) => {
+                    if (response.ok) {
+                        fetch('/api/biolink/edit', config).then(async (response) => {
+                            if (response.ok) {
+                                fetch('/credential/reduceCredit', config).then(async (response) => {
+                                    if (response.ok) {
+                                        window.location.href = '?build'
+                                    }
+                                    else if(response.status){
+                                        Swal.fire({icon: "error", title: "Ooops....", text: 'something wrong'});
+                                    }
+                                }).catch((error) => {
+                                    alert('WARNING!')
+                                    console.log(error);
+                                });
+                            }
+                            else if(response.status){
+                                Swal.fire({icon: "error", title: "Ooops....", text: 'Something went wrong while updating the biolink!'});
+                            }
+                        }).catch((error) => {
+                            alert('WARNING!')
+                            console.log(error);
+                        });
+                    }
+                    else if(response.status){
+                        Swal.fire({icon: "error", title: "Ooops....", text: 'Insufficient Credit!'});
+                    }
+                }).catch((error) => {
+                    alert('WARNING!')
+                    console.log(error);
+                })
+            }
+        })
+    }
+</script>
 </html>

@@ -151,6 +151,7 @@ export async function addNewBioLink(data) {
             return false
         }else{
             data.type = 'biolink'
+            data.pro = false
             const res = await db.collection('biolinks').doc(data.short).set(data)
             return true
         }
@@ -178,6 +179,7 @@ export async function editBioLink(data) {
         if(data.facebook) oldData.facebook = data.facebook
         if(data.youtube) oldData.youtube = data.youtube
         if(data.blocks) oldData.blocks = data.blocks
+        if(data.pro) oldData.pro = data.pro
         if(data.styleTemplate) oldData.styleTemplate = data.styleTemplate
         if(editShortStatus){
             const del = await db.collection('biolinks').doc(data.oldShort).delete()

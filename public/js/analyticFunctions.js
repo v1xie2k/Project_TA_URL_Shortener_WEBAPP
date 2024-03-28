@@ -62,6 +62,7 @@ function loadData(rawReport, filter) {
           hoverOffset: 4  
       }]
   }
+  
   const canvasLineChart = document.getElementById('lineChart').getContext('2d');
   const canvasPieChart = document.getElementById('pieChart').getContext('2d');
   if(Chart.getChart('lineChart') != undefined) Chart.getChart('lineChart').destroy()
@@ -91,6 +92,19 @@ function loadData(rawReport, filter) {
   })
   const countryBodyTable = $('#countryBodyTable').html(htmlSyntax)
   new DataTable('#countryTable')
+
+  //check if there's data or not
+  var dataFound = false 
+  lineChartData.forEach(element => {
+    if(element > 0) dataFound = true
+  })
+  if(!dataFound){
+    $('#noData').show()
+    $('.contentData').hide()
+  }else{
+    $('#noData').hide()
+    $('.contentData').show()
+  }
 }
 
 function generateLast7Days(dateFilter) {

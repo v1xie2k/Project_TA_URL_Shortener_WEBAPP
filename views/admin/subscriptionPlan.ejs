@@ -20,7 +20,7 @@
                     <div class="me-3 card mb-3 d-flex flex-row" style="width:36em">
                         <%if(data.type == 'url'){%>
                             <div class="ms-3" style="margin-top: 5em;">
-                                <i class="fa-solid fa-link fa-5x"></i>
+                                <i class="fa-solid fa-link" style="font-size: 70px;"></i>
                             </div>
                         <%}else if(data.type == 'qr'){%>
                             <div class="ms-3" style="margin-top: 5em;">
@@ -29,6 +29,10 @@
                         <%}else if(data.type == 'prompt'){%>
                             <div class="ms-3" style="margin-top: 5em;">
                                 <i class="fa-solid fa-terminal fa-5x"></i>
+                            </div>
+                        <%}else if(data.type == 'bioPro'){%>
+                            <div class="ms-3" style="margin-top: 5em;">
+                                <i class="fa-solid fa-unlock-keyhole" style="font-size: 105px;"></i>
                             </div>
                         <%}else{%>
                             <span class="orb-icon" title="Link-in-bio Icon">
@@ -54,7 +58,7 @@
         </div>
         <h3>Plans</h3>
         <hr>
-        <div class="container">
+        <div class="container card card-body">
             <h4>Make Plan</h4>
             <h6>Plan Name</h6>
             <input type="text" name="planName" id="planName" class="form-control mt-3" style="width: 35em;">
@@ -75,6 +79,10 @@
                     <input type="number" name="qtyPrompt" id="qtyPrompt" class="form-control" value="0" min="0" style="width: 4em; height:2em; margin-left: 1em; margin-right: 1em; margin-top: 1em; background-color: lightgrey;">
                 </div>
                 <div class="d-flex flex-row me-3">
+                    <i class="fa-solid fa-unlock-keyhole fa-5x"></i>
+                    <input type="number" name="qtyBioPro" id="qtyBioPro" class="form-control" value="0" min="0" style="width: 4em; height:2em; margin-left: 1em; margin-right: 1em; margin-top: 1em; background-color: lightgrey;">
+                </div>
+                <div class="d-flex flex-row me-3">
                     <span class="orb-icon" title="Link-in-bio Icon">
                         <svg fill="none" viewBox="0 0 23 23" height="100" width="100">
                             <path fill="#273144" d="M11.667 6.667a1.667 1.667 0 11-3.334 0 1.667 1.667 0 013.334 0zM12.5 14.167c0 .5-.333.833-.833.833H8.333c-.5 0-.833-.333-.833-.833 0-.5.333-.834.833-.834h3.334c.5 0 .833.334.833.834zM8.333 11.667h3.334c.5 0 .833-.334.833-.834 0-.5-.333-.833-.833-.833H8.333c-.5 0-.833.333-.833.833 0 .5.333.834.833.834z"></path>
@@ -88,6 +96,9 @@
             <button type="button" id="btnCreate" class="btn btn-primary form-control mb-5" style="width: 7.5em;" onclick="btnCreatePlan(this)" mode="add">Create Plan</button>
             <button type="button" id="btnCancel" class="btn btn-danger form-control mb-5" style="width: 7.5em; display: none;" onclick="btnCancelEditPlan(this)" mode="add">Cancel</button>
             
+        </div>
+        <div class="container mt-3 card card-body">
+            <h4>List</h4>
             <table id="planTable" class="display mt-3">
                 <thead>
                     <tr>
@@ -118,6 +129,9 @@
                                     <%if(data.bio > 0){%>
                                         <li>Bio Link: <%= data.bio%> credit</li>
                                     <%}%>
+                                    <%if(data.bioPro > 0){%>
+                                        <li>Bio Link Pro: <%= data.bioPro%> credit</li>
+                                    <%}%>
                                     <%if(data.prompt > 0){%>
                                         <li>Prompt: <%= data.prompt%> credit</li>
                                     <%}%>
@@ -125,12 +139,11 @@
                             </td>
                             <td><%= data.date%></td>
                             <td>
-                                <button type="button" class="form-control btn btn-success me-2" style="width: 5em;" value="<%= data.planId%>" onclick="btnEditPlan(this)" planName="<%= data.name%>" planPrice="<%= data.price%>" url="<%= data.url%>" qr="<%= data.qr%>" bio="<%= data.bio%>" prompt="<%= data.prompt%>">Edit</button>
+                                <button type="button" class="form-control btn btn-success me-2" style="width: 5em;" value="<%= data.planId%>" onclick="btnEditPlan(this)" planName="<%= data.name%>" planPrice="<%= data.price%>" url="<%= data.url%>" qr="<%= data.qr%>" bio="<%= data.bio%>" bioPro="<%= data.bioPro%>" prompt="<%= data.prompt%>">Edit</button>
                                 <button type="button" class="form-control btn btn-danger me-2" style="width: 5em;" value="<%= data.planId%>" onclick="btnDeletePlan(this)">Delete</button>
                             </td>
                         </tr>
                     <%}%>
-                    
                 </tbody>
             </table>
             <script>

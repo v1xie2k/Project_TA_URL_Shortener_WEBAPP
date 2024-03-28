@@ -40,7 +40,6 @@ export async function edituser(data) {
         var oldData = await searchData(dbName, data.email)
         if(data.updatedAt) oldData.updatedAt = data.updatedAt
         if(data.profile) oldData.profile = data.profile
-        if(data.credit) oldData.credit = data.credit
         if(data.name) oldData.name = data.name
         if(data.password) oldData.password = data.password
         if(data.ban) oldData.ban = data.ban

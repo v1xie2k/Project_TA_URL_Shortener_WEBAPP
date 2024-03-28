@@ -1,29 +1,51 @@
 <div>
     <div>
-        <h4>Data of Email & Phone Collector</h4>
-        <div id="typeFiler">
-            <h6>Filter Type</h6>
-            <select name="filterType" id="filterType" onchange="changeType(this)" class="form-control" style="width: 15em;">
-                <option value="all">All Type</option>
-                <option value="email">Email Collector</option>
-                <option value="phone">Phone Collector</option>
-            </select>
+        <div class="d-flex flex-row">
+            <h4>Data of Email & Phone Collector</h4>
+            <%if(data.pro == false){%>
+                <button type="button" class="form-control ms-3 d-flex flex-row" style="width: fit-content" onclick="btnUpgradeBioLink(this)" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Upgrade to Bio Link Pro to see this data"> <i class="fa-solid fa-lock mt-1 me-1"></i> Upgrade</button>
+            <%}%>
         </div>
-        <div id="dataContent">
-            <table id="dataTable" class="display" >
-                <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Type</th>
-                        <th>Created On</th>
-                    </tr>
-                </thead>
-                <tbody id="dataBodyTable">
-                </tbody>
-            </table>
-        </div>
-        <div id="noData" class=" noDataContent">
-            <h4 style="line-height: 12em;">No Data</h4>
+        <div class="<%if(data.pro == false){%> blur <%}%> card card-body">
+            <div id="typeFiler">
+                <h6>Filter Type</h6>
+                <select name="filterType" id="filterType" onchange="changeType(this)" class="form-control" style="width: 15em;">
+                    <option value="all">All Type</option>
+                    <option value="email">Email Collector</option>
+                    <option value="phone">Phone Collector</option>
+                </select>
+            </div>
+            <div id="dataContent">
+                <table id="dataTable" class="display" >
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Type</th>
+                            <th>Created On</th>
+                        </tr>
+                    </thead>
+                    <%if(data.pro == false){%>
+                        <tbody>
+                            <tr>
+                                <td>Dummy1</td>
+                                <td>Dummy</td>
+                                <td>23 March 2023</td>
+                            </tr>
+                            <tr>
+                                <td>Dummy2</td>
+                                <td>Dummy</td>
+                                <td>23 March 2023</td>
+                            </tr>
+                        </tbody>
+                    <%}else{%>
+                        <tbody id="dataBodyTable">
+                        </tbody>
+                    <%}%>
+                </table>
+            </div>
+            <div id="noData" class=" noDataContent">
+                <h4 style="line-height: 12em;">No Data</h4>
+            </div>
         </div>
     </div>
 </div>
@@ -45,7 +67,6 @@
             $('#typeFiler').show()
             $('#dataContent').show()
         }else{
-            console.log('tes');
             $('#noData').show()
             $('#typeFiler').hide()
             $('#dataContent').hide()

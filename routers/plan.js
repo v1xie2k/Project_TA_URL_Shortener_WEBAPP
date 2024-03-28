@@ -13,7 +13,7 @@ router.post('/getToken', async(req, res)=>{
         const token = await getToken(parameter)
         res.status(200).send(await token)
     }catch(error){
-        res.status(500).send(error)
+        res.status(500).send(error);
     }
 })
 

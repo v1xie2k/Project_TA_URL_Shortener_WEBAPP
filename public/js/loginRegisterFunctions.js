@@ -20,6 +20,7 @@ function addUser(e) {
             creditShortUrl: 0,
             creditQr: 0,
             creditPrompt: 0,
+            creditBioPro: 0,
             createdAt: new Date()
         }
         fetchAPI('/credential/register', 'POST', data, 'This Email is Already Taken!', '/login')

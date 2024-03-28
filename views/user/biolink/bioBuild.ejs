@@ -115,7 +115,7 @@
                                 <%}else if(block.type == 'phoneCollector'){%>
                                     <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" createdAt="<%= block.createdAt%>" cat="phoneCollector" key="<%= key%>" phoneId="<%= block.idCollector%>" phoneTitle="<%= block.title%>"  data-bs-toggle="modal" data-bs-target="#modalPhoneCollector"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
                                 <%}else{%>
-                                    <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" key="<%= key%>" value="<%= block.short%>" urlTitle="<%= block.title%>" destination="<%= block.full%>" description="<%= block.description%>" data-bs-toggle="modal" data-bs-target="#modalLink<%= key%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
+                                    <button type="button" onclick="btnClickEditUrl(this)" class="btn btn-success mx-2" animate="<%= block.animation%>" key="<%= key%>" value="<%= block.short%>" urlTitle="<%= block.title%>" destination="<%= block.full%>" description="<%= block.description%>" data-bs-toggle="modal" data-bs-target="#modalLink<%= key%>"><i class="fa-solid fa-pen-to-square pe-2"></i>Edit</button>
                                 <%}%>
 
                                 <%if(block.img){%>
@@ -142,6 +142,20 @@
                                             <h4>Destination</h4>
                                             <div class="mb-3">
                                                 <input required type="url" name="destination" id="fullUrl<%= key%>"  placeholder="https://example.com" class="form-control">
+                                            </div>
+                                            <h4>Animation</h4>
+                                            <div class="mb-3">
+                                                <select name="animation" id="animation<%= key%>" class="form-control" >
+                                                    <option value="none">None</option>
+                                                    <option value="bounce">Bounce</option>
+                                                    <option value="pulse">Pulse</option>
+                                                    <option value="flash">Flash</option>
+                                                    <option value="swing">Swing</option>
+                                                    <option value="shakeX">Shake</option>
+                                                    <option value="wobble">Wobble</option>
+                                                    <option value="heartBeat">Heart Beat</option>
+                                                    <option value="tada">Tada</option>
+                                                </select>
                                             </div>
                                             <div class="d-flex flex-row-reverse">
                                                 <button id="btnSaveUrl" type="button" onclick="btnEditUrl(this)" class="btn btn-primary ms-3" key="<%= key%>">Save</button>

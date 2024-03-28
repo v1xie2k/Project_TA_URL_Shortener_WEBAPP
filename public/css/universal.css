@@ -352,6 +352,7 @@ select {
   align-items: center;
   border: 2px dashed grey;
   border-radius: 0.25em !important;
+  background-color: white;
 }
 
 .template1{
@@ -443,4 +444,8 @@ select {
 .preset-themes{
   align-items: center;
   justify-items: center;
+}
+
+.blur{
+  filter: blur(5px);
 }

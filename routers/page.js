@@ -240,7 +240,6 @@ router.get('/m/:bioLink', async (req, res)=>{
         var fetchCountry = await fetch(`https://ipapi.co/${req.ips}/json/`);
         var getCountry = await fetchCountry.json()
         var referer = await req.headers.referer
-        console.log(referer);
         updateClickShortUrl('biolinks', param, req.headers['user-agent'], getCountry.country_name, referer)
         res.render('user/biolink/bioPreview', {data: bioLink, blocks: sortedBlocks, paramType: 'web', path: 'webview', bioLink: bioLink.short})
         

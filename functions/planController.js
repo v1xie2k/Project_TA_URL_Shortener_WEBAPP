@@ -98,6 +98,8 @@ export async function addCreditToUser(email, items) {
                 oldData.creditShortUrl += parseInt(iterator.quantity)
             }else if(iterator.type == 'prompt'){
                 oldData.creditPrompt += parseInt(iterator.quantity)
+            }else if(iterator.type == 'bioPro'){
+                oldData.creditBioPro += parseInt(iterator.quantity)
             }
         }
         await db.collection('users').doc(email).set(oldData)
@@ -274,6 +276,7 @@ export async function editPlan(data) {
         if(data.qr | data.qr == 0) oldData.qr = data.qr
         if(data.prompt | data.prompt == 0) oldData.prompt = data.prompt
         if(data.bio | data.bio == 0) oldData.bio = data.bio
+        if(data.bioPro | data.bioPro == 0) oldData.bioPro = data.bioPro
         if(data.updatedAt) oldData.updatedAt = data.updatedAt
         await db.collection('plans').doc(data.planId).set(oldData)
         return false
