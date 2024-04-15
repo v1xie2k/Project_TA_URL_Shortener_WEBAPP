@@ -97,7 +97,7 @@
 </div>
 <h4>Styles</h4>
 <div class="preset-themes d-flex flex-row m-3 ">
-    <input type="radio" id="template1" class="preset-themes" name="preset-themes" value="template1" onclick="btnRadioChangeThemes(this)">
+    <input type="radio" id="template1" <%if (data.styleTemplate == 'template1'){%>checked <%}%> class="preset-themes" name="preset-themes" value="template1" onclick="btnRadioChangeThemes(this)">
     <label for="template1">
         <div class="d-flex flex-row mt-4 ms-1 me-2">
             <div class="template-primary" style="background-image: linear-gradient(#ffffff, #ffffff); width: 4em; height: 4em; border-radius: 50%; border: 1px solid black;"></div>
@@ -105,7 +105,7 @@
         </div>
         <p style="text-align: center; align-items: center;">Default</p>
     </label>
-    <input type="radio" id="template2" class="preset-themes" name="preset-themes" value="template2" onclick="btnRadioChangeThemes(this)">
+    <input type="radio" id="template2" <%if (data.styleTemplate == 'template2'){%>checked <%}%> class="preset-themes" name="preset-themes" value="template2" onclick="btnRadioChangeThemes(this)">
     <label for="template2">
         <div class="d-flex flex-row mt-4 ms-1 me-2">
             <div class="template-primary" style="background-image: linear-gradient(#018786, #03DAC6); width: 4em; height: 4em; border-radius: 50%;"></div>
@@ -113,7 +113,7 @@
         </div>
         <p style="text-align: center; align-items: center;"> Sky Pea</p>
     </label>
-    <input type="radio" id="template3" class="preset-themes" name="preset-themes" value="template3" onclick="btnRadioChangeThemes(this)">
+    <input type="radio" id="template3" <%if (data.styleTemplate == 'template3'){%>checked <%}%> class="preset-themes" name="preset-themes" value="template3" onclick="btnRadioChangeThemes(this)">
     <label for="template3">
         <div class="d-flex flex-row mt-4 ms-1 me-2">
             <div class="template-primary" style="background-image: linear-gradient(#3700B3, #9582c0); width: 4em; height: 4em; border-radius: 50%;"></div>
@@ -121,7 +121,7 @@
         </div>
         <p style="text-align: center; align-items: center;">Midnight Purple</p>
     </label>
-    <input type="radio" id="template4" class="preset-themes" name="preset-themes" value="template4" onclick="btnRadioChangeThemes(this)">
+    <input type="radio" id="template4" <%if (data.styleTemplate == 'template4'){%>checked <%}%> class="preset-themes" name="preset-themes" value="template4" onclick="btnRadioChangeThemes(this)">
     <label for="template4">
         <div class="d-flex flex-row mt-4 ms-1 me-2">
             <div class="template-primary" style="background-image: linear-gradient(#5b84b1ff, rgb(132, 188, 248)); width: 4em; height: 4em; border-radius: 50%;"></div>
@@ -129,7 +129,7 @@
         </div>
         <p style="text-align: center; align-items: center;">Living Coral</p>
     </label>
-    <input type="radio" id="template5" class="preset-themes" name="preset-themes" value="template5" onclick="btnRadioChangeThemes(this)">
+    <input type="radio" id="template5" <%if (data.styleTemplate == 'template5'){%>checked <%}%> class="preset-themes" name="preset-themes" value="template5" onclick="btnRadioChangeThemes(this)">
     <label for="template5">
         <div class="d-flex flex-row mt-4 ms-1 me-2">
             <div class="template-primary" style="background-image: linear-gradient(#272727, #949398ff); width: 4em; height: 4em; border-radius: 50%;"></div>
@@ -140,7 +140,7 @@
     
 </div>
 <div class="preset-themes d-flex flex-row m-3">
-    <input type="radio" id="template6" class="preset-themes" name="preset-themes" value="template6" onclick="btnRadioChangeThemes(this)">
+    <input type="radio" id="template6" <%if (data.styleTemplate == 'template6'){%>checked <%}%> class="preset-themes" name="preset-themes" value="template6" onclick="btnRadioChangeThemes(this)">
     <label for="template6">
         <div class="d-flex flex-row mt-4 ms-1 me-2">
             <div class="template-primary" style="background-image: linear-gradient(#e3cd81ff, rgb(255, 237, 174)); width: 4em; height: 4em; border-radius: 50%;"></div>
@@ -148,7 +148,7 @@
         </div>
         <p style="text-align: center; align-items: center;">Dusky</p>
     </label>
-    <input type="radio" id="template7" class="preset-themes" name="preset-themes" value="template7" onclick="btnRadioChangeThemes(this)">
+    <input type="radio" id="template7" <%if (data.styleTemplate == 'template7'){%>checked <%}%> class="preset-themes" name="preset-themes" value="template7" onclick="btnRadioChangeThemes(this)">
     <label for="template7">
         <div class="d-flex flex-row mt-4 ms-1 me-2">
             <div class="template-primary" style="background-image: linear-gradient(#A07855FF, rgb(207, 158, 114)); width: 4em; height: 4em; border-radius: 50%;"></div>
@@ -156,7 +156,7 @@
         </div>
         <p style="text-align: center; align-items: center;">Brown Sugar</p>
     </label>
-    <input type="radio" id="template8" class="preset-themes" name="preset-themes" value="template8" onclick="btnRadioChangeThemes(this)">
+    <input type="radio" id="template8" <%if (data.styleTemplate == 'template8'){%>checked <%}%> class="preset-themes" name="preset-themes" value="template8" onclick="btnRadioChangeThemes(this)">
     <label for="template8">
         <div class="d-flex flex-row mt-4 ms-1 me-2">
             <div class="template-primary" style="background-image: linear-gradient(#6E6E6DFF, rgb(151, 151, 151)); width: 4em; height: 4em; border-radius: 50%;"></div>
@@ -164,7 +164,7 @@
         </div>
         <p style="text-align: center; align-items: center;">Pink Salt</p>
     </label>
-    <input type="radio" id="template9" class="preset-themes" name="preset-themes" value="template9" onclick="btnRadioChangeThemes(this)">
+    <input type="radio" id="template9" <%if (data.styleTemplate == 'template9'){%>checked <%}%> class="preset-themes" name="preset-themes" value="template9" onclick="btnRadioChangeThemes(this)">
     <label for="template9">
         <div class="d-flex flex-row mt-4 ms-1 me-2">
             <div class="template-primary" style="background-image: linear-gradient(#00203FFF, rgb(6, 64, 123)); width: 4em; height: 4em; border-radius: 50%;"></div>
@@ -172,7 +172,7 @@
         </div>
         <p style="text-align: center; align-items: center;">Cool Mint</p>
     </label>
-    <input type="radio" id="template10" class="preset-themes" name="preset-themes" value="template10" onclick="btnRadioChangeThemes(this)">
+    <input type="radio" id="template10" <%if (data.styleTemplate == 'template10'){%>checked <%}%> class="preset-themes" name="preset-themes" value="template10" onclick="btnRadioChangeThemes(this)">
     <label for="template10">
         <div class="d-flex flex-row mt-4 ms-1 me-2">
             <div class="template-primary" style="background-image: linear-gradient(#2c5f2d, #428d43); width: 4em; height: 4em; border-radius: 50%;"></div>

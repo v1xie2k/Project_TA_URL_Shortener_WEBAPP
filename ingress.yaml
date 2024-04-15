@@ -1,0 +1,24 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-gamepal
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+spec:
+  tls:
+  - hosts:
+    - gamepal.my.id
+    secretName: verynewsecret
+  rules:
+  - host: gamepal.my.id
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: project-ta-v2-service
+            port:
+              number: 80
+

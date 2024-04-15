@@ -185,7 +185,7 @@ router.post('/prompt', async(req, res)=>{
 router.post('/addImg/:type/:shortId', multer.single("imgfile"), async(req, res)=>{
     try {
         if (req.file) {
-            const template = 'https://storage.googleapis.com/url-shortener-storage/'
+            const template = 'https://storage.googleapis.com/url-shortener-storage-2/'
             const type = req.params.type
             const shortId = req.params.shortId
             const img = template + req.file.originalname
@@ -222,7 +222,7 @@ router.post('/addImg/:type/:shortId', multer.single("imgfile"), async(req, res)=
 router.post('/addImgSlider/:type/:biolinkId/:idBlock/:idImage', multer.single("imgfile"), async(req, res)=>{
     try {
         if (req.file) {
-            const template = 'https://storage.googleapis.com/url-shortener-storage/'
+            const template = 'https://storage.googleapis.com/url-shortener-storage-2/'
             const type = req.params.type
             const idBlock = req.params.idBlock
             const idImage = req.params.idImage
@@ -324,7 +324,7 @@ router.delete('/deleteImg/:fileName', async(req, res)=>{
 router.post('/addPdf', multer.single("file"), async(req, res)=>{
     try {
         if (req.file) {
-            const template = 'https://storage.googleapis.com/url-shortener-storage/'
+            const template = 'https://storage.googleapis.com/url-shortener-storage-2/'
             const img = template + req.file.originalname
             
             await uploadImage(req.file)

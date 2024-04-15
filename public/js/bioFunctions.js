@@ -421,13 +421,15 @@ async function btnEditUrl(e) {
     const checkFull = (oldDestination != full)? true : false
     for (const data of blocks) {
         if(data.full == oldDestination){
+            if(isYoutube){
+                data.youtubeId = youtubeId
+            }
+        }
+        if(data.short == short){
             data.full = full
             data.title = title 
             data.description = description
             data.animation = animation
-            if(isYoutube){
-                data.youtubeId = youtubeId
-            }
         }
     }
     const newBioData = {oldShort : bioLink, short: bioLink, blocks }

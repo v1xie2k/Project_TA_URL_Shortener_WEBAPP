@@ -9,6 +9,7 @@ import moment from 'moment'
 import { UAParser } from 'ua-parser-js';
 
 const db = getFirestore();
+db.settings({ ignoreUndefinedProperties: true });
 const dbName = 'shorturls'
 
 const genAI = new GoogleGenerativeAI(process.env.gemini_api_key);
@@ -35,6 +36,11 @@ export async function getAllUrl() {
     } catch (err) {
         console.log(err.stack);
     }
+    data.forEach(x => {
+        const createdAt = x.createdAt 
+        x.createdAt = moment(createdAt).format('LLL')
+        return x
+    });
     return data
 }
 
@@ -294,6 +300,11 @@ export async function sortBlocksBioLink(data) {
         }
         return 0;
     })
+    list.forEach(x => {
+        const createdAt = x.createdAt
+        x.createdAt = moment(createdAt).format('LLL')
+        return x
+    });
     return list
 }
 
@@ -341,8 +352,8 @@ export async function deleteImage(fileName){
 export async function updateClickShortUrl(collection, param, userAgent, country, referer) {
     var data
     try { 
-        const parser = new UAParser(userAgent);
-        let parserResults = parser.getResult();
+        const parser = new UAParser(userAgent)
+        let parserResults = await parser.getResult();
         const device = parserResults.device
         
         data = await searchData(collection, param)
@@ -413,7 +424,9 @@ export async function updateClickShortUrl(collection, param, userAgent, country,
             }
         }
         data.referrer = referrerData
-        const res = await db.collection(collection).doc(param).set(data)
+        console.log(data.logClicks);
+        console.log(data.logClicks[0].countryList);
+        const res = await db.collection(collection).doc(param).set(await data)
     } catch (err) {
         console.log(err.stack);
     }

@@ -16,16 +16,6 @@ const serviceAccount = {
     "universe_domain": "googleapis.com"
 }
 
-// const firebaseConfig = {
-//     apiKey: "AIzaSyBbSnxXmL7hfOO45tD82qMwIHoCrSLP5XU",
-//     authDomain: "tes-firebase-9bd08.firebaseapp.com",
-//     projectId: "tes-firebase-9bd08",
-//     storageBucket: "tes-firebase-9bd08.appspot.com",
-//     messagingSenderId: "793446522014",
-//     appId: "1:793446522014:web:101440f7643611ffbc6f8f"
-// };
-  
-// export const fire = initializeApp(firebaseConfig);
 export const fire = initializeApp({
     credential: cert(serviceAccount)
 });

@@ -232,10 +232,10 @@ router.get('/view/pdf/:pdf', async (req,res)=>{
 router.get('/m/:bioLink', async (req, res)=>{
     const param = req.params.bioLink
     const bioLink = await searchData('biolinks', req.params.bioLink)
-    var sortedBlocks = await sortBlocksBioLink(bioLink)
     if(!bioLink){
         res.render('error/error404')
     }else{
+        var sortedBlocks = await sortBlocksBioLink(bioLink)
         // this api is for detecting user's region(location)
         var fetchCountry = await fetch(`https://ipapi.co/${req.ips}/json/`);
         var getCountry = await fetchCountry.json()
@@ -254,7 +254,7 @@ router.get('/:shortUrl', async (req,res)=>{
     }else{
         const param = req.params.shortUrl
         //this api is for detecting user's region(location)
-        var fetchCountry = await fetch(`https://ipapi.co/${req.ips}/json/`);
+        var fetchCountry = await fetch(`https://ipapi.co/${req.ips[0]}/json/`);
         var getCountry = await fetchCountry.json()
         updateClickShortUrl('shorturls', param, req.headers['user-agent'], getCountry.country_name, '')
         res.redirect(shortUrl.full)

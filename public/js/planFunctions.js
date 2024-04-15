@@ -72,8 +72,8 @@ async function btnClickBuy(e) {
         items,
         grandTotal,
         createdAt: new Date(),
-        status: 1,
-        paymentToken: null,
+        // status: 1,
+        // paymentToken: null,
         type: 'customplan'
     }
     //step 1 create invoice
@@ -103,8 +103,8 @@ async function btnClickBuy(e) {
     snap.pay(token, {
         onSuccess: async function(result){
             //step 3 update invoice diisi token baru & status
-            data.status = 2
-            data.paymentToken = token
+            // data.status = 2
+            // data.paymentToken = token
             config.body = JSON.stringify(data)
             const confirmPayment = await fetch('/plan/updateInvoice/'+ invoiceId, config).then(async (response) => {
                 return await response.text()

@@ -48,7 +48,7 @@ function addUser(e) {
 function btnUpdateService(e) {  
     const service = $(e).val()
     const description = $('#textArea'+service).val()
-    const price = $('#price'+service).val()
+    const price = +$('#price'+service).val()
     var title = "Are you sure you want to update "+ service + " ?"
     const data = {service, price, description}
     if(!description || !price){
