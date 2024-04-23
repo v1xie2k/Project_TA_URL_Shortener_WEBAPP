@@ -80,8 +80,12 @@ function btnCreatePlan(e) {
     const bioQty = parseInt($('#qtyBio').val())
     const bioProQty = parseInt($('#qtyBioPro').val())
     const data = {name, price, url: urlQty, qr: qrQty, prompt: promptQty, bio: bioQty, bioPro: bioProQty, createdAt: new Date()}
-    if(!name || !planPrice){
+    if(!name || !price){
         Swal.fire("Price & Description must be filled");
+        return
+    }
+    if(price <= 0){
+        Swal.fire("Price Can't be under or equals to 0");
         return
     }
     if(urlQty == 0 && qrQty == 0 && promptQty == 0 && bioQty == 0 && bioProQty == 0){
