@@ -90,7 +90,6 @@ export async function getAllBioLink() {
 }
 
 export async function addNewURL(data) {
-    var status = true
     try {
         // check apakah sudah used di db short urlnya
         if(await searchData(dbName, data.short)){
