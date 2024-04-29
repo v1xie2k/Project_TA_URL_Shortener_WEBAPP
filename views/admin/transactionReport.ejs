@@ -17,7 +17,7 @@
             <%= JSON.stringify(income) %>
         </div>
         <div class="card card-body">
-            <div class="d-flex flex-row">
+            <div class="d-flex flex-row ">
                 <div>
                     <h6>Date From</h6>
                     <input class="form-control me-3" type="date" name="dateFrom" id="dateFrom" onchange="dateChange(this)" value="<%= dateFrom%>" style="width:15em;">
@@ -35,14 +35,19 @@
                       </select>
                     
                 </div>
-                <div style="margin-top: 27px;">
-                    <button class="btn btn-secondary form-control" onclick="btnSearchDate(this)" style="width:5em;">Search</button>
+                <div style="margin-top: 27px;" class="d-flex flex-row justify-content-between">
+                    <button class="btn btn-secondary form-control" onclick="btnSearchDate(this)" style="width: 5em;">Search</button>
+                    <button class="btn btn-success form-control" onclick="btnDownloadExcel(this)" style="width: 6em; margin-left: 1em;"><i class="fa-solid fa-download me-1"></i>Excel</button>
                 </div>
             </div>
             <div class="mt-3 mb-3">
-                <h4>Total Income This Period : Rp. <%= income.totalIncome%></h4>
-                <!-- <h4 <%if(type == 1){%> style="display: none;" <%}%>>Custom Plan : Rp. <%= income.customIncome%></h4>
-                <h4 <%if(type == 2){%> style="display: none;" <%}%>>Normal Plan : Rp. <%= income.planIncome%></h4> -->
+                <% if(type == 0){%>
+                    <h4>Total Income This Period : Rp <%= income.totalIncome%></h4>
+                <% }else if(type == 1){%>
+                    <h4>Total Income This Period : Rp <%= income.planIncome%></h4>
+                <% }else{%>
+                    <h4>Total Income This Period : Rp <%= income.customIncome%></h4>
+                <% }%>
                 <input type="hidden" name="type" id="typeFilter" value="<%= type%>">
                 <canvas id="incomeChart"></canvas>
                 <canvas id="lineChart"></canvas>
@@ -59,6 +64,8 @@
                         <th>Date</th>
                         <th>Item</th>
                         <th>Plan Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -84,6 +91,21 @@
                                 <% }else{%>
                                     <%= data.type%>
                                 <% }%>
+                            </td>
+                            <td>
+                                <% if(data.status == 1){%>
+                                    <h6 class="text-warning">Pending</h6>
+                                <% }else if(data.status == 2){%>
+                                    <h6 class="text-success">Success</h6>
+                                <% }else{%>
+                                    <h6 class="text-danger">Canceled</h6>
+                                <% }%>
+                            </td>
+                            <td>
+                                <% if(data.status != 2){%>
+                                    <button class="btn btn-primary" onclick="btnSendNotif(this)" email="<%= data.user%>" invoiceId="<%= data.invoiceId%>" status="<%= data.status%>" type="<%= data.type%>">Send Notification</button>
+                                <% }%>
+                                
                             </td>
                         </tr>
                     <%}%>

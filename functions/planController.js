@@ -6,7 +6,8 @@ import { searchData } from './universal.js'
 import { bucket } from '../config/cloudStorage.js'
 import midtransPkg from 'midtrans-client';
 import moment from 'moment/moment.js'
-
+import nodemailer from 'nodemailer'
+import excelJS from 'exceljs'
 
 const db = getFirestore();
 const midtransClient = midtransPkg
@@ -18,7 +19,9 @@ export async function getAllPriceList() {
     try {
         rawData = await db.collection('services').get();
         rawData.forEach((doc) => {
-            data.push(doc.data())
+            const obj = doc.data()
+            obj.priceIdr =doc.data().price.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ".")
+            data.push(obj)
         });
     } catch (err) {
         console.log(err.stack);
@@ -42,7 +45,20 @@ export async function getToken(parameter) {
         })
     });
 }
-
+const InvoiceStatus = [
+    {
+        id: 1,
+        name: 'Pending'
+    },
+    {
+        id: 2,
+        name: 'Success'
+    },
+    {
+        id: 3,
+        name: 'Canceled'
+    },
+]
 export async function createInvoice(data) {  
     try{
         var invoiceId 
@@ -50,9 +66,24 @@ export async function createInvoice(data) {
             const generateInvoiceId = customAlphabet ('1234567890abcdefghijklmopqrstuvwxyz', 10)
             invoiceId = generateInvoiceId(10)
             data.invoiceId = invoiceId
+            data.status = 1
+            data.tokenExpire = moment().add({day: 1}).toDate()
         }while(await searchData(dbName, invoiceId))
+        const parameter = {
+            'transaction_details': {
+                'order_id': invoiceId,
+                'gross_amount': data.grandTotal,
+            },
+            "item_details": data.items
+        }
+        const token = await getToken(parameter)
+        data.token = token
         const res = await db.collection(dbName).doc(invoiceId).set(data)
-        return invoiceId
+        const obj = {
+            token,
+            invoiceId
+        }
+        return obj
     }catch(err){
         console.log(err);
     }
@@ -77,6 +108,7 @@ export async function updateInvoice(invoiceId, data) {
 }
 
 export async function deleteInvoice(invoiceId) {  
+    return
     try{
         await db.collection(dbName).doc(invoiceId).delete()
         return false
@@ -86,21 +118,24 @@ export async function deleteInvoice(invoiceId) {
     return false
 }
 
-export async function addCreditToUser(email, items) {  
+export async function addCreditToUser(email, planId) {  
     try{
         var oldData = await searchData('users', email)
-        for (const iterator of items) {
-            if(iterator.type == 'bio'){
-                oldData.creditBioLink += parseInt(iterator.quantity)
-            }else if(iterator.type == 'qr'){
-                oldData.creditQr += parseInt(iterator.quantity)
-            }else if(iterator.type == 'url'){
-                oldData.creditShortUrl += parseInt(iterator.quantity)
-            }else if(iterator.type == 'prompt'){
-                oldData.creditPrompt += parseInt(iterator.quantity)
-            }else if(iterator.type == 'bioPro'){
-                oldData.creditBioPro += parseInt(iterator.quantity)
-            }
+        var plan = await searchData('plans', planId) ? await searchData('plans', planId) : planId
+        if(plan.bio && plan.bio > 0){
+            oldData.creditBioLink += parseInt(plan.bio)
+        }
+        if(plan.bioPro && plan.bioPro > 0){
+            oldData.creditBioPro += parseInt(plan.bioPro)
+        }
+        if(plan.prompt && plan.prompt > 0){
+            oldData.creditPrompt += parseInt(plan.prompt)
+        }
+        if(plan.qr && plan.qr > 0){
+            oldData.creditQr += parseInt(plan.qr)
+        }
+        if(plan.url && plan.url > 0){
+            oldData.creditShortUrl += parseInt(plan.url)
         }
         await db.collection('users').doc(email).set(oldData)
         return false
@@ -113,25 +148,55 @@ export async function addCreditToUser(email, items) {
 export async function getAllInvoice(user, filter) {  
     var rawData
     var data = []
-    try {
-        rawData = await db.collection('transactions').get();
-        rawData.forEach((doc) => {
-            if(user == doc.data().user && doc.data().status == 2){
-                doc.data().date = formatDate(doc.data().createdAt)
-                const obj = doc.data()
-                obj.date = formatDate(doc.data().createdAt)
-                if(filter){
-                    const dateCreated = moment(doc.data().createdAt).format('YYYY-MM-DD')
-                    if(filter.dateFrom && filter.dateTo){
-                        if(filter.dateFrom <= dateCreated && dateCreated <= filter.dateTo  ){
-                            data.push(obj)
+    var new_data
+    async function formatObject(doc, filter, planId) {  
+        doc.data().date = formatDate(doc.data().createdAt)
+        const plan = await searchData('plans', planId)
+        const obj = doc.data()
+        obj.plan = obj.type == 'plan' ? plan.name : 'custom plan'
+        obj.date = formatDate(doc.data().createdAt)
+        obj.grandTotalIdr =doc.data().grandTotal.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ".")
+        if(moment(obj.tokenExpire).isSameOrAfter(moment(), 'second')){
+            obj.status = 3
+        }
+        if(filter){
+            const dateCreated = moment(doc.data().createdAt).format('YYYY-MM-DD')
+            if(filter.dateFrom && filter.dateTo){
+                if(filter.dateFrom <= dateCreated && dateCreated <= filter.dateTo){
+                    if(filter.status && filter.status != 0){
+                        if(obj.status == filter.status){
+                            return obj
                         }
+                    }else{
+                        return obj
                     }
-                }else{
-                    data.push(obj)
                 }
             }
+        }else{
+            return obj
+        }
+    }
+    try {
+        rawData = await db.collection('transactions').orderBy('createdAt', 'desc').get();
+        const promises = [];
+        rawData.forEach((doc) => {
+            if(user && user == doc.data().user){
+                promises.push(formatObject(doc, filter, doc.data().planId).then(formatObj => {
+                    if(formatObj){
+                        data.push(formatObj)
+                        // console.log('data_push', data);
+                    }
+                }));
+            }
+            else if(!user && doc.data().user){
+                promises.push(formatObject(doc, filter, doc.data().planId).then(formatObj => {
+                    if(formatObj){
+                        data.push(formatObj)
+                    }
+                }));
+            }
         });
+        await Promise.all(promises)
     } catch (err) {
         console.log(err.stack);
     }
@@ -212,9 +277,9 @@ export async function getIncome(filter) {
             }
         })
         data.incomeData = incomeData
-        data.totalIncome = totalIncome
-        data.customIncome = customIncome
-        data.planIncome = planIncome
+        data.totalIncome = totalIncome.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ".")
+        data.customIncome = customIncome.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ".")
+        data.planIncome = planIncome.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ".")
         return data
     }catch (err) {
         console.log(err.stack);
@@ -243,6 +308,7 @@ export async function getAllPlans() {
             doc.data().date = formatDate(doc.data().createdAt)
             const obj = doc.data()
             obj.date = formatDate(doc.data().createdAt)
+            obj.priceIdr =doc.data().price.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ".")
             data.push(obj)
         });
     } catch (err) {
@@ -323,6 +389,72 @@ export function sortPlans(data, sort) {
     return list
 }
 
+export async function sendEmail(email, message, type) {
+    var transporter = nodemailer.createTransport({
+        host: 'live.smtp.mailtrap.io',
+        port: 587,
+        secure: false,
+        auth: {
+            user: 'api',
+            pass: process.env.mailtrap_pass
+        }
+    });
+    var subject
+    if(type == 'notifPayment'){
+        subject = 'Transaction Reminder'
+    }else{
+        subject = 'Canceled Payment'
+    }
+    let info = await transporter.sendMail({
+        from: 'info@gamepal.my.id',
+        to: email,
+        subject,
+        text: message
+    })
+}
+
+export async function exportTransactions(data, response) {  
+    const workbook = new excelJS.Workbook()
+    const worksheet = workbook.addWorksheet('Transaction Report')
+    worksheet.columns = [
+        { header: "No", key: "no", width: 10 }, 
+        { header: "Tanggal", key: "tanggal", width: 10 },
+        { header: "User", key: "user", width: 10 },
+        { header: "Keterangan", key: "keterangan", width: 10 },
+        { header: "Tipe", key: "type", width: 10 },
+        { header: "Pemasukan", key: "income", width: 10 },
+    ];
+    let counter = 1;
+    data.transactions.forEach((item) => {
+        const obj = {}
+        obj.no = counter 
+        obj.tanggal = item.createdAt 
+        obj.user = item.user
+        obj.keterangan = item.type == 'customplan' ? 'Pembelian Custom Plan' : 'Pembelian Plan '+ item.plan
+        obj.type = item.type
+        obj.income = 'Rp' + item.grandTotalIdr
+        if(item.status == 2){
+            worksheet.addRow(obj)
+            counter++
+        }
+    })
+
+    worksheet.getRow(1).eachCell((cell)=>{
+        cell.font = { bold : true }
+    })
+    worksheet.addRow({keterangan: 'Total', income: 'Rp'+data.totalIncome })
+    worksheet.getRow(counter+1).eachCell((cell)=>{
+        cell.font = { bold : true }
+    })
+
+    response.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    response.setHeader('Content-Disposition', 'attachment; filename="transaction.xlsx"')
+    workbook.xlsx.write(response).then(function(){
+        response.end();
+        console.log('Done!');
+    })
+}
+
 function formatDate(dateString) {
     const options = { 
         year: 'numeric', 
@@ -335,3 +467,4 @@ function formatDate(dateString) {
     const formattedDate = new Date(dateString).toLocaleDateString('en-US', options);
     return formattedDate;
 }
+

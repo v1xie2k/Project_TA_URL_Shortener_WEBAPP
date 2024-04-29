@@ -17,7 +17,6 @@ function btnActionUser(e) {
           return
         }
     });
-    
 }
 
 function addUser(e) {
@@ -255,7 +254,6 @@ function loadData(rawReport, filter) {
             }
         }
     }
-    console.log(lineChartUrl);
 
     const dataLineChart = {
         labels: labelDate,
@@ -304,7 +302,6 @@ function generateNext7Days(dateFilter) {
     const labels = []
     for (let i = 0; i <= 6; i++) {
         const date = new Date(dateFilter)
-        console.log(dateFilter.getDate());
         date.setDate(dateFilter.getDate() + i)
         const month = date.getMonth() + 1
         const day = date.getDate()
@@ -331,19 +328,15 @@ function loadIncomeData() {
     var lineChartNormal= new Array(labelDate.length).fill(0)
     var lineChartCustom = new Array(labelDate.length).fill(0)
 
-    console.log(rawReport);
     for (let index = 0; index < labelDate.length; index++) {
         const dateNow = labelDate[index]
         for (const item of rawReport.incomeData) {
-            
             const createdAt = moment(item.createdAt).format('l')
-            console.log('dateNow', dateNow);
-            console.log('createdAt', createdAt);
             if(createdAt == dateNow){
                 if(item.type == 'plan'){
-                    lineChartNormal[index] = item.grandTotal
+                    lineChartNormal[index] += item.grandTotal
                 }else{
-                    lineChartCustom[index] = item.grandTotal
+                    lineChartCustom[index] += item.grandTotal
                 }
             }
         }
@@ -361,10 +354,8 @@ function loadIncomeData() {
             borderColor: 'rgba(113, 172, 105, 1)',
             borderWidth: 1
         }]
-    console.log(datasets)
     if(planType == 1) datasets.pop()
     else if(planType == 2) datasets.shift()
-    console.log('newds',datasets);
     const dataLineChart = {
         labels: labelDate,
         datasets
@@ -382,6 +373,7 @@ function generateIncomeDate(dateFrom, dateTo) {
     var dateTo = new Date(dateTo)
     var labels = []
     var currentDate = new Date(dateFrom)
+    currentDate.setDate(currentDate.getDate() - 1);
     dateFrom.setDate(dateFrom.getDate()-1)
     while(currentDate.toDateString() != dateTo.toDateString()){
         const date = dateFrom
@@ -392,7 +384,6 @@ function generateIncomeDate(dateFrom, dateTo) {
         const year = date.getFullYear()
         labels.push(`${month}/${day}/${year}`)
     }
-    console.log(labels);
     return labels;
 }
 
@@ -411,4 +402,42 @@ function btnSearchDate(e) {
     }
     window.location.href = location
 
+}
+
+function btnDownloadExcel(e) {  
+    const dateFrom = $('#dateFrom').val()
+    const dateTo = $('#dateTo').val()
+    const planType = $('#planType').val()
+    var location = '?df=' + dateFrom +'&dt=' + dateTo +'&type='+planType
+    var newTab = window.open('http://127.0.0.1:8080/admin/export/'+location, '_blank');
+}
+
+function btnSendNotif(e) {
+    const email = $(e).attr('email')
+    const invoiceId = $(e).attr('invoiceId')
+    const status = $(e).attr('status')
+    const type = status == 1 ? 'notifPayment' : 'cancelPayment'
+    var message
+    if(status == 1){
+        message = 'We would like to inform you that you have a pending transaction with Invoice Id '+ invoiceId+ '.'
+    }else{
+        message = 'We would like to inform you that your transaction with Invoice Id '+ invoiceId+ " is Expired and your transaction is getting canceled. If you'd like to buy other subscription plan you can go to subscription page or customize your own plan on custom plan page."
+    }
+    const data = {email, message, type}
+    var config = {method:'POST', headers: {"Content-Type": "application/json"}}
+    config.body = JSON.stringify(data)
+    fetch("/plan/sendEmail/", config).then(async (response) =>{
+            if(response.ok) {
+                console.log('Success Send Email');
+                Swal.fire({
+                    icon: "success",
+                    title: "Email notification is being sent",
+                    showConfirmButton: false,
+                    timer: 1500
+                  });
+            }
+    }).catch((error) => {
+        alert('WARNINGHUH!')
+        console.log(error);
+    });
 }

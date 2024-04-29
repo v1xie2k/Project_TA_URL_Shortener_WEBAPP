@@ -1,11 +1,12 @@
 function btnIncreaseQty(e) {  
+    console.log('OI');
     const type = $(e).attr('category')
     const price = $(e).attr('price')
     var input = parseInt($('#ctr'+type).val())
     var newInput = input + 1
     var subtotal = newInput * price
     $('#ctr'+type).val(newInput)
-    $('#subtotal'+type).html(subtotal)
+    $('#subtotal'+type).html(subtotal.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, "."))
     loadGrandTotal()
     $('#btnClickBuy').attr('disabled', false)
 }
@@ -18,7 +19,7 @@ function btnDecreaseQty(e) {
     if(newInput < 0) newInput = 0
     var subtotal = newInput * price
     $('#ctr'+type).val(newInput)
-    $('#subtotal'+type).html(subtotal)
+    $('#subtotal'+type).html(subtotal.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, "."))
     loadGrandTotal()
 }
 
@@ -39,12 +40,12 @@ function loadGrandTotal(){
     const urlSub = (urlQty * urlPrice)
     const promptSub = (promptQty * promptPrice)
     var grandTotal = bioSub + urlSub + qrSub + promptSub + bioProSub
-    $('#grandTotal').html(grandTotal)
-    $('#subtotalbiolink').html(bioSub)
-    $('#subtotalbioPro').html(bioProSub)
-    $('#subtotalqr').html(qrSub)
-    $('#subtotalurl').html(urlSub)
-    $('#subtotalprompt').html(promptSub)
+    $('#grandTotal').html(grandTotal.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, "."))
+    $('#subtotalbiolink').html(bioSub.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, "."))
+    $('#subtotalbioPro').html(bioProSub.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, "."))
+    $('#subtotalqr').html(qrSub.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, "."))
+    $('#subtotalurl').html(urlSub.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, "."))
+    $('#subtotalprompt').html(promptSub.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, "."))
     if(grandTotal == 0) $('#btnClickBuy').attr('disabled', true)
 }
 
@@ -76,62 +77,14 @@ async function btnClickBuy(e) {
         // paymentToken: null,
         type: 'customplan'
     }
-    //step 1 create invoice
     config.body = JSON.stringify(data)
-    const invoiceId = await fetch('/plan/createInvoice', config).then(async (response) => {
-        return await response.text()
+    const token = await fetch('/plan/createInvoice', config).then(async (response) => {
+        const obj = await response.json()
+        return await obj.token
     }).catch((error) => {
         alert('WARNING!')
         console.log(error);
     });
-    const parameter = {
-        'transaction_details': {
-            'order_id': invoiceId,
-            'gross_amount': grandTotal,
-        },
-        "item_details": items
-    }
-    //step 2 generate token
-    config.body = JSON.stringify(parameter)
-    const token = await fetch('/plan/getToken', config).then(async (response) => {
-        return await response.text()
-    }).catch((error) => {
-        alert('WARNING!something wrong!')
-        console.log(error);
-    });
-    // console.log('token', token);
-    snap.pay(token, {
-        onSuccess: async function(result){
-            //step 3 update invoice diisi token baru & status
-            // data.status = 2
-            // data.paymentToken = token
-            config.body = JSON.stringify(data)
-            const confirmPayment = await fetch('/plan/updateInvoice/'+ invoiceId, config).then(async (response) => {
-                return await response.text()
-            }).catch((error) => {
-                alert('WARNING!')
-                console.log(error);
-            });
-            window.location = '?'
-        },
-        onPending: function(result){
-            console.log("pending", result);
-        },
-        onError: function(result){
-            console.log("error", result);
-
-        },
-        onClose: async function (result) {
-            config.method = 'DELETE'
-            const cancelPayment = await fetch('/plan/deleteInvoice/'+ invoiceId, config).then(async (response) => {
-                return await response.text()
-            }).catch((error) => {
-                alert('WARNING!')
-                console.log(error);
-            });
-            console.log("close", result);
-            failAlert('Payment not finished')
-        }
-    })
+    snap.pay(token)
     console.log('grandTotal',grandTotal);
 }

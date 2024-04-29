@@ -423,8 +423,6 @@ export async function updateClickShortUrl(collection, param, userAgent, country,
             }
         }
         data.referrer = referrerData
-        console.log(data.logClicks);
-        console.log(data.logClicks[0].countryList);
         const res = await db.collection(collection).doc(param).set(await data)
     } catch (err) {
         console.log(err.stack);

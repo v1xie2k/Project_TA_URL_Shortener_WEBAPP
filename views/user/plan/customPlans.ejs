@@ -46,12 +46,12 @@
                             <div class="col col-md-5">
                                 <h2><%= data.name%></h2>
                                 <h5><%= data.description%></h5>
-                                <h6>Price per credit: Rp.<%= data.price %></h6>
+                                <h6>Price per credit: Rp <%= data.priceIdr %></h6>
                             </div>
                             <div class="col col-md-5">
                                 <div class="d-flex flex-row-reverse me-1">
                                     <h4 id="subtotal<%= data.type%>">0</h4>
-                                    <h4>Rp.</h4>
+                                    <h4>Rp </h4>
                                 </div>
                                 <div class="d-flex flex-row-reverse">
                                     <button type="button" onclick="btnIncreaseQty(this)" class="btn btn-secondary btn-lg mt-3" category="<%= data.type%>" price="<%= data.price%>" style="border-radius: 100px;"><i class="fa-solid fa-plus"></i></button>
@@ -68,7 +68,7 @@
         <div class="d-flex flex-row-reverse justify-content-between">
             <button id="btnClickBuy" type="button" onclick="btnClickBuy(this)" class="btn btn-primary btn-lg mt-3" disabled><i class="fa-solid fa-right-to-bracket"></i>Buy</button>
             <div class="d-flex flex-row mt-3">
-                <h4>Grand Total: Rp.</h4>
+                <h4>Grand Total: Rp </h4>
                 <h4 id="grandTotal">0</h4>
             </div>
             

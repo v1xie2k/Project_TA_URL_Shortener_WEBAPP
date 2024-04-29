@@ -2,10 +2,11 @@ import express from 'express'
 import { editBioLink, filterData, getAllBioLink, getAllQr, getAllShortUrl, getAllUrl, getReports, sortBlocksBioLink, sortDataBioLink, updateClickShortUrl } from '../functions/urlController.js';
 import { searchData } from '../functions/universal.js';
 import { isAdmin, isLoggedIn } from '../middleware/middleware.js';
-import { getAllInvoice, getAllPlans, getAllPriceList, getIncome, getInvoices, sortPlans } from '../functions/planController.js';
+import { exportTransactions, getAllInvoice, getAllPlans, getAllPriceList, getIncome, getInvoices, sortPlans } from '../functions/planController.js';
 import 'dotenv/config'
 import moment from 'moment';
 import { getUsers } from '../functions/userController.js';
+import excelJS from 'exceljs'
 
 const app = express() 
 const router = express.Router();
@@ -13,6 +14,10 @@ const router = express.Router();
 router.get('/', (req, res)=>{
     res.locals.user = req.session.user
     res.render('user/home')
+})
+
+router.get('/thankyou-page', (req, res)=>{
+    res.render('user/thankyou-page')
 })
 
 router.get('/login', (req, res)=>{
@@ -53,15 +58,16 @@ router.get('/plan/custom', isLoggedIn, async (req, res)=>{
 
 router.get('/plan/history', isLoggedIn, async (req, res)=>{
     res.locals.user = req.session.user
-    
-    const dateFrom = req.url.includes('df=') ? req.url.split('df=')[1].substring(0, 10) : moment().startOf('month').format('YYYY-MM-DD')
-    const dateTo = req.url.includes('dt=') ? req.url.split('dt=')[1] : moment().endOf('month').format('YYYY-MM-DD')
     const filter = {}
+    const dateFrom = req.url.includes('df=') ? req.url.split('df=')[1].substring(0, 10) : moment().startOf('month').format('YYYY-MM-DD')
+    const dateTo = req.url.includes('dt=') ? req.url.split('dt=')[1].substring(0, 10) : moment().endOf('month').format('YYYY-MM-DD')
+    const status = req.url.includes('st=') ? req.url.split('st=')[1] : 0
     if(dateFrom) filter.dateFrom = dateFrom
     if(dateTo) filter.dateTo = dateTo
+    if(status) filter.status = status
     const allInvoice = await getAllInvoice(req.session.user.email, filter)
     const midtransClientKey = process.env.midtrans_client_key
-    res.render('user/plan/historySubscription', {midtransClientKey, allInvoice, dateFrom, dateTo})
+    res.render('user/plan/historySubscription', {midtransClientKey, allInvoice, dateFrom, dateTo, status})
 })
 
 router.get('/analytic', isLoggedIn, async (req, res)=>{
@@ -93,7 +99,8 @@ router.get('/admin/service', isAdmin, async (req, res)=>{
     res.render('admin/serviceReport', {allUrl, allQr, allBioLink})
 })
 
-router.get('/admin/transaction', isAdmin, async (req, res)=>{
+// router.get('/admin/transaction', isAdmin, async (req, res)=>{
+router.get('/admin/transaction', async (req, res)=>{
     res.locals.user = req.session.user
     const filter = {}
     const dateFrom = req.url.includes('df=') ? req.url.split('df=')[1].substring(0, 10) : moment().startOf('month').format('YYYY-MM-DD')
@@ -102,9 +109,28 @@ router.get('/admin/transaction', isAdmin, async (req, res)=>{
     if(dateFrom) filter.dateFrom = dateFrom
     if(dateTo) filter.dateTo = dateTo
     if(type) filter.type = type
-    const transactions = await getInvoices(filter)
+    const transactions = await getAllInvoice(undefined ,filter)
     const income = await getIncome(filter)
     res.render('admin/transactionReport', {transactions, dateFrom, dateTo, type, income})
+})
+
+// router.get('/admin/export', isAdmin, async (req, res)=>{
+router.get('/admin/export', async (req, res)=>{
+    res.locals.user = req.session.user
+    const filter = {}
+    const dateFrom = req.url.includes('df=') ? req.url.split('df=')[1].substring(0, 10) : moment().startOf('month').format('YYYY-MM-DD')
+    const dateTo = req.url.includes('dt=') ? req.url.split('dt=')[1].substring(0, 10) : moment().endOf('month').format('YYYY-MM-DD')
+    const type = req.url.includes('type=') ? req.url.split('type=')[1].substring(0, 1) : 0
+    if(dateFrom) filter.dateFrom = dateFrom
+    if(dateTo) filter.dateTo = dateTo
+    if(type) filter.type = type
+    const transactions = await getAllInvoice(undefined ,filter)
+    const income = await getIncome(filter)
+    const data = {
+        transactions,
+        totalIncome: income.totalIncome
+    }
+    exportTransactions(data, res)
 })
 
 router.get('/url', isLoggedIn, async (req, res)=>{
