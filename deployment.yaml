@@ -1,0 +1,67 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "project-ta-v1"
+  namespace: "shlink"
+  labels:
+    app: "project-ta-v1"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: "project-ta-v1"
+  template:
+    metadata:
+      labels:
+        app: "project-ta-v1"
+    spec:
+      containers:
+      - name: "certain-torus-sha256-1"
+        image: "asia-southeast2-docker.pkg.dev/certain-torus-419710/project-ta/certain-torus@sha256:09f33608762b6c4c6f77bfcd051cdc125b12608e76684529b1ece71dd640d468"
+        env:
+        - name: "gemini_api_key"
+          valueFrom:
+            configMapKeyRef:
+              key: "gemini_api_key"
+              name: "project-ta-v1-config-5ahw"
+        - name: "private_key_id_firebase"
+          valueFrom:
+            configMapKeyRef:
+              key: "private_key_id_firebase"
+              name: "project-ta-v1-config-5ahw"
+        - name: "private_key_firebase"
+          valueFrom:
+            configMapKeyRef:
+              key: "private_key_firebase"
+              name: "project-ta-v1-config-5ahw"
+        - name: "gcp_service_api_key"
+          valueFrom:
+            configMapKeyRef:
+              key: "gcp_service_api_key"
+              name: "project-ta-v1-config-5ahw"
+        - name: "gcs_bucket_name"
+          valueFrom:
+            configMapKeyRef:
+              key: "gcs_bucket_name"
+              name: "project-ta-v1-config-5ahw"
+        - name: "gcp_project_id"
+          valueFrom:
+            configMapKeyRef:
+              key: "gcp_project_id"
+              name: "project-ta-v1-config-5ahw"
+        - name: "midtrans_client_key"
+          valueFrom:
+            configMapKeyRef:
+              key: "midtrans_client_key"
+              name: "project-ta-v1-config-5ahw"
+        - name: "midtrans_server_key"
+          valueFrom:
+            configMapKeyRef:
+              key: "midtrans_server_key"
+              name: "project-ta-v1-config-5ahw"
+        - name: "mailtrap_pass"
+          valueFrom:
+            configMapKeyRef:
+              key: "mailtrap_pass"
+              name: "project-ta-v1-config-5ahw"

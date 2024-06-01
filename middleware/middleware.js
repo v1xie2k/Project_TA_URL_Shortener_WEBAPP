@@ -11,7 +11,7 @@ export async function isAdmin(req, res, next) {
         if(req.session.user.role == 'admin'){
             next()
         }else{
-            res.render('error/error401')
+            res.render('error/error403')
         }
     }else{
         res.render('error/error401')

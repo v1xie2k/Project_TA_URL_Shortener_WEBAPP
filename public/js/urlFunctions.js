@@ -33,6 +33,7 @@ function promptClick(e) {
 function promptRecommendation(e){
     var config = {method: 'POST', headers: {"Content-Type": "application/json"}}
     var fullUrl = $('#fullUrl').val()
+    var title = $('#titleUrl').val()
     const data = {type: 'prompt'}
     config.body = JSON.stringify(data)
     if(!fullUrl){
@@ -45,7 +46,8 @@ function promptRecommendation(e){
                         $('#promptBtn').html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Loading...')
                         $('#promptBtn').prop('disabled', true)
                         const data = {
-                            full: fullUrl
+                            full: fullUrl,
+                            title
                         }
                         fetch('/api/prompt', {
                             method: "POST",
@@ -56,13 +58,29 @@ function promptRecommendation(e){
                         }).then(async (response) => {
                             if (response.ok) {
                                 $('#promptResult').html('')
+                                //old
+                                // const prompt = await response.json()
+                                // const list = prompt.promptResult.split("\n")
+                                // var ctr = 1
+                                // for (const iterator of list) {
+                                //     if(ctr <4){
+                                //         var val = iterator.substr(2, iterator.length)
+                                //         val = val.trim()
+                                //         $('#promptResult').append('<button onclick="promptClick(this)" class="btn btn-secondary prompt-res" value="'+ val + '">'+ val +' </button>')
+                                //     }
+                                //     ctr++
+                                // }
                                 const prompt = await response.json()
-                                const list = prompt.promptResult.split("\n")
-                                const newList = []
+                                const list = prompt.promptResult
+                                console.log('list', list);
+                                var ctr = 1
                                 for (const iterator of list) {
-                                    var val = iterator.substr(2, iterator.length)
-                                    val = val.trim()
-                                    $('#promptResult').append('<button onclick="promptClick(this)" class="btn btn-secondary prompt-res" value="'+ val + '">'+ val +' </button>')
+                                    if(ctr <4){
+                                        var val = iterator
+                                        val = val.trim()
+                                        $('#promptResult').append('<button onclick="promptClick(this)" class="btn btn-secondary prompt-res" value="'+ val + '">'+ val +' </button>')
+                                    }
+                                    ctr++
                                 }
                                 fetch('/credential/reduceCredit', config).then(async (response) => {
                                     if (response.ok) {

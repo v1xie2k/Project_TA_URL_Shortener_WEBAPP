@@ -57,9 +57,9 @@
                             <button type="button" onclick="downloadQR(this)" class="btn btn-secondary" value="qr_<%= key%>" short="<%= data.short%>"><i class="fa-solid fa-download pe-2"></i>Download</button>
                         </div>
                         <div class="text-left">
-                          <h4 class="card-title"><%= data.title%></h4>
-                          <a href="<%= data.full%>" style="text-decoration: none;"><%= data.full%></a>
-                          <p class="card-text"><small class="text-body-secondary"><%= data.createdAt%></small></p>
+                            <a href="/url/view/<%= data.short%>" style="text-decoration: none; color: black;"><h4 class="card-title"><%= data.title%></h4></a>
+                            <a href="<%= data.full%>" style="text-decoration: none;"><%= data.full%></a>
+                            <p class="card-text"><small class="text-body-secondary"><%= data.createdAt%></small></p>
                         </div>
                       </div>
                     </div>

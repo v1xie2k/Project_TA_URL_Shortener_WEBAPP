@@ -2,23 +2,23 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-gamepal
+  name: ingress-foodcharity
   annotations:
     kubernetes.io/ingress.class: "gce"
 spec:
   tls:
   - hosts:
-    - gamepal.my.id
-    secretName: verynewsecret
+    - foodcharity.my.id
+    secretName: secretfoodcharity
   rules:
-  - host: gamepal.my.id
+  - host: foodcharity.my.id
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: project-ta-v1-service
+            name: project-ta-v2-service
             port:
               number: 80
 

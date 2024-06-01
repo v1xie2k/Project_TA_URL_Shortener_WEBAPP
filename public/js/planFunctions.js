@@ -51,12 +51,12 @@ function loadGrandTotal(){
 
 async function btnClickBuy(e) {  
     var config = {method: "POST", headers: {"Content-Type": "application/json"}}
+    var grandTotal = 0
     const bioQty = parseInt($('#ctrbiolink').val())
     const bioProQty = parseInt($('#ctrbioPro').val())
     const qrQty = parseInt($('#ctrqr').val())
     const urlQty = parseInt($('#ctrurl').val())
     const promptQty = parseInt($('#ctrprompt').val())
-    const grandTotal = parseInt($('#grandTotal').html())
     const bioPrice = parseInt($('#ctrbiolink').attr('price'))
     const bioProPrice = parseInt($('#ctrbioPro').attr('price'))
     const qrPrice = parseInt($('#ctrqr').attr('price'))
@@ -64,11 +64,26 @@ async function btnClickBuy(e) {
     const promptPrice = parseInt($('#ctrprompt').attr('price'))
     var items = []
     //grandtotal sudah jalan tingal connect ke midtrans & tambahkan credit ke user
-    if(bioQty > 0) items.push({name: 'Bio Link', price: bioPrice, quantity: bioQty, type:'bio'})
-    if(bioProQty > 0) items.push({name: 'Bio Link Pro', price: bioProPrice, quantity: bioProQty, type:'bioPro'})
-    if(qrQty > 0) items.push({name: 'QR Code', price: qrPrice, quantity: qrQty, type: 'qr'})
-    if(urlQty > 0) items.push({name: 'Short URL', price: urlPrice, quantity: urlQty, type: 'url'})
-    if(promptQty > 0) items.push({name: 'Prompt', price: promptPrice, quantity: promptQty, type: 'prompt'})
+    if(bioQty > 0) {
+        items.push({name: 'Bio Link', price: bioPrice, quantity: bioQty, type:'bio'})
+        grandTotal+= (bioPrice * bioQty)
+    }
+    if(bioProQty > 0) {
+        items.push({name: 'Bio Link Pro', price: bioProPrice, quantity: bioProQty, type:'bioPro'})
+        grandTotal+= (bioProPrice*bioProQty)
+    }
+    if(qrQty > 0) {
+        items.push({name: 'QR Code', price: qrPrice, quantity: qrQty, type: 'qr'})
+        grandTotal+= (qrPrice*qrQty)
+    }
+    if(urlQty > 0) {
+        items.push({name: 'Short URL', price: urlPrice, quantity: urlQty, type: 'url'})
+        grandTotal+= (urlPrice*urlQty)
+    }
+    if(promptQty > 0) {
+        items.push({name: 'Prompt', price: promptPrice, quantity: promptQty, type: 'prompt'})
+        grandTotal+= (promptPrice*promptQty)
+    }
     const data = {
         items,
         grandTotal,
@@ -86,5 +101,4 @@ async function btnClickBuy(e) {
         console.log(error);
     });
     snap.pay(token)
-    console.log('grandTotal',grandTotal);
 }

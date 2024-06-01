@@ -168,7 +168,15 @@ export async function getAllInvoice(user, filter) {
                             return obj
                         }
                     }else{
-                        return obj
+                        if(filter.type == 0){
+                            return obj
+                        }else if(filter.type == 1){
+                            if(obj.type == 'plan') return obj
+                        }else if(filter.type == 2){
+                            if(obj.type == 'customplan') return obj
+                        }else{
+                            return obj
+                        }
                     }
                 }
             }
@@ -280,6 +288,11 @@ export async function getIncome(filter) {
         data.totalIncome = totalIncome.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ".")
         data.customIncome = customIncome.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ".")
         data.planIncome = planIncome.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ".")
+        if(filter.type == 1){
+            data.totalIncome = data.planIncome
+        }else if(filter.type == 2){
+            data.totalIncome = data.customIncome
+        }
         return data
     }catch (err) {
         console.log(err.stack);

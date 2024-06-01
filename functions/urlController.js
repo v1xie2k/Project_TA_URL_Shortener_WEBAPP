@@ -15,9 +15,11 @@ const dbName = 'shorturls'
 const genAI = new GoogleGenerativeAI(process.env.gemini_api_key);
 const model = genAI.getGenerativeModel({ model: "gemini-pro"});
 
-export async function promptUrlRecommendation(url) { 
-
-    const prompt = "Make 3 recommendation of short url for suffix only! for this url "+ url +" make the output only the suffix with 2 until 3 readable words seperated with dash mark and without slash mark, dont mind the main url, display in order using numbers"
+export async function promptUrlRecommendation(url, title) { 
+    //old prompt
+    // const prompt = "Make 10 recommendation of short url for suffix only! for this url "+ url +" and consider this title to "+ title+" to make the output only the suffix with 2 until 3 readable words seperated with dash mark and without slash mark, dont mind the main url, display in order using numbers"
+    //new prompt
+    const prompt = "Make 15 recommendation of short url for suffix only! for this url "+url+". Please consider crawl the HTML content inside the URL and make a recommendation based on its content. Also consider the title which is '"+title+"' that can be combine with the URL content to generate a better recommendation, Remember the main thing for this recommendation is the content inside the URL not the title.Make the output ONLY the suffix with 2 until 3 readable word seperated with dash mark and without slash mark, dont mind the main url, display in order using numbers. Only display the short URL recommendations, don't add anything such as explanation or example beside the short URL recommendation."
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
@@ -97,14 +99,14 @@ export async function addNewURL(data) {
             return false
         }else{
             //check type qr&biolink/bukan
-            if(data.type  == 'qr' && data.short == undefined){
+            if(data.type  == 'qr' && !data.short){
                 var shortQrNew 
                 do{
                     const idQr = customAlphabet ('1234567890abcdefghijklmopqrstuvwxyz', 8)
                     shortQrNew = idQr(8)
                     data.short = shortQrNew
                 }while(await searchData(dbName, shortQrNew))
-            }else if(data.short == undefined){
+            }else if(!data.short){
                 var shortQrNew 
                 do{
                     const idQr = customAlphabet ('1234567890abcdefghijklmopqrstuvwxyz', 8)
@@ -112,7 +114,6 @@ export async function addNewURL(data) {
                     data.short = shortQrNew
                 }while(await searchData(dbName, shortQrNew))
             }
-            // console.log('data', data);
             const res = await db.collection(dbName).doc(data.short).set(data)
             // console.log(res);
             return data
@@ -169,9 +170,7 @@ export async function addNewBioLink(data) {
 export async function editBioLink(data) {
     var status = true
     try {
-        // check edit is include with short url changes or not
         const editShortStatus = (data.oldShort != data.short)? true : false
-        //edit includes short url changes
         var oldData = await searchData('biolinks',data.oldShort)
         if(data.updatedAt) oldData.updatedAt = data.updatedAt
         if(data.short) oldData.short = data.short
@@ -190,6 +189,8 @@ export async function editBioLink(data) {
             const del = await db.collection('biolinks').doc(data.oldShort).delete()
         }
         const res = await db.collection('biolinks').doc(data.short).set(oldData)
+        return true
+        
         
     } catch (err) {
         console.log(err.stack);

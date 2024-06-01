@@ -1,6 +1,3 @@
-
-// const { MongoClient, ServerApiVersion } = require('mongodb');
-// const express = require('express');
 const app = express() 
 import express from 'express'
 import sessions from 'express-session'

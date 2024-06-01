@@ -2,7 +2,7 @@ async function btnAddBioLink(e){
     var config = {method: 'POST', headers: {"Content-Type": "application/json"}}
     const short = $('#shortUrl').val()
     if(!short){
-        Swal.fire("Short URL must be filled!");
+        Swal.fire("Back half must be filled!");
         return
     }
     if(!await checkUrl(short)){
@@ -72,7 +72,7 @@ async function btnEditBioLink(e) {
     const oldBio = $('#bioLink').val()
     const title = newBio
     if (!newBio) {
-        Swal.fire("Short Url must be filled!");
+        Swal.fire("Back half must be filled!");
         return
     }
     if(!await checkUrl(newBio)){
@@ -89,23 +89,34 @@ async function btnEditBioLink(e) {
     config.body = JSON.stringify(data)
     const checkShort = (newBio != oldBio)? true : false
     if(checkShort){
-        Swal.fire({
-            icon: "warning",
-            title: "Changing Back Half will cost you 1 credit! Are you sure about it?",
-            showCancelButton: true,
-            confirmButtonText: "Go",
-        }).then(async (result) => {
-            if(result.isConfirmed){
-                fetch('/credential/checkCredit', config).then(async (response) => {
-                    if (response.ok) {
-                        fetch('/api/biolink/edit', config).then(async (response) => {
+        fetch('/api/biolink/check', config).then(async (response) => {
+            console.log(response);
+            if(response.ok){
+                Swal.fire({
+                    icon: "warning",
+                    title: "Changing Back Half will cost you 1 credit! Are you sure about it?",
+                    showCancelButton: true,
+                    confirmButtonText: "Go",
+                }).then(async (result) => {
+                    if(result.isConfirmed){
+                        fetch('/credential/checkCredit', config).then(async (response) => {
                             if (response.ok) {
-                                fetch('/credential/reduceCredit', config).then(async (response) => {
+                                fetch('/api/biolink/edit', config).then(async (response) => {
                                     if (response.ok) {
-                                        window.location.href = '/biolink/edit/' + newBio
+                                        fetch('/credential/reduceCredit', config).then(async (response) => {
+                                            if (response.ok) {
+                                                window.location.href = '/biolink/edit/' + newBio
+                                            }
+                                            else if(response.status){
+                                                Swal.fire({icon: "error", title: "Ooops....", text: 'something wrong'});
+                                            }
+                                        }).catch((error) => {
+                                            alert('WARNING!')
+                                            console.log(error);
+                                        });
                                     }
                                     else if(response.status){
-                                        Swal.fire({icon: "error", title: "Ooops....", text: 'something wrong'});
+                                        Swal.fire({icon: "error", title: "Ooops....", text: 'This Bio Link is Already Taken!'});
                                     }
                                 }).catch((error) => {
                                     alert('WARNING!')
@@ -113,20 +124,16 @@ async function btnEditBioLink(e) {
                                 });
                             }
                             else if(response.status){
-                                Swal.fire({icon: "error", title: "Ooops....", text: 'This Bio Link is Already Taken!'});
+                                Swal.fire({icon: "error", title: "Ooops....", text: 'Insufficient Credit!'});
                             }
                         }).catch((error) => {
                             alert('WARNING!')
                             console.log(error);
-                        });
+                        })
                     }
-                    else if(response.status){
-                        Swal.fire({icon: "error", title: "Ooops....", text: 'Insufficient Credit!'});
-                    }
-                }).catch((error) => {
-                    alert('WARNING!')
-                    console.log(error);
                 })
+            }else if(response.status){
+                Swal.fire({icon: "error", title: "Ooops....", text: 'This Bio Link is already taken'});
             }
         })
     }else{
@@ -568,7 +575,8 @@ async function btnAddSpotify(e) {
         Swal.fire("Please enter a spotify track!");
         return
     }else{
-        if(!checkSocialMedia('spotify', spotifyLink)){
+        if(!checkSocialMedia(spotifyLink, 'spotify')){
+            console.log('masuk');
             Swal.fire("Please enter a valid spotify track!");
             return
         }
@@ -591,7 +599,7 @@ async function btnEditSpotify(e) {
         Swal.fire("Please enter a spotify track!");
         return
     }else{
-        if(!checkSocialMedia('spotify', spotifyLink)){
+        if(!checkSocialMedia(spotifyLink, 'spotify')){
             Swal.fire("Please enter a valid spotify track!");
             return
         }
@@ -618,7 +626,7 @@ async function btnAddSoundCloud(e) {
         Swal.fire("Please enter a Soundcloud track!");
         return
     }else{
-        if(!checkSocialMedia('soundcloud', soundCloudLink)){
+        if(!checkSocialMedia(soundCloudLink, 'soundcloud')){
             Swal.fire("Please enter a valid Soundcloud link!");
             return
         }
@@ -640,7 +648,7 @@ async function btnEditSoundCloud(e) {
         Swal.fire("Please enter a spotify track!");
         return
     }else{
-        if(!checkSocialMedia('soundcloud', soundCloudLink)){
+        if(!checkSocialMedia(soundCloudLink, 'soundcloud')){
             Swal.fire("Please enter a valid spotify track!");
             return
         }

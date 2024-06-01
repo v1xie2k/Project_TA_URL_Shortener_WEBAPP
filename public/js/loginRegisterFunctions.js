@@ -50,7 +50,7 @@ function login(e) {
             }
             else if(response.status){
                 var text = 'Email or Password is incorect!'
-                if(response.status == 403) text ='Your account is banned please ask admin to unbanned'
+                if(response.status == 403) text ='Your account is banned please ask admin to unban'
                 Swal.fire({
                 icon: "error",
                 title: "Ooops....",

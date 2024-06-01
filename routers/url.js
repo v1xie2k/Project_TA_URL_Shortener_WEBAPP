@@ -22,7 +22,7 @@ router.post('/url', async(req, res)=>{
     const data = req.body
     try{
         data.createdBy = req.session.user.email
-        const result = await addNewURL(data).catch(console.dir);
+        const result = await addNewURL(data).catch(console.dir)
         if(result){
             return res.status(200).send(result)
         }
@@ -98,6 +98,15 @@ router.post('/biolink/edit', async(req, res)=>{
     }
 })
 
+router.post('/biolink/check', async(req, res)=>{
+    const short = req.body.short
+    if(await searchData('biolinks', short)){
+        return res.status(400).send('error')
+    }else{
+        return res.status(200).send('success')
+    }
+})
+
 router.post('/deleteField', async(req, res)=>{
     const data = req.body
     try{
@@ -168,11 +177,27 @@ router.delete('/delete_bio_link/:bioLinkUrl', async(req, res)=>{
 
 router.post('/prompt', async(req, res)=>{
     const full = req.body.full
+    const title = req.body.title
     try{
-        const promptResult = await promptUrlRecommendation(full);
+        const promptResult = await promptUrlRecommendation(full, title);
         if(promptResult){
-            // return res.status(200).send({promptResult})
-            return res.status(200).send({promptResult})
+            const shortURL = await getAllUrl()
+            const list = promptResult.split("\n")
+            const filteredList = []
+            // console.log(list);
+            for (const iterator of list) {
+                var val = iterator.split(".")
+                val = val[1].trim()
+                var status = false
+                for (const shorts of shortURL) {
+                    if(shorts.short == val)status = true
+                }
+                // console.log('val',val)
+                if(!status) filteredList.push(val)
+            }
+            
+            // console.log('filteredList', filteredList);
+            return res.status(200).send({promptResult: filteredList})
         }
         else{
             return res.status(400).send('error')

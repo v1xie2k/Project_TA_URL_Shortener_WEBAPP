@@ -99,8 +99,7 @@ router.get('/admin/service', isAdmin, async (req, res)=>{
     res.render('admin/serviceReport', {allUrl, allQr, allBioLink})
 })
 
-// router.get('/admin/transaction', isAdmin, async (req, res)=>{
-router.get('/admin/transaction', async (req, res)=>{
+router.get('/admin/transaction', isAdmin, async (req, res)=>{
     res.locals.user = req.session.user
     const filter = {}
     const dateFrom = req.url.includes('df=') ? req.url.split('df=')[1].substring(0, 10) : moment().startOf('month').format('YYYY-MM-DD')
@@ -114,8 +113,7 @@ router.get('/admin/transaction', async (req, res)=>{
     res.render('admin/transactionReport', {transactions, dateFrom, dateTo, type, income})
 })
 
-// router.get('/admin/export', isAdmin, async (req, res)=>{
-router.get('/admin/export', async (req, res)=>{
+router.get('/admin/export', isAdmin, async (req, res)=>{
     res.locals.user = req.session.user
     const filter = {}
     const dateFrom = req.url.includes('df=') ? req.url.split('df=')[1].substring(0, 10) : moment().startOf('month').format('YYYY-MM-DD')
@@ -124,6 +122,7 @@ router.get('/admin/export', async (req, res)=>{
     if(dateFrom) filter.dateFrom = dateFrom
     if(dateTo) filter.dateTo = dateTo
     if(type) filter.type = type
+    console.log(type);
     const transactions = await getAllInvoice(undefined ,filter)
     const income = await getIncome(filter)
     const data = {
@@ -282,6 +281,7 @@ router.get('/:shortUrl', async (req,res)=>{
         //this api is for detecting user's region(location)
         var fetchCountry = await fetch(`https://ipapi.co/${req.ips[0]}/json/`);
         var getCountry = await fetchCountry.json()
+        getCountry.country_name = getCountry.country_name ? getCountry.country_name : "Indonesia"
         updateClickShortUrl('shorturls', param, req.headers['user-agent'], getCountry.country_name, '')
         res.redirect(shortUrl.full)
     }

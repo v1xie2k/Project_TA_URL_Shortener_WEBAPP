@@ -33,9 +33,9 @@
                             <td><%= data.dateCreated%></td>
                             <td>
                                 <% if(data.ban == 1){%>
-                                    <button type="button" style="width: 7em;" value="<%= data.email%>" typeBan="unbanned"  onclick="btnActionUser(this)" class="btn btn-success form-control">Unbanned</button>
+                                    <button type="button" style="width: 7em;" value="<%= data.email%>" typeBan="unbanned"  onclick="btnActionUser(this)" class="btn btn-success form-control">Unban</button>
                                 <% }else{%>
-                                    <button type="button" style="width: 7em;" value="<%= data.email%>" typeBan="banned" onclick="btnActionUser(this)" class="btn btn-danger form-control">Banned</button>
+                                    <button type="button" style="width: 7em;" value="<%= data.email%>" typeBan="banned" onclick="btnActionUser(this)" class="btn btn-danger form-control">Ban</button>
                                 <% }%>
                             </td>
                         </tr>

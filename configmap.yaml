@@ -1,0 +1,18 @@
+---
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  name: "project-ta-v1-config-5ahw"
+  namespace: "shlink"
+  labels:
+    app: "project-ta-v1"
+data:
+  gemini_api_key: "AIzaSyBmwEStsgD0_WqlaagOIbxr8z1y2rnbSzY"
+  private_key_id_firebase: "2b8af02099ba6296a3150059371f5f7a04fbc32a"
+  private_key_firebase: "gcp_service_api_key = 'AIzaSyCU3ZDjed4OGy60LiYMqh7wqO_wV6djpSQ'"
+  gcp_service_api_key: "AIzaSyCU3ZDjed4OGy60LiYMqh7wqO_wV6djpSQ"
+  gcs_bucket_name: "url-shortener-storage-2"
+  gcp_project_id: "certain-torus-419710"
+  midtrans_client_key: "SB-Mid-client-3pvddp1GPtAATWkY"
+  midtrans_server_key: "SB-Mid-server-J4G6KFZ9W319M3sr4rmrF37U"
+  mailtrap_pass: "2af35a60da3f14494deb0f818e7e1826"

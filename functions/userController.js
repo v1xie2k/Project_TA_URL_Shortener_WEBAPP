@@ -57,7 +57,7 @@ export async function getUsers(email) {
     try {
         rawData = await db.collection('users').get();
         rawData.forEach((doc) => {
-            if(email != doc.data().user){
+            if(email != doc.data().email){
                 const obj = doc.data()
                 obj.dateCreated = formatDate(doc.data().createdAt)
                 //dont push the admin that loggedin (email == admin that logged in into the system)

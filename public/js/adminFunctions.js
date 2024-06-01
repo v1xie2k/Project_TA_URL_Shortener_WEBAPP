@@ -91,6 +91,10 @@ function btnCreatePlan(e) {
         Swal.fire("There should be 1 service at minimum");
         return
     }
+    if(urlQty <= 0 && qrQty <= 0 && promptQty <= 0 && bioQty <= 0 && bioProQty <= 0){
+        Swal.fire("Service quantity should be greater than 0");
+        return
+    }
     if(mode == 'add'){
         fetchAPI('/plan/addPlan', 'POST', data, "Something wrong while adding this plan", '?')
     }else{
@@ -283,6 +287,23 @@ function loadData(rawReport, filter) {
         type: 'line',
         data: dataLineChart
     })
+    var dataFound = false 
+    lineChartUrl.forEach(element => {
+      if(element > 0) dataFound = true
+    })
+    lineChartQr.forEach(element => {
+      if(element > 0) dataFound = true
+    })
+    lineChartBio.forEach(element => {
+      if(element > 0) dataFound = true
+    })
+    if(!dataFound){
+        $('#noData').show()
+        $('.contentData').hide()
+    }else{
+        $('#noData').hide()
+        $('.contentData').show()
+    }
 }
 
 function generateLast7Days(dateFilter) {
@@ -366,6 +387,22 @@ function loadIncomeData() {
         type: 'line',
         data: dataLineChart
     })
+    var dataFound = false
+    lineChartNormal.forEach(element => {
+      if(element > 0 && (planType == 0 || planType == 1)) dataFound = true
+    })
+    lineChartCustom.forEach(element => {
+      if(element > 0 && (planType == 0 || planType == 2)) dataFound = true
+    })
+    if(!dataFound){
+        $('#noData').show()
+        $('.contentData').hide()
+        $('#btnExcel').attr('disabled', true)
+    }else{
+        $('#noData').hide()
+        $('.contentData').show()
+        $('#btnExcel').attr('disabled', false)
+    }
 }
 
 function generateIncomeDate(dateFrom, dateTo) {
@@ -409,7 +446,7 @@ function btnDownloadExcel(e) {
     const dateTo = $('#dateTo').val()
     const planType = $('#planType').val()
     var location = '?df=' + dateFrom +'&dt=' + dateTo +'&type='+planType
-    var newTab = window.open('http://127.0.0.1:8080/admin/export/'+location, '_blank');
+    var newTab = window.open('https://gamepal.my.id/admin/export/'+location, '_blank');
 }
 
 function btnSendNotif(e) {
